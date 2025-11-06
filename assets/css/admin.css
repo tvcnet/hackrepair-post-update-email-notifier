@@ -1,0 +1,111 @@
+.pue-theme{--pue-accent:#ff6f00;--pue-accent2:#e53935;--pue-bg:#fff7f0;--pue-card:#fff;--pue-border:#ffd7b3;--pue-muted:#6b7280}
+.pue-theme h2{background:linear-gradient(90deg,#fff3e6,#fff);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent2);border-radius:10px;padding:12px 16px;margin:0}
+.pue-theme .form-table{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:0 20px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);margin-top:0}
+/* Increase left padding for content cells so inputs/text align comfortably inside cards */
+.pue-theme .form-table td{padding-left:26px}
+/* Keep label cells tidy */
+.pue-theme .form-table th{padding-left:10px}
+.pue-theme .form-table tr:last-child th{display:none}
+.pue-theme .form-table tr:last-child td{padding-left:16px}
+.pue-theme .form-table tr:last-child td .button-primary{margin-left:0}
+.pue-theme .button-primary{background:var(--pue-accent);border-color:var(--pue-accent)}
+.pue-theme .button-primary:hover{background:#ff7a12;border-color:#ff7a12}
+.pue-inline{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.pue-inline .submit{margin:0}
+.pue-done{margin-left:10px;color:#2e7d32;font-weight:600}
+.pue-error{margin-left:10px;color:#b32d2e;font-weight:600}
+
+/* Tiny spinner shown during async actions */
+.pue-spinner{display:inline-block;width:14px;height:14px;margin-left:10px;border:2px solid #ff6f00;border-top-color:transparent;border-radius:50%;animation:pue-spin 0.8s linear infinite;vertical-align:middle}
+@keyframes pue-spin{to{transform:rotate(360deg)}}
+
+/* Busy state on buttons */
+.button-primary.is-busy{opacity:.7;pointer-events:none}
+
+.pue-notice{margin:12px 0;padding:12px 14px;border-left:6px solid #46b450;border-radius:6px;background:linear-gradient(135deg,#e6ffed,#fff);box-shadow:0 1px 0 rgba(0,0,0,.04);display:flex;align-items:center;gap:10px}
+.pue-notice__emoji{font-size:20px;line-height:1}
+.pue-notice--success{border-left-color:#46b450;background:linear-gradient(135deg,#e6ffed,#fff)}
+.pue-notice--warning{border-left-color:#ffb900;background:linear-gradient(135deg,#fff7e6,#fff)}
+.pue-notice--error{border-left-color:#dc3232;background:linear-gradient(135deg,#ffe6e6,#fff)}
+.pue-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;background:#eef2f7;color:#444;font-size:12px;margin-left:8px}
+.pue-chip--ok{background:#e7f7ec;color:#2e7d32}
+.pue-chip--muted{background:#f1f1f1;color:#666}
+.pue-dot{width:8px;height:8px;border-radius:999px;background:#2e7d32}
+.pue-dot--muted{background:#999}
+
+/* Sidebar nav */
+.pue-container{display:flex;gap:22px;margin-top:10px}
+.pue-sidebar{width:220px;min-width:220px;background:#fff7f0;border:1px solid #ffd7b3;border-radius:12px;padding:10px;position:sticky;top:72px;height:max-content}
+.pue-nav{list-style:none;margin:0;padding:0}
+.pue-nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:6px;border-radius:10px;color:#1f2937;text-decoration:none;border:1px solid #ffd7b3;background:#fff}
+.pue-nav a:hover{background:#fff1e6;border-color:#ffc38a}
+.pue-nav a.active{background:#ffedd8;border-color:#ffa95c}
+.pue-main{flex:1;min-width:0;padding-bottom:120px}
+/* Ensure enough breathing room above WP admin footer so it doesn't overlap clickable controls */
+.pue-theme{padding-bottom:20px}
+/* Extra space before logs section header */
+.pue-theme h2#logging{margin-top:0}
+/* Spacing for reset block */
+.pue-theme #reset-defaults{margin-top:0}
+/* Generic card body to pair with section headers */
+.pue-card{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.03);max-width:1000px}
+/* Reset section uses standard card styling */
+.pue-reset{ }
+
+/* Mobile tweaks: stack labels/inputs for readability */
+@media (max-width: 600px){
+  .pue-theme .form-table tr{display:block;margin-bottom:10px}
+  .pue-theme .form-table th,
+  .pue-theme .form-table td{display:block;width:100%;padding-left:16px}
+  .pue-theme .form-table th{margin-bottom:4px}
+}
+
+/* Ensure helper note box drops below on smaller screens */
+@media (max-width: 900px){
+  .pue-right-note{float:none !important;width:100% !important;margin:8px 0 12px 0 !important}
+}
+@media (max-width: 782px){ /* WordPress admin common breakpoint */
+  .pue-right-note{display:none !important}
+}
+
+/* Desktop refinement: slightly reduce left padding so it tucks in closer */
+@media (min-width: 901px){
+  /* Tuck the helper note in a bit and improve breathing room */
+  .pue-right-note{
+    padding:14px 16px !important;
+    margin:4px 12px 8px 24px !important; /* slightly closer to content, a bit from right edge */
+    width:calc(38% + 20px) !important; /* allow ~20px more content width */
+    max-width:540px !important; /* lift cap to allow ~20px more words per line */
+  }
+  .pue-right-note p{margin:0 0 8px 0 !important; line-height:1.55}
+}
+
+/* Stack sidebar on smaller screens to prioritize content */
+@media (max-width: 960px){
+  .pue-container{flex-direction:column;gap:12px}
+  .pue-sidebar{position:static;width:100%;min-width:0}
+  .pue-main{padding-bottom:80px}
+}
+
+/* Accessible button contrast and visible focus styles */
+.pue-theme .button-primary{background:#b34700;border-color:#b34700;color:#fff}
+.pue-theme .button-primary:hover{background:#9a3c00;border-color:#9a3c00}
+.pue-nav a:focus-visible,
+.pue-theme .button-primary:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
+
+/* Reduced motion preference: stop spinner animation */
+@media (prefers-reduced-motion: reduce){
+  .pue-spinner{animation:none}
+}
+
+/* Modal styles */
+.pue-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:100000;display:none}
+.pue-modal.is-open{display:block}
+.pue-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.pue-modal__dialog{position:relative;max-width:720px;margin:10% auto;background:#fff;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,.2);overflow:hidden}
+.pue-modal__header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eee}
+.pue-modal__title{margin:0}
+.pue-modal__close{background:transparent;border:0;font-size:22px;line-height:1;cursor:pointer}
+.pue-modal__body{padding:16px}
+.pue-modal__line{margin:0 0 8px}
+.pue-modal__pre{background:#f6f7f7;border:1px solid #e2e4e7;border-radius:6px;padding:12px;max-height:360px;overflow:auto}
