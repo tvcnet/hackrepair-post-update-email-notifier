@@ -401,7 +401,7 @@ function pue_settings_page() {
                         <label>
                             <input type="hidden" name="pue_enable_logging" value="0">
                             <input type="checkbox" name="pue_enable_logging" value="1" <?php checked(1, $enable_logging); ?>>
-                            <?php echo esc_html__('Keep the last 50 email send events in a local log.', 'hackrepair-post-update-email-notifier'); ?>
+                            <?php echo esc_html__('Keep a recent log of email send events.', 'hackrepair-post-update-email-notifier'); ?>
                         </label>
                     </td>
                 </tr>
