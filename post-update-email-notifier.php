@@ -82,7 +82,7 @@ function pue_register_settings() {
         [
             'type' => 'string',
             'sanitize_callback' => 'pue_sanitize_message',
-            'default' => '<p>A post at [site_name] has been updated by [editor_name]:</br><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>',
+            'default' => '<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>',
         ]
     );
 
@@ -201,7 +201,7 @@ function pue_settings_page() {
     $roles = wp_roles()->roles;
     $selected_roles = get_option('pue_roles', []);
     $subject = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:</br><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
+    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
     $selected_post_types = get_option('pue_post_types', []);
     $exclude_updater = (int) get_option('pue_exclude_updater', 0);
     $enable_logging = (int) get_option('pue_enable_logging', 0);
@@ -302,7 +302,7 @@ function pue_settings_page() {
         // Refresh local variables
         $selected_roles   = get_option('pue_roles', []);
         $subject          = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-        $message          = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:</br><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
+        $message          = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
         $selected_post_types = get_option('pue_post_types', []);
         $exclude_updater  = (int) get_option('pue_exclude_updater', 0);
         $enable_logging   = (int) get_option('pue_enable_logging', 0);
@@ -825,7 +825,7 @@ function pue_ajax_send_test_email() {
         wp_send_json_error([ 'html' => '<div class="pue-notice pue-notice--error"><p>' . esc_html__('Security check failed.', 'hackrepair-post-update-email-notifier') . '</p></div>' ], 400);
     }
     $subject = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:</br><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
+    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
     $current_user = wp_get_current_user();
     $to_email = !empty($current_user->user_email) ? $current_user->user_email : get_option('admin_email');
     $sent = pue_send_test_email($to_email, $subject, $message);
@@ -897,7 +897,7 @@ function pue_ajax_bulk_test_send() {
     if ($count > 200) { $count = 200; }
 
     $subject = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:</br><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
+    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
 
     // Individual-only bulk test
     $sent = 0; $failed = 0;
