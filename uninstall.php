@@ -13,6 +13,13 @@ $option_keys = array(
     'pue_enable_logging',
     'pue_logs',
     'pue_log_retention',
+    'pue_header_text',
+    'pue_header_bg_color',
+    'pue_footer_text',
+    'pue_from_name',
+    'pue_from_email',
+    'pue_reply_to_email',
+    'pue_smtp_notice_dismiss_until',
 );
 
 if ( is_multisite() ) {
