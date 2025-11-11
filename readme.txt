@@ -2,7 +2,7 @@
 
 Contributors: hackrepair, tvcnet
 Tags: email notifications, post update, roles, html email, admin
-Donate link: https://hackrepair.com/about/hackrepair-plugin-archiver
+Donate link: https://hackrepair.com/donations/buy-jim-a-coffee
 Support link: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
 Requires at least: 6.6
 Tested up to: 6.8.2
