@@ -41,6 +41,26 @@
       }
     }catch(e){}
 
+    // Color swatch + optional WP color picker for header background
+    try{
+      var colorInput = document.querySelector('input[name="pue_header_bg_color"]');
+      var swatch = document.getElementById('pue-swatch-header-bg');
+      var updateSwatch = function(){ if(!swatch || !colorInput) return; var v = (colorInput.value || '').trim(); if(v){ swatch.style.background = v; } };
+      if(colorInput){
+        colorInput.addEventListener('input', updateSwatch);
+        colorInput.addEventListener('change', updateSwatch);
+        // Initialize WP color picker when available
+        if(window.jQuery && jQuery.fn && jQuery.fn.wpColorPicker){
+          jQuery(colorInput).wpColorPicker({
+            change: function(event, ui){ if(swatch && ui && ui.color){ swatch.style.background = ui.color.toString(); } },
+            clear: function(){ if(swatch){ swatch.style.background = ''; } }
+          });
+        }
+        // Initial paint
+        updateSwatch();
+      }
+    }catch(e){}
+
     // Show "Done!" only for the section submitted
     try{
       var markDone = function(formId){
@@ -87,6 +107,14 @@
           }catch(e){}
           if(isAjax){
             try{
+              // Ensure TinyMCE editors push their content back to the underlying textarea
+              try{
+                if (window.tinymce && typeof tinymce.triggerSave === 'function') {
+                  tinymce.triggerSave();
+                } else if (window.tinyMCE && tinyMCE.triggerSave) {
+                  tinyMCE.triggerSave();
+                }
+              }catch(e){}
               var data = new FormData(f);
               var conf = ajaxMap[id];
               data.append('action', conf.action);

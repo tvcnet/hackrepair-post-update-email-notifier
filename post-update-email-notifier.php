@@ -3,7 +3,7 @@
 Plugin Name: The Hack Repair Guy's Post Update Email Notifier
 Plugin URI: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
 Description: Sends an HTML email to selected user roles whenever a post or page is updated. Includes settings to configure roles, subject, message, branding, email identity, and a test email.
-Version: 1.3.6
+Version: 1.4.0
 Author: Jim Walker, The Hack Repair Guy
 Author URI: https://hackrepair.com/
 License: GPL2
@@ -17,8 +17,34 @@ Domain Path: /languages
 if (!defined('ABSPATH')) exit;
 
 if (!defined('PUE_VERSION')) {
-    define('PUE_VERSION', '1.3.6');
+    define('PUE_VERSION', '1.4.0');
 }
+if (!defined('PUE_MAIN_FILE')) {
+    define('PUE_MAIN_FILE', __FILE__);
+}
+
+// ---------- 0.0 Simple Autoloader for OOP classes ----------
+// Loads classes like PUE_Notifier from includes/class-pue-notifier.php
+spl_autoload_register(function ($class) {
+    if (strpos($class, 'PUE_') !== 0) {
+        return;
+    }
+    $file = plugin_dir_path(__FILE__) . 'includes/class-' . strtolower(str_replace('_', '-', $class)) . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+// Initialize Notifier container (no behavior changes yet)
+add_action('plugins_loaded', function(){
+    if (class_exists('PUE_Notifier')) {
+        PUE_Notifier::instance()->boot();
+    }
+    // Require SHA-256 in updater manifests for package integrity
+    if (!has_filter('pue_updater_require_hash')) {
+        add_filter('pue_updater_require_hash', '__return_true');
+    }
+});
 
 // ---------- 0. Load Text Domain and Plugin Links ----------
 function pue_load_textdomain() {
@@ -37,8 +63,15 @@ add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'pue_plugin_actio
 function pue_admin_enqueue_assets($hook) {
     $screen = function_exists('get_current_screen') ? get_current_screen() : null;
     if ($screen && $screen->id === 'settings_page_pue-settings') {
-        wp_enqueue_style('pue-admin', plugins_url('assets/css/admin.css', __FILE__), [], PUE_VERSION);
-        wp_enqueue_script('pue-admin', plugins_url('assets/js/admin.js', __FILE__), [], PUE_VERSION, true);
+        // WP color picker (for branding color input) + our assets
+        if (function_exists('wp_enqueue_style')) {
+            wp_enqueue_style('wp-color-picker');
+        }
+        if (function_exists('wp_enqueue_script')) {
+            wp_enqueue_script('wp-color-picker');
+        }
+        wp_enqueue_style('pue-admin', plugins_url('assets/css/admin.css', __FILE__), ['wp-color-picker'], PUE_VERSION);
+        wp_enqueue_script('pue-admin', plugins_url('assets/js/admin.js', __FILE__), ['wp-color-picker'], PUE_VERSION, true);
         wp_localize_script('pue-admin', 'PUE_Ajax', [
             'ajax_url'  => admin_url('admin-ajax.php'),
             'nonce'     => wp_create_nonce('pue_test_email_action'),
@@ -57,130 +90,9 @@ add_action('init', function(){
 
 // ---------- 1. Register Settings ----------
 function pue_register_settings() {
-    // Notifications + Logging
-    register_setting(
-        'pue_group_notifications',
-        'pue_roles',
-        [
-            'type' => 'array',
-            'sanitize_callback' => 'pue_sanitize_roles',
-            'default' => [],
-        ]
-    );
-    register_setting(
-        'pue_group_notifications',
-        'pue_subject',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_subject',
-            'default' => 'Post Updated: [post_title]',
-        ]
-    );
-    register_setting(
-        'pue_group_notifications',
-        'pue_message',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_message',
-            'default' => '<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>',
-        ]
-    );
-
-    // New: post type filters and exclude-updater toggle
-    register_setting(
-        'pue_group_notifications',
-        'pue_post_types',
-        [
-            'type' => 'array',
-            'sanitize_callback' => 'pue_sanitize_post_types',
-            'default' => [], // Empty = all types allowed (back-compat)
-        ]
-    );
-    register_setting(
-        'pue_group_notifications',
-        'pue_exclude_updater',
-        [
-            'type' => 'boolean',
-            'sanitize_callback' => 'pue_sanitize_bool',
-            'default' => 0,
-        ]
-    );
-    register_setting(
-        'pue_group_notifications',
-        'pue_enable_logging',
-        [
-            'type' => 'boolean',
-            'sanitize_callback' => 'pue_sanitize_bool',
-            'default' => 0,
-        ]
-    );
-    register_setting(
-        'pue_group_notifications',
-        'pue_log_retention',
-        [
-            'type' => 'integer',
-            'sanitize_callback' => 'pue_sanitize_retention',
-            'default' => 50,
-        ]
-    );
-
-    // Email Identity
-    register_setting(
-        'pue_group_identity',
-        'pue_from_name',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_subject',
-            'default' => '',
-        ]
-    );
-    register_setting(
-        'pue_group_identity',
-        'pue_from_email',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_email',
-            'default' => '',
-        ]
-    );
-    register_setting(
-        'pue_group_identity',
-        'pue_reply_to_email',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_email',
-            'default' => '',
-        ]
-    );
-
-    // Branding (moved from init to admin_init for consistency)
-    register_setting(
-        'pue_group_branding',
-        'pue_header_text',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_subject',
-            'default' => '[site_name] Notification',
-        ]
-    );
-    register_setting(
-        'pue_group_branding',
-        'pue_header_bg_color',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_hex',
-            'default' => '#0073aa',
-        ]
-    );
-    register_setting(
-        'pue_group_branding',
-        'pue_footer_text',
-        [
-            'type' => 'string',
-            'sanitize_callback' => 'pue_sanitize_subject',
-            'default' => 'Thank you for supporting [site_name]',
-        ]
-    );
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->register_settings();
+    }
 }
 add_action('admin_init', 'pue_register_settings');
 
@@ -191,12 +103,20 @@ function pue_create_menu() {
         __('Post Update Notifier', 'hackrepair-post-update-email-notifier'),
         'manage_options',
         'pue-settings',
-        'pue_settings_page'
+        'pue_settings_page_router'
     );
 }
 add_action('admin_menu', 'pue_create_menu');
 
 // ---------- 3. Settings Page ----------
+function pue_settings_page_router() {
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->render_settings_page();
+    }
+    if (function_exists('pue_settings_page')) {
+        return pue_settings_page();
+    }
+}
 function pue_settings_page() {
     $roles = wp_roles()->roles;
     $selected_roles = get_option('pue_roles', []);
@@ -236,6 +156,10 @@ function pue_settings_page() {
             wp_die(esc_html__('Sorry, you are not allowed to perform this action.', 'hackrepair-post-update-email-notifier'));
         }
         check_admin_referer('pue_export_log_action', 'pue_export_log_nonce');
+        if (class_exists('PUE_Logger')) {
+            PUE_Logger::instance()->export_csv_and_exit();
+        }
+        // Fallback to previous inline export if class not found
         $export_logs = get_option('pue_logs', []);
         nocache_headers();
         header('Content-Type: text/csv; charset=utf-8');
@@ -708,225 +632,44 @@ add_action('admin_init', function(){
 
 // ---------- 4. Send Email on Post Update ----------
 function pue_notify_on_update($post_ID, $post_after, $post_before) {
-    if (wp_is_post_autosave($post_ID) || wp_is_post_revision($post_ID)) return;
-    if ($post_after->post_status !== 'publish') return;
-    if (!apply_filters('pue_should_notify', true, $post_ID, $post_after, $post_before)) return;
-
-    // Respect post type filters if configured
-    $allowed_types = get_option('pue_post_types', []);
-    if (!empty($allowed_types) && !in_array($post_after->post_type, (array) $allowed_types, true)) {
-        return;
+    if (class_exists('PUE_Notification_Service')) {
+        return PUE_Notification_Service::instance()->handle_post_update($post_ID, $post_after, $post_before);
     }
-
-    $selected_roles = get_option('pue_roles', []);
-    if (empty($selected_roles)) return;
-
-    $subject_template = get_option('pue_subject');
-    $message_template = get_option('pue_message');
-
-    $editor = wp_get_current_user();
-    $post_title = $post_after->post_title;
-
-    // Build placeholder maps for update context and allow developer overrides
-    $maps = pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, $editor);
-    $maps = apply_filters('pue_placeholders', $maps, $post_ID, $post_after, $post_before, $editor);
-
-    // Compose email (subject, body HTML, headers) via centralized helper
-    list($subject, $body_html, $headers) = pue_compose_email(
-        'update',
-        $subject_template,
-        $message_template,
-        $maps,
-        [ 'post_id' => (int) $post_ID, 'post_after' => $post_after, 'post_before' => $post_before ],
-        $editor
-    );
-
-    $recipients = [];
-    foreach ($selected_roles as $role) {
-        $users = get_users(['role' => $role]);
-        foreach ($users as $user) {
-            $recipients[] = $user->user_email;
-        }
-    }
-
-    // Optionally exclude the user who updated the post
-    $exclude_updater = (int) get_option('pue_exclude_updater', 0);
-    if ($exclude_updater && !empty($editor->user_email)) {
-        $recipients = array_filter($recipients, function($email) use ($editor) {
-            return strtolower($email) !== strtolower($editor->user_email);
-        });
-    }
-
-    $recipients = array_unique($recipients);
-    $recipients = apply_filters('pue_email_recipients', $recipients, $post_ID, $post_after, $post_before, $editor);
-    $recipients = pue_sanitize_emails((array) $recipients);
-    if (!empty($recipients)) {
-        // Send individually only (privacy, deliverability, observability)
-        $all_ok = true;
-        $sent_count = 0;
-        $total = count($recipients);
-        foreach ($recipients as $rcpt) {
-            $ok = wp_mail($rcpt, $subject, $body_html, $headers);
-            if ($ok) { $sent_count++; } else { $all_ok = false; }
-        }
-        $sent = $all_ok;
-        pue_log_event('update', $sent, $recipients, $subject, $post_ID, [
-            'post_title' => $post_title,
-            'post_type'  => $post_after->post_type,
-            'editor_id'  => $editor->ID,
-            'mode'       => 'individual',
-            'sent_count' => isset($sent_count) ? (int) $sent_count : ($sent ? count($recipients) : 0),
-            'total'      => isset($total) ? (int) $total : count($recipients),
-        ]);
-        do_action('pue_email_sent', $sent, $recipients, $subject, $message, $post_ID, $post_after, $post_before, $editor);
-    }
+    // Fallback to no-op if class not available (should not happen)
     return $post_ID;
 }
 add_action('post_updated', 'pue_notify_on_update', 10, 3);
 
 // ---------- 5. Send Test Email ----------
 function pue_send_test_email($to, $subject, $message, $log = true) {
-    $headers = [
-        'Content-Type: text/html; charset=UTF-8',
-        'X-PUE: 1',
-        'X-PUE-Type: test',
-        'X-PUE-Post: 0',
-    ];
-    // Provide filter parity with update sends (post-specific args are 0/nulls here)
-    $user = wp_get_current_user();
-    // Build maps and compose via centralized helper for parity with update sends
-    $maps = pue_build_placeholder_maps_test($user);
-    list($subject, $body_html, $headers) = pue_compose_email(
-        'test',
-        $subject,
-        $message,
-        $maps,
-        [ 'post_id' => 0 ],
-        $user
-    );
-    $to = sanitize_email($to);
-    if (!is_email($to)) { return false; }
-    $sent = wp_mail($to, 'Test: ' . $subject, $body_html, $headers);
-    if ($log) {
-        pue_log_event('test', $sent, [$to], 'Test: ' . $subject, 0, []);
+    if (class_exists('PUE_Notification_Service')) {
+        return PUE_Notification_Service::instance()->send_test_email($to, $subject, $message, $log);
     }
-    return $sent;
+    return false;
 }
 
 // AJAX handler for Test Email (admin)
 add_action('wp_ajax_pue_send_test_email', 'pue_ajax_send_test_email');
 function pue_ajax_send_test_email() {
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error([ 'html' => '<div class="pue-notice pue-notice--error"><p>' . esc_html__('Permission denied.', 'hackrepair-post-update-email-notifier') . '</p></div>' ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_send_test_email();
     }
-    // Nonce can be passed in body as 'nonce'
-    $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
-    if (!wp_verify_nonce($nonce, 'pue_test_email_action')) {
-        wp_send_json_error([ 'html' => '<div class="pue-notice pue-notice--error"><p>' . esc_html__('Security check failed.', 'hackrepair-post-update-email-notifier') . '</p></div>' ], 400);
-    }
-    $subject = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
-    $current_user = wp_get_current_user();
-    $to_email = !empty($current_user->user_email) ? $current_user->user_email : get_option('admin_email');
-    $sent = pue_send_test_email($to_email, $subject, $message);
-    if ($sent) {
-        $html = '<div class="pue-notice pue-notice--success"><span class="pue-notice__emoji">🎉</span><p><strong>' . esc_html__('Success!', 'hackrepair-post-update-email-notifier') . '</strong> ' . sprintf(esc_html__('Test email sent to %s.', 'hackrepair-post-update-email-notifier'), esc_html($to_email)) . '</p></div>';
-        wp_send_json_success([ 'html' => $html ]);
-    }
-    $html = '<div class="pue-notice pue-notice--error"><span class="pue-notice__emoji">💥</span><p><strong>' . esc_html__('Hmm,', 'hackrepair-post-update-email-notifier') . '</strong> ' . sprintf(esc_html__('looks like the test email to %s didn’t go through. Double-check your mail setup or try using an SMTP plugin for more reliable delivery.', 'hackrepair-post-update-email-notifier'), esc_html($to_email)) . '</p></div>';
-    wp_send_json_error([ 'html' => $html ]);
 }
 
 // AJAX: Force update check (stay on page)
 add_action('wp_ajax_pue_force_check_now', 'pue_ajax_force_check_now');
 function pue_ajax_force_check_now() {
-    if (!current_user_can('update_plugins')) {
-        wp_send_json_error([ 'msg' => 'forbidden' ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_force_check_now();
     }
-    $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
-    if (!wp_verify_nonce($nonce, 'pue_force_check')) {
-        wp_send_json_error([ 'msg' => 'bad_nonce' ], 400);
-    }
-    if (!class_exists('PUE_Drive_Updater')) {
-        $path = __DIR__ . '/includes/class-pue-drive-updater.php';
-        if (file_exists($path)) require_once $path;
-    }
-    if (!class_exists('PUE_Drive_Updater')) {
-        wp_send_json_error([ 'msg' => 'no_updater' ], 500);
-    }
-    $manifest = PUE_Drive_Updater::force_refresh();
-    // Also trigger WordPress' plugin update check so the Plugins list reflects updates immediately
-    if (function_exists('wp_clean_plugins_cache')) {
-        wp_clean_plugins_cache(true);
-    }
-    if (function_exists('wp_update_plugins')) {
-        wp_update_plugins();
-    }
-    if (!$manifest || empty($manifest['latest_version'])) {
-        wp_send_json_error([ 'msg' => 'no_manifest' ], 500);
-    }
-    $latest = (string) $manifest['latest_version'];
-    $ts     = !empty($manifest['fetched_at']) ? (int) $manifest['fetched_at'] : current_time('timestamp');
-    $dl     = !empty($manifest['download_file_id']) ? ('https://drive.google.com/uc?export=download&id=' . rawurlencode((string) $manifest['download_file_id'])) : '';
-    $last_html = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $ts);
-    wp_send_json_success([
-        'latest_version' => $latest,
-        'last_checked'   => $last_html,
-        'download_url'   => $dl,
-    ]);
 }
 
 // AJAX: Bulk Test Email
 add_action('wp_ajax_pue_bulk_test_send', 'pue_ajax_bulk_test_send');
 function pue_ajax_bulk_test_send() {
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error([ 'error' => __('Permission denied.', 'hackrepair-post-update-email-notifier') ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_bulk_test_send();
     }
-    $nonce = isset($_POST['pue_bulk_test_nonce']) ? $_POST['pue_bulk_test_nonce'] : (isset($_POST['nonce']) ? $_POST['nonce'] : '');
-    if (!wp_verify_nonce($nonce, 'pue_bulk_test_action')) {
-        wp_send_json_error([ 'error' => __('Security check failed.', 'hackrepair-post-update-email-notifier') ], 400);
-    }
-    $email = isset($_POST['pue_bulk_email']) ? sanitize_email($_POST['pue_bulk_email']) : '';
-    $count = isset($_POST['pue_bulk_count']) ? (int) $_POST['pue_bulk_count'] : 0;
-    $use_plus = !empty($_POST['pue_bulk_plus']);
-    $log_detail = !empty($_POST['pue_bulk_log_detail']);
-    if (!$email || !is_email($email)) {
-        wp_send_json_error([ 'error' => __('Invalid email address.', 'hackrepair-post-update-email-notifier') ], 400);
-    }
-    if ($count < 1) { $count = 1; }
-    if ($count > 200) { $count = 200; }
-
-    $subject = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
-    $message = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
-
-    // Individual-only bulk test
-    $sent = 0; $failed = 0;
-    $targets = [];
-    if ($use_plus) {
-        $targets = pue_generate_plus_aliases($email, $count);
-    } else {
-        for ($i=0; $i<$count; $i++) { $targets[] = $email; }
-    }
-    $i = 0;
-    foreach ($targets as $addr) {
-        $i++;
-        // Suppress per-message logs unless detailed logging requested
-        $ok = pue_send_test_email($addr, '[Bulk ' . $i . '] ' . $subject, $message, $log_detail ? true : false);
-        if ($ok) { $sent++; } else { $failed++; }
-        usleep(50000);
-    }
-    // Summary row when not logging detail
-    if (!$log_detail) {
-        pue_log_event('test', ($sent === count($targets)), [$email], '[Bulk Individual Summary] ' . $subject, 0, [
-            'mode'       => 'bulk_individual_summary',
-            'sent_count' => (int) $sent,
-            'total'      => (int) count($targets),
-        ]);
-    }
-    $html = '<div class="pue-notice ' . ($failed ? 'pue-notice--warning' : 'pue-notice--success') . '"><p>'
-          . sprintf( esc_html__('Bulk test complete (Individual). Sent %1$d of %2$d.', 'hackrepair-post-update-email-notifier'), (int)$sent, (int)count($targets) )
-          . '</p></div>';
-    wp_send_json_success([ 'html' => $html, 'sent' => $sent, 'total' => count($targets), 'mode' => 'individual' ]);
 }
 
 /**
@@ -954,74 +697,25 @@ function pue_generate_plus_aliases($email, $count) {
 // AJAX: save Notifications
 add_action('wp_ajax_pue_save_notifications', 'pue_ajax_save_notifications');
 function pue_ajax_save_notifications() {
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error([ 'msg' => 'forbidden' ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_save_notifications();
     }
-    if (!isset($_POST['pue_save_notifications_nonce']) || !wp_verify_nonce($_POST['pue_save_notifications_nonce'], 'pue_save_notifications')) {
-        wp_send_json_error([ 'msg' => 'bad_nonce' ], 400);
-    }
-    // Sanitize and save
-    $roles       = isset($_POST['pue_roles']) ? pue_sanitize_roles($_POST['pue_roles']) : [];
-    $subject     = isset($_POST['pue_subject']) ? pue_sanitize_subject($_POST['pue_subject']) : '';
-    $message     = isset($_POST['pue_message']) ? pue_sanitize_message($_POST['pue_message']) : '';
-    $post_types  = isset($_POST['pue_post_types']) ? pue_sanitize_post_types($_POST['pue_post_types']) : [];
-    $exclude_upd = isset($_POST['pue_exclude_updater']) ? pue_sanitize_bool($_POST['pue_exclude_updater']) : 0;
-    $enable_log  = isset($_POST['pue_enable_logging']) ? pue_sanitize_bool($_POST['pue_enable_logging']) : 0;
-    $retention   = isset($_POST['pue_log_retention']) ? pue_sanitize_retention($_POST['pue_log_retention']) : 50;
-
-    pue_save_notifications_group([
-        'pue_roles' => $roles,
-        'pue_subject' => $subject,
-        'pue_message' => $message,
-        'pue_post_types' => $post_types,
-        'pue_exclude_updater' => (int)$exclude_upd,
-        'pue_enable_logging' => (int)$enable_log,
-        'pue_log_retention' => (int)$retention,
-    ]);
-
-    wp_send_json_success([ 'ok' => true ]);
 }
 
 // AJAX: save Branding
 add_action('wp_ajax_pue_save_branding', 'pue_ajax_save_branding');
 function pue_ajax_save_branding() {
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error([ 'msg' => 'forbidden' ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_save_branding();
     }
-    if (!isset($_POST['pue_save_branding_nonce']) || !wp_verify_nonce($_POST['pue_save_branding_nonce'], 'pue_save_branding')) {
-        wp_send_json_error([ 'msg' => 'bad_nonce' ], 400);
-    }
-    $header = isset($_POST['pue_header_text']) ? pue_sanitize_subject($_POST['pue_header_text']) : '';
-    $bg     = isset($_POST['pue_header_bg_color']) ? pue_sanitize_hex($_POST['pue_header_bg_color']) : '#0073aa';
-    $footer = isset($_POST['pue_footer_text']) ? pue_sanitize_subject($_POST['pue_footer_text']) : '';
-    pue_save_branding_group([
-        'pue_header_text' => $header,
-        'pue_header_bg_color' => $bg,
-        'pue_footer_text' => $footer,
-    ]);
-    wp_send_json_success([ 'ok' => true ]);
 }
 
 // AJAX: save Email Identity
 add_action('wp_ajax_pue_save_identity', 'pue_ajax_save_identity');
 function pue_ajax_save_identity() {
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error([ 'msg' => 'forbidden' ], 403);
+    if (class_exists('PUE_Admin_Interface')) {
+        return PUE_Admin_Interface::instance()->ajax_save_identity();
     }
-    if (!isset($_POST['pue_save_identity_nonce']) || !wp_verify_nonce($_POST['pue_save_identity_nonce'], 'pue_save_identity')) {
-        wp_send_json_error([ 'msg' => 'bad_nonce' ], 400);
-    }
-    $from_name = isset($_POST['pue_from_name']) ? pue_sanitize_subject($_POST['pue_from_name']) : '';
-    $from_email = isset($_POST['pue_from_email']) ? pue_sanitize_email($_POST['pue_from_email']) : '';
-    $reply_email = isset($_POST['pue_reply_to_email']) ? pue_sanitize_email($_POST['pue_reply_to_email']) : '';
-    pue_save_identity_group([
-        'pue_from_name' => $from_name,
-        'pue_from_email' => $from_email,
-        'pue_reply_to_email' => $reply_email,
-    ]);
-    wp_send_json_success([ 'ok' => true ]);
-
-// Centralized group saves to keep sanitizer parity with Settings API
 }
 
 function pue_save_notifications_group($data) {
@@ -1056,6 +750,9 @@ function pue_save_identity_group($data) {
 
 // ---------- 7. Sanitize Callbacks ----------
 function pue_sanitize_roles($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_roles($input);
+    }
     $allowed = array_keys(wp_roles()->roles);
     $sanitized = [];
     if (is_array($input)) {
@@ -1070,18 +767,27 @@ function pue_sanitize_roles($input) {
 }
 
 function pue_sanitize_subject($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_subject($input);
+    }
     if ($input === null) { return ''; }
     if (!is_scalar($input)) { return ''; }
     return sanitize_text_field((string) $input);
 }
 
 function pue_sanitize_message($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_message($input);
+    }
     if ($input === null) { return ''; }
     if (!is_string($input)) { $input = (string) $input; }
     return wp_kses_post($input);
 }
 
 function pue_sanitize_post_types($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_post_types($input);
+    }
     $allowed = get_post_types([], 'names');
     $sanitized = [];
     if (is_array($input)) {
@@ -1096,22 +802,34 @@ function pue_sanitize_post_types($input) {
 }
 
 function pue_sanitize_bool($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_bool($input);
+    }
     return $input ? 1 : 0;
 }
 
 function pue_sanitize_retention($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_retention($input);
+    }
     $allowed = [50, 200, 1000];
     $val = (int) $input;
     return in_array($val, $allowed, true) ? $val : 50;
 }
 
 function pue_sanitize_hex($color) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_hex($color);
+    }
     $color = is_string($color) ? $color : '';
     $c = sanitize_hex_color($color);
     return $c ? $c : '#0073aa';
 }
 
 function pue_sanitize_email($input) {
+    if (class_exists('PUE_Settings_Manager')) {
+        return PUE_Settings_Manager::instance()->sanitize_email($input);
+    }
     if ($input === null) return '';
     if (!is_string($input)) $input = (string) $input;
     return sanitize_email($input);
@@ -1121,6 +839,10 @@ function pue_sanitize_email($input) {
 
 // ---------- 8. Logging ----------
 function pue_log_event($type, $sent, $recipients, $subject, $post_id = 0, $extra = []) {
+    if (class_exists('PUE_Logger')) {
+        return PUE_Logger::instance()->log_event($type, $sent, $recipients, $subject, $post_id, $extra);
+    }
+    // Fallback to inline logic (pre‑OOP)
     $enabled = (int) get_option('pue_enable_logging', 0);
     if (!$enabled) return;
     $entry = [
@@ -1131,11 +853,9 @@ function pue_log_event($type, $sent, $recipients, $subject, $post_id = 0, $extra
         'subject'    => (string) $subject,
         'post_id'    => (int) $post_id,
     ];
-    if (isset($extra['post_title'])) { $entry['post_title'] = (string) $extra['post_title']; }
-    if (isset($extra['post_type'])) { $entry['post_type'] = (string) $extra['post_type']; }
-    if (isset($extra['editor_id'])) { $entry['editor_id'] = (int) $extra['editor_id']; }
-    if (isset($extra['error'])) { $entry['error'] = (string) $extra['error']; }
-    if (isset($extra['error_code'])) { $entry['error_code'] = (string) $extra['error_code']; }
+    foreach (['post_title','post_type','editor_id','error','error_code','mode','sent_count','total'] as $k) {
+        if (isset($extra[$k])) { $entry[$k] = $extra[$k]; }
+    }
     $logs = get_option('pue_logs', []);
     if (!is_array($logs)) { $logs = []; }
     $logs[] = $entry;
@@ -1150,16 +870,17 @@ function pue_log_event($type, $sent, $recipients, $subject, $post_id = 0, $extra
 // Capture failure details from wp_mail for plugin emails only (identified via X-PUE header)
 add_action('wp_mail_failed', 'pue_wp_mail_failed');
 function pue_wp_mail_failed($wp_error) {
+    if (class_exists('PUE_Logger')) {
+        return PUE_Logger::instance()->capture_mail_failure($wp_error);
+    }
+    // Fallback to inline capture
     if (!is_wp_error($wp_error)) return;
     $data = $wp_error->get_error_data();
     if (!is_array($data)) return;
     $headers = isset($data['headers']) ? $data['headers'] : [];
-    $header_lines = [];
-    if (is_string($headers)) {
-        $header_lines = preg_split('/\r\n|\r|\n/', $headers);
-    } elseif (is_array($headers)) {
-        $header_lines = $headers;
-    }
+    $header_lines = is_string($headers)
+        ? preg_split('/\r\n|\r|\n/', $headers)
+        : (is_array($headers) ? $headers : []);
     $is_plugin_mail = false;
     $type = 'update';
     $post_id = 0;
@@ -1236,6 +957,10 @@ function pue_phpmailer_set_altbody($phpmailer) {
  * @return array                [ $subject, $body_html, $headers ]
  */
 function pue_compose_email($context, $subject_tmpl, $message_tmpl, $maps, $meta, $user) {
+    if (class_exists('PUE_Email_Composer')) {
+        return PUE_Email_Composer::instance()->compose($context, $subject_tmpl, $message_tmpl, $maps, $meta, $user);
+    }
+    // Fallback to previous inline logic if class not available
     $post_id    = isset($meta['post_id']) ? (int) $meta['post_id'] : 0;
     $post_after = isset($meta['post_after']) ? $meta['post_after'] : null;
     $post_before= isset($meta['post_before']) ? $meta['post_before'] : null;
@@ -1244,19 +969,13 @@ function pue_compose_email($context, $subject_tmpl, $message_tmpl, $maps, $meta,
     $message_map = isset($maps['message']) && is_array($maps['message']) ? $maps['message'] : [];
     $brand_map   = isset($maps['brand'])   && is_array($maps['brand'])   ? $maps['brand']   : array_merge($message_map, $subject_map);
 
-    // Render subject + message
     $subject = strtr((string) $subject_tmpl, $subject_map);
     $subject = apply_filters('pue_email_subject', $subject, $post_id, $post_after, $post_before, $user, $subject_map);
-
     $message = strtr((string) $message_tmpl, $message_map);
     $message = apply_filters('pue_email_message', $message, $post_id, $post_after, $post_before, $user, $message_map);
     $message = function_exists('pue_normalize_message_html') ? pue_normalize_message_html($message) : $message;
-
-    // Wrap with branded template
     $body_html = pue_email_template_branded($message, $brand_map);
     $body_html = apply_filters('pue_email_template_html', $body_html, $message, $post_id, $post_after, $post_before, $user);
-
-    // Base + identity headers
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
         'X-PUE: 1',
@@ -1265,15 +984,12 @@ function pue_compose_email($context, $subject_tmpl, $message_tmpl, $maps, $meta,
     ];
     $headers = pue_build_identity_headers($headers, $brand_map, $user);
     $headers = apply_filters('pue_email_headers', $headers, $post_id, $post_after, $post_before, $user);
-
-    // Optional plaintext alternative
     if (apply_filters('pue_email_plaintext_enabled', false, $body_html, $post_id, $context)) {
         $width = (int) apply_filters('pue_email_plaintext_width', 78, $post_id, $context);
         $alt = pue_generate_plaintext($body_html, $width);
         $alt = apply_filters('pue_email_plaintext', $alt, $body_html, $post_id, $context);
         $GLOBALS['pue_altbody'] = $alt;
     }
-
     return [ $subject, $body_html, $headers ];
 }
 
@@ -1282,13 +998,15 @@ function pue_compose_email($context, $subject_tmpl, $message_tmpl, $maps, $meta,
  * Returns ['subject'=>[], 'message'=>[], 'brand'=>[]].
  */
 function pue_build_placeholder_maps_test($user) {
+    if (class_exists('PUE_Placeholder_Engine')) {
+        return PUE_Placeholder_Engine::instance()->build_test_maps($user);
+    }
     $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
     $now_str     = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
     $editor_name = $user ? $user->display_name : '';
     $sample_post = __( 'Sample Post', 'hackrepair-post-update-email-notifier' );
     $sample_url  = home_url( '/' );
     $edit_url    = admin_url( 'edit.php' );
-
     $subject_map = [
         '[post_title]'    => $sample_post,
         '[post_url]'      => $sample_url,
@@ -1325,6 +1043,9 @@ function pue_build_placeholder_maps_test($user) {
  * Returns ['subject'=>[], 'message'=>[], 'brand'=>[]].
  */
 function pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, $editor) {
+    if (class_exists('PUE_Placeholder_Engine')) {
+        return PUE_Placeholder_Engine::instance()->build_update_maps($post_ID, $post_after, $post_before, $editor);
+    }
     $post_title  = $post_after ? $post_after->post_title : get_the_title($post_ID);
     $post_url    = get_permalink($post_ID);
     $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
@@ -1336,7 +1057,6 @@ function pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, 
     if (!$edit_url) {
         $edit_url = admin_url('post.php?post=' . (int) $post_ID . '&action=edit');
     }
-
     $subject_map = [
         '[post_title]'    => wp_strip_all_tags((string) $post_title),
         '[post_url]'      => (string) $post_url,
@@ -1348,7 +1068,6 @@ function pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, 
         '[post_edit_url]' => (string) $edit_url,
         '[year]'          => date('Y'),
     ];
-
     $message_map = [
         '[post_title]'    => esc_html((string) $post_title),
         '[post_url]'      => esc_url((string) $post_url),
@@ -1360,14 +1079,12 @@ function pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, 
         '[post_edit_url]' => esc_url((string) $edit_url),
         '[year]'          => esc_html(date('Y')),
     ];
-
     $brand_map = [
         '[site_name]'  => (string) $site_name,
         '[updated_at]' => (string) $updated_at,
         '[editor_name]'=> $editor ? (string) $editor->display_name : '',
         '[year]'       => date('Y'),
     ];
-
     return [ 'subject' => $subject_map, 'message' => $message_map, 'brand' => $brand_map ];
 }
 function pue_sanitize_emails($emails) {
@@ -1380,6 +1097,9 @@ function pue_sanitize_emails($emails) {
 }
 
 function pue_csv_safe($value) {
+    if (class_exists('PUE_Logger')) {
+        return PUE_Logger::instance()->csv_safe($value);
+    }
     if (!is_string($value)) { return $value; }
     $trim = ltrim($value);
     if ($trim !== '' && in_array($trim[0], ['=', '+', '-', '@'], true)) {
@@ -1488,6 +1208,12 @@ function pue_normalize_message_html($message) {
         // Strip leading/trailing <br> artifacts
         $message = preg_replace('/^(?:<br\s*\/?>\s*)+/', '', $message);
         $message = preg_replace('/(?:<br\s*\/?>\s*)+$/', '', $message);
+        // If no block-level tags present, auto-paragraph for better visual parity
+        if (!preg_match('/<\s*(p|ul|ol|table|div|h[1-6])\b/i', $message)) {
+            if (function_exists('wpautop')) {
+                $message = wpautop($message);
+            }
+        }
     }
     return $message;
 }

@@ -7,7 +7,7 @@ Support link: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin
 Requires at least: 6.6
 Tested up to: 6.8.2
 Requires PHP: 7.4
-Stable tag: 1.3.6
+Stable tag: 1.4.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,7 +152,7 @@ This plugin includes a lightweight self‑updater that checks a Google Drive man
 - Direct links (Drive):
   - Manifest: `https://drive.google.com/uc?export=download&id=MANIFEST_FILE_ID`
   - ZIP: `https://drive.google.com/uc?export=download&id=ZIP_FILE_ID`
-- Caching: The manifest is cached for ~12 hours. Use the plugin’s Settings → Update Status (Cacheless) button or the plugin row “Check for updates now” link to force a refresh.
+- Caching: The manifest is cached for ~12 hours. Use the plugin’s Settings → Update Status (Cacheless) button to force a refresh.
 - Integrity (optional): If you include `sha256` in the manifest, the ZIP’s SHA‑256 will be verified before install. If omitted, updates still work (hash is optional by default).
 
 = Performance
@@ -182,6 +182,21 @@ Go to Settings → Post Update Notifier. Configure roles, subject/body template,
 
 == Changelog ==
 
+= 1.4.0 =
+- Architecture: start incremental OOP refactor with simple autoloader and new service classes (Logger, AdminInterface, NotificationService). Existing hooks, AJAX actions, and option names preserved.
+- Settings: route registration and sanitizers via PUE_Settings_Manager (backward-compatible wrappers retained).
+- Email: delegate composition and placeholder building via PUE_Email_Composer and PUE_Placeholder_Engine; public helper functions remain for back-compat.
+- Delegation: route logging, CSV export, and `wp_mail_failed` capture through `PUE_Logger` (with fallback code paths for safety).
+- Admin AJAX: route AJAX handlers (test email, force update check, bulk test, save sections) through `PUE_AdminInterface` without changing action names.
+- Notifications: route update/test email flows through `PUE_NotificationService` while keeping identical behavior (one email per recipient; same filters/placeholders/headers).
+- Fix: `pue_email_sent` now passes the composed HTML message instead of an undefined variable.
+- No breaking changes.
+
+= 1.3.7 =
+- Uninstall: remove all plugin options on uninstall (single‑site and multisite) to ensure a clean removal.
+- Defaults: updated fallback/default message to use HTML `<br />` line breaks for consistent rendering.
+- Copy: minor logging description and wording improvements in settings.
+
 = 1.3.6 =
 - Mobile-first polish: sidebar stacks under header on small screens; helper note drops below or hides on mobile.
 - Accessibility: higher-contrast primary buttons; visible focus rings; reduced-motion support for spinner.
@@ -191,7 +206,7 @@ Go to Settings → Post Update Notifier. Configure roles, subject/body template,
 
 = 1.3.4 =
 - Settings: Update Status (Cacheless) button to force-refresh the Drive manifest without leaving the page.
-- UX: Immediate plugin list visibility — after an instant check, the Plugins page shows available updates right away.
+- Note: The plugin-row “Check for updates now” link was removed in later versions; use the Settings button instead.
 
 = 1.3.3 =
 - Google Drive self‑updater: added on‑demand “Update Status (Cacheless)” in Settings and plugin‑row “Check for updates now”.
