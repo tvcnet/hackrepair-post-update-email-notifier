@@ -190,7 +190,6 @@ Go to Settings → Post Update Notifier. Configure roles, subject/body template,
 - Admin AJAX: route AJAX handlers (test email, force update check, bulk test, save sections) through `PUE_AdminInterface` without changing action names.
 - Notifications: route update/test email flows through `PUE_NotificationService` while keeping identical behavior (one email per recipient; same filters/placeholders/headers).
 - Fix: `pue_email_sent` now passes the composed HTML message instead of an undefined variable.
-- No breaking changes.
 
 = 1.3.7 =
 - Uninstall: remove all plugin options on uninstall (single‑site and multisite) to ensure a clean removal.
