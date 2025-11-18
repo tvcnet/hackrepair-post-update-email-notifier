@@ -95,7 +95,7 @@ if (!class_exists('PUE_Logger')) {
             foreach ((array) $export_logs as $entry) {
                 $time = isset($entry['ts']) ? (int) $entry['ts'] : time();
                 $type = isset($entry['type']) ? (string) $entry['type'] : 'update';
-                $sent = !empty($entry['sent']) ? 'sent' : 'failed';
+                $sent = !empty($entry['sent']) ? 'sent' : ((isset($entry['mode']) && $entry['mode'] === 'skipped') ? 'skipped' : 'failed');
                 $post_id = isset($entry['post_id']) ? (int) $entry['post_id'] : 0;
                 $title = $this->csv_safe(isset($entry['post_title']) ? (string) $entry['post_title'] : '');
                 $ptype = $this->csv_safe(isset($entry['post_type']) ? (string) $entry['post_type'] : '');
@@ -128,4 +128,3 @@ if (!class_exists('PUE_Logger')) {
         }
     }
 }
-

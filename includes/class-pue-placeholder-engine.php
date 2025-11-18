@@ -14,7 +14,7 @@ if (!class_exists('PUE_Placeholder_Engine')) {
 
         public function build_test_maps($user) {
             $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
-            $now_str     = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
+            $now_str     = function_exists('pue_format_datetime') ? pue_format_datetime(current_time('timestamp')) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
             $editor_name = $user ? $user->display_name : '';
             $sample_post = __('Sample Post', 'hackrepair-post-update-email-notifier');
             $sample_url  = home_url('/');
@@ -57,7 +57,7 @@ if (!class_exists('PUE_Placeholder_Engine')) {
             $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
             $ptype_obj   = $post_after ? get_post_type_object($post_after->post_type) : null;
             $ptype_label = ($ptype_obj && isset($ptype_obj->labels->singular_name)) ? $ptype_obj->labels->singular_name : ($post_after ? $post_after->post_type : get_post_type($post_ID));
-            $updated_at  = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
+            $updated_at  = function_exists('pue_format_datetime') ? pue_format_datetime(current_time('timestamp')) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
             $author_name = $post_after ? get_the_author_meta('display_name', $post_after->post_author) : '';
             $edit_url    = get_edit_post_link($post_ID);
             if (!$edit_url) {
@@ -97,4 +97,3 @@ if (!class_exists('PUE_Placeholder_Engine')) {
         }
     }
 }
-

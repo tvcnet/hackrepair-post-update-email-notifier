@@ -64,7 +64,7 @@ if (!class_exists('PUE_Admin_Interface')) {
                 foreach ((array) $export_logs as $entry) {
                     $time = isset($entry['ts']) ? (int) $entry['ts'] : time();
                     $type = isset($entry['type']) ? (string) $entry['type'] : 'update';
-                    $sent = !empty($entry['sent']) ? 'sent' : 'failed';
+                    $sent = !empty($entry['sent']) ? 'sent' : ((isset($entry['mode']) && $entry['mode'] === 'skipped') ? 'skipped' : 'failed');
                     $post_id = isset($entry['post_id']) ? (int) $entry['post_id'] : 0;
                     $title = pue_csv_safe(isset($entry['post_title']) ? (string) $entry['post_title'] : '');
                     $ptype = pue_csv_safe(isset($entry['post_type']) ? (string) $entry['post_type'] : '');
@@ -361,7 +361,7 @@ if (!class_exists('PUE_Admin_Interface')) {
                                 $post_title = isset($entry['post_title']) ? $entry['post_title'] : '';
                                 $recips = isset($entry['recipients']) && is_array($entry['recipients']) ? $entry['recipients'] : [];
                                 $subject_line = isset($entry['subject']) ? $entry['subject'] : '';
-                                $time_str = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $time);
+                                $time_str = function_exists('pue_format_datetime') ? pue_format_datetime($time) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $time);
                                 $post_label = $post_id ? ($post_title ? $post_title : ('#' . $post_id)) : __('(no post)', 'hackrepair-post-update-email-notifier');
                                 $recip_display = implode(', ', array_slice($recips, 0, 3));
                                 if (count($recips) > 3) { $recip_display .= ', …'; }
@@ -375,18 +375,22 @@ if (!class_exists('PUE_Admin_Interface')) {
                                     if ($sent) {
                                         $status_html = '<span style="color:green;">' . esc_html__('Sent', 'hackrepair-post-update-email-notifier') . '</span>';
                                     } else {
-                                        $sc = isset($entry['sent_count']) ? (int) $entry['sent_count'] : 0;
-                                        $tot = isset($entry['total']) ? (int) $entry['total'] : 0;
-                                        if ($sc > 0 && $tot > 0 && $sc < $tot) {
-                                            $status_html = '<span style="color:#d98300;">' . esc_html__('Partial', 'hackrepair-post-update-email-notifier') . ' (' . (int) $sc . '/' . (int) $tot . ')</span>';
+                                        $mode = isset($entry['mode']) ? (string) $entry['mode'] : '';
+                                        if ($mode === 'skipped') {
+                                            $status_html = '<span style="color:#555;">' . esc_html__('Not sent', 'hackrepair-post-update-email-notifier') . '</span>';
                                         } else {
-                                            $status_html = '<span style="color:#b32d2e;">' . esc_html__('Failed', 'hackrepair-post-update-email-notifier') . '</span>';
-                                        }
-                                        if (function_exists('pue_get_related_error_detail')) {
-                                            $detail = pue_get_related_error_detail($logs, $type, $post_id, $time);
-                                            if (!empty($detail['full'])) {
-                                                $mode = isset($entry['mode']) ? (string) $entry['mode'] : '';
-                                                $status_html .= ' <a href="#" class="pue-err-link" data-error-full="' . esc_attr($detail['full']) . '" data-error-code="' . esc_attr($detail['code']) . '" data-error-time="' . esc_attr($time_str) . '" data-error-mode="' . esc_attr($mode) . '">' . esc_html__('View error', 'hackrepair-post-update-email-notifier') . '</a>';
+                                            $sc = isset($entry['sent_count']) ? (int) $entry['sent_count'] : 0;
+                                            $tot = isset($entry['total']) ? (int) $entry['total'] : 0;
+                                            if ($sc > 0 && $tot > 0 && $sc < $tot) {
+                                                $status_html = '<span style="color:#d98300;">' . esc_html__('Partial', 'hackrepair-post-update-email-notifier') . ' (' . (int) $sc . '/' . (int) $tot . ')</span>';
+                                            } else {
+                                                $status_html = '<span style="color:#b32d2e;">' . esc_html__('Failed', 'hackrepair-post-update-email-notifier') . '</span>';
+                                            }
+                                            if (function_exists('pue_get_related_error_detail')) {
+                                                $detail = pue_get_related_error_detail($logs, $type, $post_id, $time);
+                                                if (!empty($detail['full'])) {
+                                                    $status_html .= ' <a href="#" class="pue-err-link" data-error-full="' . esc_attr($detail['full']) . '" data-error-code="' . esc_attr($detail['code']) . '" data-error-time="' . esc_attr($time_str) . '" data-error-mode="' . esc_attr($mode) . '">' . esc_html__('View error', 'hackrepair-post-update-email-notifier') . '</a>';
+                                                }
                                             }
                                         }
                                     }
@@ -429,7 +433,7 @@ if (!class_exists('PUE_Admin_Interface')) {
                 ?>
                 <p><strong><?php echo esc_html__('Current version:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-current"><?php echo esc_html($current_v); ?></span></p>
                 <p><strong><?php echo esc_html__('Latest available (Drive):', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-latest"><?php echo $latest_v ? esc_html($latest_v) : esc_html__('Not checked yet', 'hackrepair-post-update-email-notifier'); ?></span></p>
-                <p><strong><?php echo esc_html__('Last checked:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $fetched_at)) : esc_html__('—', 'hackrepair-post-update-email-notifier'); ?></span></p>
+                <p><strong><?php echo esc_html__('Last checked:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( function_exists('pue_format_datetime') ? pue_format_datetime($fetched_at) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $fetched_at) ) : esc_html__('—', 'hackrepair-post-update-email-notifier'); ?></span></p>
                 <p class="pue-inline" style="margin-top:8px;">
                     <button type="button" id="pue-check-updates-btn" class="button button-primary"><?php echo esc_html__('Check for updates now', 'hackrepair-post-update-email-notifier'); ?></button>
                     <input type="hidden" id="pue-force-check-nonce" value="<?php echo esc_attr( wp_create_nonce('pue_force_check') ); ?>" />
@@ -555,7 +559,7 @@ if (!class_exists('PUE_Admin_Interface')) {
             $latest = (string) $manifest['latest_version'];
             $ts     = !empty($manifest['fetched_at']) ? (int) $manifest['fetched_at'] : current_time('timestamp');
             $dl     = !empty($manifest['download_file_id']) ? ('https://drive.google.com/uc?export=download&id=' . rawurlencode((string) $manifest['download_file_id'])) : '';
-            $last_html = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $ts);
+            $last_html = function_exists('pue_format_datetime') ? pue_format_datetime($ts) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $ts);
             wp_send_json_success([
                 'latest_version' => $latest,
                 'last_checked'   => $last_html,

@@ -7,7 +7,7 @@ Support link: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin
 Requires at least: 6.6
 Tested up to: 6.8.2
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,8 +21,9 @@ Send branded HTML emails to selected user roles whenever a published post or pag
 - Configurable subject and message templates (HTML supported)
 - Test Email (AJAX) to preview the current template — with inline success/error
 - Post type filter and “Exclude Updating User” option
+- Per‑post “Don’t send email notifications” checkbox (one‑time skip)
 - Email Identity options for From/Reply‑To (no SMTP credentials)
-- Optional logging of email send events (50/200/1000) with CSV export and Clear Log; captures failure details for plugin emails
+- Optional logging of email send events (50/200/1000) with CSV export and Clear Log; captures failure details for plugin emails and records “Not sent” when an update is intentionally skipped
 - SMTP “Active” status chip + guidance notice after repeated failures
 - Reset to Defaults action to restore all plugin options
 - Smooth, accessible admin UX: card layout, sidebar nav, spinners, and inline “Done!”
@@ -33,6 +34,7 @@ Send branded HTML emails to selected user roles whenever a published post or pag
 - Autosaves and revisions are skipped.
 - If you select post types in Settings, only those types trigger notifications; otherwise, all types do.
 - Optionally exclude the user who performed the update from recipients.
+- If the per‑post “Don’t send” checkbox is checked, the next update is skipped and (when logging is enabled) a “Not sent” entry is added to the Recent Email Log and CSV.
 - The Test Email button sends a preview to your user email (falls back to the site admin email if your account has no email).
 - If repeated mail failures are detected in the last 24 hours, an on‑page admin notice suggests installing an SMTP plugin.
 
@@ -181,6 +183,18 @@ Go to Settings → Post Update Notifier. Configure roles, subject/body template,
 1. Settings screen showing roles, post types, template, and options
 
 == Changelog ==
+
+= 1.4.3 =
+- Change: The per‑post “Don’t send email notifications” checkbox is now checked by default for new posts (and posts with no prior setting), making it easier to pause notifications intentionally. Existing posts with an explicit setting are respected.
+
+= 1.4.2 =
+- Docs: Clarified security review points — AJAX Update Check uses `update_plugins` capability (more appropriate than `manage_options`); AJAX handlers already return JSON via `wp_send_json_*`, while `wp_die()` is used only for non‑AJAX form posts.
+- Fix: The per‑post “Don’t send email notifications” checkbox is now registered for all public post types, ensuring Gutenberg saves the flag consistently (Pages and CPTs included). Skips are correctly honored.
+- Enhancement: When a skip is used, the Recent Email Log now shows Status: Not sent, and CSV exports include `skipped` in the status column for those entries.
+
+= 1.4.1 =
+- Feature: Added a per‑post “Don’t send email notifications” checkbox in the editor (Classic: Publish box; Block Editor: Status & visibility). When checked, the next update for that post will not send emails; the flag auto‑clears afterward.
+- Internal: Registered REST‑exposed post meta `_pue_do_not_notify` and guard via `pue_should_notify`.
 
 = 1.4.0 =
 - Architecture: start incremental OOP refactor with simple autoloader and new service classes (Logger, AdminInterface, NotificationService). Existing hooks, AJAX actions, and option names preserved.

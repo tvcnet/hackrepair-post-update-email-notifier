@@ -3,7 +3,7 @@
 Plugin Name: The Hack Repair Guy's Post Update Email Notifier
 Plugin URI: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
 Description: Sends an HTML email to selected user roles whenever a post or page is updated. Includes settings to configure roles, subject, message, branding, email identity, and a test email.
-Version: 1.4.0
+Version: 1.4.3
 Author: Jim Walker, The Hack Repair Guy
 Author URI: https://hackrepair.com/
 License: GPL2
@@ -17,7 +17,7 @@ Domain Path: /languages
 if (!defined('ABSPATH')) exit;
 
 if (!defined('PUE_VERSION')) {
-    define('PUE_VERSION', '1.4.0');
+    define('PUE_VERSION', '1.4.3');
 }
 if (!defined('PUE_MAIN_FILE')) {
     define('PUE_MAIN_FILE', __FILE__);
@@ -40,9 +40,9 @@ add_action('plugins_loaded', function(){
     if (class_exists('PUE_Notifier')) {
         PUE_Notifier::instance()->boot();
     }
-    // Require SHA-256 in updater manifests for package integrity
+    // Package hash optional by default (can be enforced via filter elsewhere)
     if (!has_filter('pue_updater_require_hash')) {
-        add_filter('pue_updater_require_hash', '__return_true');
+        add_filter('pue_updater_require_hash', '__return_false');
     }
 });
 
@@ -80,6 +80,96 @@ function pue_admin_enqueue_assets($hook) {
     }
 }
 add_action('admin_enqueue_scripts', 'pue_admin_enqueue_assets');
+
+// ---------- 0.2 Per‑post "Do Not Notify" toggle ----------
+// Register post meta so both Classic and Block editor UIs can read/write it.
+add_action('init', function(){
+    if (!function_exists('register_post_meta')) return;
+    // Register the flag for all public post types so Gutenberg saves it everywhere
+    $pts = get_post_types(['public' => true], 'names');
+    foreach ((array) $pts as $pt) {
+        register_post_meta($pt, '_pue_do_not_notify', [
+            'show_in_rest'   => true,
+            'single'         => true,
+            'type'           => 'boolean',
+            'default'        => true,
+            'auth_callback'  => function() { return current_user_can('edit_posts'); },
+        ]);
+    }
+});
+
+// Classic editor: add a checkbox in the Submit box (appears above Move to Trash).
+// Use a high priority so it renders after most other misc lines.
+add_action('post_submitbox_misc_actions', function(){
+    global $post;
+    if (!($post instanceof WP_Post)) return;
+    // Limit to public post types by default
+    $ptype = get_post_type($post);
+    $obj   = get_post_type_object($ptype);
+    if (!$obj || empty($obj->public)) return;
+    $meta_exists = metadata_exists('post', $post->ID, '_pue_do_not_notify');
+    $checked = $meta_exists ? (bool) get_post_meta($post->ID, '_pue_do_not_notify', true) : true;
+    wp_nonce_field('pue_dnn_meta', 'pue_dnn_nonce');
+    echo '<div class="misc-pub-section pue-dnn"><label>'
+        . '<input type="checkbox" name="pue_do_not_notify" value="1" ' . checked($checked, true, false) . ' /> '
+        . esc_html__('Don’t send email notifications', 'hackrepair-post-update-email-notifier')
+        . '</label></div>';
+}, 99);
+
+// Save handler for Classic editor checkbox.
+add_action('save_post', function($post_id){
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (wp_is_post_revision($post_id)) return;
+    if (!isset($_POST['pue_dnn_nonce']) || !wp_verify_nonce($_POST['pue_dnn_nonce'], 'pue_dnn_meta')) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    $val = isset($_POST['pue_do_not_notify']) ? 1 : 0;
+    if ($val) {
+        update_post_meta($post_id, '_pue_do_not_notify', 1);
+    } else {
+        delete_post_meta($post_id, '_pue_do_not_notify');
+    }
+});
+
+// Block editor UI: small checkbox in Status & visibility panel.
+add_action('enqueue_block_editor_assets', function(){
+    wp_enqueue_script(
+        'pue-editor',
+        plugins_url('assets/js/editor.js', __FILE__),
+        [ 'wp-plugins', 'wp-edit-post', 'wp-components', 'wp-element', 'wp-data', 'wp-core-data', 'wp-i18n' ],
+        PUE_VERSION,
+        true
+    );
+});
+
+// Honor the per‑post flag: if set, skip notifications once and clear it.
+add_filter('pue_should_notify', function($should, $post_ID, $post_after, $post_before){
+    if (!$should) return false;
+    $skip = get_post_meta($post_ID, '_pue_do_not_notify', true);
+    if ($skip) {
+        // One‑time skip: clear the flag first
+        delete_post_meta($post_ID, '_pue_do_not_notify');
+        // If logging is enabled, add a "Not sent" entry for clarity
+        if ((int) get_option('pue_enable_logging', 0) === 1) {
+            $subject_tmpl = get_option('pue_subject', __('Post Updated: [post_title]', 'hackrepair-post-update-email-notifier'));
+            $message_tmpl = get_option('pue_message', __('<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier'));
+            $editor = wp_get_current_user();
+            $maps = pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, $editor);
+            $maps = apply_filters('pue_placeholders', $maps, $post_ID, $post_after, $post_before, $editor);
+            list($subject) = pue_compose_email('update', $subject_tmpl, $message_tmpl, $maps, [ 'post_id' => (int) $post_ID, 'post_after' => $post_after, 'post_before' => $post_before ], $editor);
+            pue_log_event('update', false, [], $subject, $post_ID, [
+                'post_title' => $post_after ? $post_after->post_title : get_the_title($post_ID),
+                'post_type'  => $post_after ? $post_after->post_type : get_post_type($post_ID),
+                'editor_id'  => $editor ? (int) $editor->ID : 0,
+                'mode'       => 'skipped', // signal UI to show "Not sent"
+                'sent_count' => 0,
+                'total'      => 0,
+            ]);
+        }
+        return false;
+    }
+    return true;
+}, 5, 4);
 
 // Ensure certain options are created with autoload disabled (performance/privacy)
 add_action('init', function(){
@@ -165,29 +255,29 @@ function pue_settings_page() {
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=post-update-email-notifier-log-' . gmdate('Ymd-His') . '.csv');
         $out = fopen('php://output', 'w');
-        fputcsv($out, ['time','type','status','post_id','post_title','post_type','editor_id','recipients','subject']);
-        foreach ((array) $export_logs as $entry) {
-            $time = isset($entry['ts']) ? (int) $entry['ts'] : time();
-            $type = isset($entry['type']) ? (string) $entry['type'] : 'update';
-            $sent = !empty($entry['sent']) ? 'sent' : 'failed';
-            $post_id = isset($entry['post_id']) ? (int) $entry['post_id'] : 0;
-            $title = pue_csv_safe(isset($entry['post_title']) ? (string) $entry['post_title'] : '');
-            $ptype = pue_csv_safe(isset($entry['post_type']) ? (string) $entry['post_type'] : '');
-            $editor_id = isset($entry['editor_id']) ? (int) $entry['editor_id'] : 0;
-            $recips = isset($entry['recipients']) && is_array($entry['recipients']) ? implode('; ', array_map('pue_csv_safe', $entry['recipients'])) : '';
-            $subject_line = pue_csv_safe(isset($entry['subject']) ? (string) $entry['subject'] : '');
-            fputcsv($out, [
-                date_i18n('Y-m-d H:i:s', $time),
-                $type,
-                $sent,
-                $post_id,
-                $title,
-                $ptype,
-                $editor_id,
-                $recips,
-                $subject_line,
-            ]);
-        }
+            fputcsv($out, ['time','type','status','post_id','post_title','post_type','editor_id','recipients','subject']);
+            foreach ((array) $export_logs as $entry) {
+                $time = isset($entry['ts']) ? (int) $entry['ts'] : time();
+                $type = isset($entry['type']) ? (string) $entry['type'] : 'update';
+            $sent = !empty($entry['sent']) ? 'sent' : ((isset($entry['mode']) && $entry['mode'] === 'skipped') ? 'skipped' : 'failed');
+                $post_id = isset($entry['post_id']) ? (int) $entry['post_id'] : 0;
+                $title = pue_csv_safe(isset($entry['post_title']) ? (string) $entry['post_title'] : '');
+                $ptype = pue_csv_safe(isset($entry['post_type']) ? (string) $entry['post_type'] : '');
+                $editor_id = isset($entry['editor_id']) ? (int) $entry['editor_id'] : 0;
+                $recips = isset($entry['recipients']) && is_array($entry['recipients']) ? implode('; ', array_map('pue_csv_safe', $entry['recipients'])) : '';
+                $subject_line = pue_csv_safe(isset($entry['subject']) ? (string) $entry['subject'] : '');
+                fputcsv($out, [
+                    date_i18n('Y-m-d H:i:s', $time),
+                    $type,
+                    $sent,
+                    $post_id,
+                    $title,
+                    $ptype,
+                    $editor_id,
+                    $recips,
+                    $subject_line,
+                ]);
+            }
         fclose($out);
         exit;
     }
@@ -461,7 +551,7 @@ function pue_settings_page() {
                             $post_title = isset($entry['post_title']) ? $entry['post_title'] : '';
                             $recips = isset($entry['recipients']) && is_array($entry['recipients']) ? $entry['recipients'] : [];
                             $subject_line = isset($entry['subject']) ? $entry['subject'] : '';
-                            $time_str = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $time);
+                            $time_str = function_exists('pue_format_datetime') ? pue_format_datetime($time) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $time);
                             $post_label = $post_id ? ($post_title ? $post_title : ('#' . $post_id)) : __('(no post)', 'hackrepair-post-update-email-notifier');
                             $recip_display = implode(', ', array_slice($recips, 0, 3));
                             if (count($recips) > 3) { $recip_display .= ', …'; }
@@ -475,18 +565,22 @@ function pue_settings_page() {
                                 if ($sent) {
                                     $status_html = '<span style="color:green;">' . esc_html__('Sent', 'hackrepair-post-update-email-notifier') . '</span>';
                                 } else {
-                                    $sc = isset($entry['sent_count']) ? (int) $entry['sent_count'] : 0;
-                                    $tot = isset($entry['total']) ? (int) $entry['total'] : 0;
-                                    if ($sc > 0 && $tot > 0 && $sc < $tot) {
-                                        $status_html = '<span style="color:#d98300;">' . esc_html__('Partial', 'hackrepair-post-update-email-notifier') . ' (' . (int) $sc . '/' . (int) $tot . ')</span>';
+                                    $mode = isset($entry['mode']) ? (string) $entry['mode'] : '';
+                                    if ($mode === 'skipped') {
+                                        $status_html = '<span style="color:#555;">' . esc_html__('Not sent', 'hackrepair-post-update-email-notifier') . '</span>';
                                     } else {
-                                        $status_html = '<span style="color:#b32d2e;">' . esc_html__('Failed', 'hackrepair-post-update-email-notifier') . '</span>';
+                                        $sc = isset($entry['sent_count']) ? (int) $entry['sent_count'] : 0;
+                                        $tot = isset($entry['total']) ? (int) $entry['total'] : 0;
+                                        if ($sc > 0 && $tot > 0 && $sc < $tot) {
+                                            $status_html = '<span style="color:#d98300;">' . esc_html__('Partial', 'hackrepair-post-update-email-notifier') . ' (' . (int) $sc . '/' . (int) $tot . ')</span>';
+                                        } else {
+                                            $status_html = '<span style="color:#b32d2e;">' . esc_html__('Failed', 'hackrepair-post-update-email-notifier') . '</span>';
+                                        }
                                     }
                                     // Append a modal trigger for detailed error
                                     if (function_exists('pue_get_related_error_detail')) {
                                         $detail = pue_get_related_error_detail($logs, $type, $post_id, $time);
                                         if (!empty($detail['full'])) {
-                                            $mode = isset($entry['mode']) ? (string) $entry['mode'] : '';
                                             $status_html .= ' <a href="#" class="pue-err-link" data-error-full="' . esc_attr($detail['full']) . '" data-error-code="' . esc_attr($detail['code']) . '" data-error-time="' . esc_attr($time_str) . '" data-error-mode="' . esc_attr($mode) . '">' . esc_html__('View error', 'hackrepair-post-update-email-notifier') . '</a>';
                                         }
                                     }
@@ -530,7 +624,7 @@ function pue_settings_page() {
             ?>
             <p><strong><?php echo esc_html__('Current version:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-current"><?php echo esc_html($current_v); ?></span></p>
             <p><strong><?php echo esc_html__('Latest available (Drive):', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-latest"><?php echo $latest_v ? esc_html($latest_v) : esc_html__('Not checked yet', 'hackrepair-post-update-email-notifier'); ?></span></p>
-            <p><strong><?php echo esc_html__('Last checked:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $fetched_at)) : esc_html__('—', 'hackrepair-post-update-email-notifier'); ?></span></p>
+            <p><strong><?php echo esc_html__('Last checked:', 'hackrepair-post-update-email-notifier'); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( function_exists('pue_format_datetime') ? pue_format_datetime($fetched_at) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $fetched_at) ) : esc_html__('—', 'hackrepair-post-update-email-notifier'); ?></span></p>
             <p class="pue-inline" style="margin-top:8px;">
                 <button type="button" id="pue-check-updates-btn" class="button button-primary"><?php echo esc_html__('Check for updates now', 'hackrepair-post-update-email-notifier'); ?></button>
                 <input type="hidden" id="pue-force-check-nonce" value="<?php echo esc_attr( wp_create_nonce('pue_force_check') ); ?>" />
@@ -631,14 +725,16 @@ add_action('admin_init', function(){
 });
 
 // ---------- 4. Send Email on Post Update ----------
-function pue_notify_on_update($post_ID, $post_after, $post_before) {
+// Use wp_after_insert_post so that Classic/Block meta is already saved (e.g., our skip checkbox),
+// preventing a race where post_updated fires before meta is persisted.
+function pue_notify_after_insert($post_ID, $post, $update) {
+    if (!$update) return; // only on updates
     if (class_exists('PUE_Notification_Service')) {
-        return PUE_Notification_Service::instance()->handle_post_update($post_ID, $post_after, $post_before);
+        return PUE_Notification_Service::instance()->handle_post_update($post_ID, $post, null);
     }
-    // Fallback to no-op if class not available (should not happen)
     return $post_ID;
 }
-add_action('post_updated', 'pue_notify_on_update', 10, 3);
+add_action('wp_after_insert_post', 'pue_notify_after_insert', 10, 3);
 
 // ---------- 5. Send Test Email ----------
 function pue_send_test_email($to, $subject, $message, $log = true) {
@@ -943,6 +1039,22 @@ function pue_phpmailer_set_altbody($phpmailer) {
         $GLOBALS['pue_altbody'] = null;
     }
 }
+
+/**
+ * Format a timestamp using site date/time formats with sensible fallbacks.
+ * Uses `wp_date()` when available, otherwise `date_i18n()`.
+ */
+function pue_format_datetime($timestamp) {
+    // Our logs store timestamps using current_time('timestamp') (site-local time).
+    // To avoid double-applying offsets, format using date_i18n() directly on that value.
+    $ts = is_numeric($timestamp) ? (int) $timestamp : 0;
+    if ($ts <= 0) { $ts = current_time('timestamp'); }
+    $date_format = trim((string) get_option('date_format'));
+    $time_format = trim((string) get_option('time_format'));
+    $format = trim($date_format . ' ' . $time_format);
+    if ($format === '') { $format = 'F j, Y g:i a'; }
+    return date_i18n($format, $ts);
+}
 /**
  * Compose an email (subject, HTML body, headers) with shared logic for update/test.
  * Ensures placeholder rendering, message normalization, branded wrapping, identity headers,
@@ -1002,7 +1114,7 @@ function pue_build_placeholder_maps_test($user) {
         return PUE_Placeholder_Engine::instance()->build_test_maps($user);
     }
     $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
-    $now_str     = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
+    $now_str     = function_exists('pue_format_datetime') ? pue_format_datetime(current_time('timestamp')) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
     $editor_name = $user ? $user->display_name : '';
     $sample_post = __( 'Sample Post', 'hackrepair-post-update-email-notifier' );
     $sample_url  = home_url( '/' );
@@ -1051,7 +1163,7 @@ function pue_build_placeholder_maps_update($post_ID, $post_after, $post_before, 
     $site_name   = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
     $ptype_obj   = $post_after ? get_post_type_object($post_after->post_type) : null;
     $ptype_label = ($ptype_obj && isset($ptype_obj->labels->singular_name)) ? $ptype_obj->labels->singular_name : ($post_after ? $post_after->post_type : get_post_type($post_ID));
-    $updated_at  = date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
+    $updated_at  = function_exists('pue_format_datetime') ? pue_format_datetime(current_time('timestamp')) : date_i18n(get_option('date_format') . ' ' . get_option('time_format'), current_time('timestamp'));
     $author_name = $post_after ? get_the_author_meta('display_name', $post_after->post_author) : '';
     $edit_url    = get_edit_post_link($post_ID);
     if (!$edit_url) {
