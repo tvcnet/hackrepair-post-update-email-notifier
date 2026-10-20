@@ -9,16 +9,20 @@
 - Browser: Settings and native View Details load; desktop and 390px widths checked without horizontal overflow. Test button reports acceptance without delivery guarantee. GitHub unavailable error is visible rather than swallowed.
 - Zendogs real update hook: temporary fixture creation silent; explicit opt-in update sent one captured message; next update skipped. Original role/exclusion/log options restored; fixture deleted. No real posts/users changed.
 - Mailpit captured test preview 5yLcRtjwXvF2i9jFSpFj4K and corrected update fixture 4ny1N0lpGG6Zsz712BKQXd. Messages show domain/plugin subjects and full-width HTML. No external-delivery claim. No bulk send performed.
-- Repository remains tvcnet. GitHub currently has no releases; publication/install-via-published-updater verification is pending review approval. Old Google Drive manifest unchanged.
+- Repository remains tvcnet. At the initial review there were no GitHub releases; published-updater verification follows the approved publication. Old Google Drive manifest unchanged.
 
 See PROJECT.md for limitations and the final source state. Consider Codex Security review separately; it has not been run automatically.
 
 Observed runtime: WordPress 7.1, PHP 8.2.33. Tested-up-to metadata is 7.1 for this review candidate; GitHub CI passed on PHP 7.4 and 8.3 (syntax, isolated regressions and packaging), run 39347575049; this does not establish a full WordPress/editor matrix on those runtimes.
 
-A stale November 2025 rebase-merge directory was preserved in the outer baseline backup and cleared with git rebase --quit. HEAD, worktree and index were preserved. The rebuild is isolated on codex/1.5.0-standardization, keeping main and published releases unchanged.
+A stale November 2025 rebase-merge directory was preserved in the outer baseline backup and cleared with git rebase --quit. HEAD, worktree and index were preserved. The rebuild was reviewed on codex/1.5.0-standardization before the approved merge and publication.
 
 The final family guide includes all four companion plugins; native plugin-information output was checked after adding the fourth card.
 
 CI evidence: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39347575049. Final review ZIP SHA-256: `144a5add9cd4785ef45b8ffdef82c741f1ef159605b8179764ee4e979e949b4c`. Zendogs installed files match this ZIP.
 
 Follow-up UI review: removed the redundant custom row-meta link; browser confirms one View Details link. Restored the original 772x250 banner from source artwork and kept overlay branding from obscuring it. Rebuilt the review ZIP; the previous recorded SHA above refers to the earlier review build.
+
+## Release approval and final checks
+
+The user approved full GitHub publication after the banner/details review. Final shared PHPCS (21 files), 13 notification assertions, updater guards, seven update-message checks and package-permissions regression all passed again. Release ZIP SHA-256: `a4176bee2ed1a97555e4567927ad9d71fa311fe3e8f0af617cc5a7dadd28e6bf`. This supersedes the earlier review-build digest. Latest code CI: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39348046849 (PHP 7.4/8.3 passed).

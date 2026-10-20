@@ -4,7 +4,7 @@
 
 Notify selected WordPress roles when published content is updated. Customize the email, exclude the updating user, review optional logs, and test your mail configuration.
 
-**Development review build: 1.5.0.** Existing deployed installations may still use the 1.4.4 Google Drive updater. This rebuild has not been published as a release.
+**Version 1.5.0.** [Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest). Older Google Drive installations require a one-time manual ZIP update to receive the GitHub updater.
 
 ## Features
 
@@ -20,9 +20,9 @@ Notify selected WordPress roles when published content is updated. Customize the
 
 ## Installation and use
 
-Upload the review ZIP through Plugins → Add New → Upload Plugin. The installed folder remains `hackrepair-post-update-email-notifier`; the entrypoint remains `post-update-email-notifier.php`. Open **Settings → Post Update Notifier**. No notification roles are selected by default. Configure and test mail before enabling notifications. A PHP/WordPress update can invoke hooks outside the editor: leave default skip behavior intact unless intentionally announcing an update.
+Upload the release ZIP through Plugins → Add New → Upload Plugin. The installed folder remains `hackrepair-post-update-email-notifier`; the entrypoint remains `post-update-email-notifier.php`. Open **Settings → Post Update Notifier**. No notification roles are selected by default. Configure and test mail before enabling notifications. A PHP/WordPress update can invoke hooks outside the editor: leave default skip behavior intact unless intentionally announcing an update.
 
-Requirements remain WordPress 6.6+ and PHP 7.4+. The review runtime is WordPress 7.1 / PHP 8.2.33; see PROJECT.md for the evidence and limitations.
+Requirements remain WordPress 6.6+ and PHP 7.4+. The verified local runtime is WordPress 7.1 / PHP 8.2.33; see PROJECT.md for the evidence and limitations.
 
 ## Privacy and updates
 
