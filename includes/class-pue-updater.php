@@ -25,7 +25,7 @@ use YahnisElsts\PluginUpdateChecker\v5p7\Vcs\Api;
  * `hackrepair-post-update-email-notifier-2.0.0/`) which would change the
  * installed plugin's directory name and deactivate it on update.
  *
- * @since 2.0.0
+ * @since 1.5.0
  */
 final class PUE_Updater {
 

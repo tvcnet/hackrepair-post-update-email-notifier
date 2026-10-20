@@ -127,3 +127,7 @@ Deliberately not recommended: bundling SMTP credentials or a mail transport (the
 - Whether log privacy (counts-only, age-based retention) should become the default for new installs.
 - Whether to schedule the separate Codex Security review before 1.6.0.
 - Background-sending dependency: WP-Cron only, or Action Scheduler (heavier, but more reliable on busy sites).
+
+## Execution status (October 19, 2026)
+
+Implemented locally as 1.6.0 on branch claude/1.6.0 with your scope decisions (local only; fixes, structure and core features F1-F5, F7, F12, F13, F15; skip-by-default kept; WP-Cron for background sending). D6 was implemented as "consume and log the reason" rather than "keep the opt-in pending", so a stale opt-in cannot fire months later. Evidence and remaining limits are recorded in PROJECT.md under "1.6.0 review candidate". Deferred: F6 with the UTC timestamp migration, F8-F11, F14, and the Codex Security review.

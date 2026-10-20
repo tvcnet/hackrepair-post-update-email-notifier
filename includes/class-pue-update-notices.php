@@ -63,7 +63,7 @@ final class PUE_Update_Notices {
 
 	/** Move verbose library errors into the technical disclosure. */
 	public function prepare_notice() {
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only notice selection; the library authorizes the actual check.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only notice selection; the library authorizes the actual check.
 		if ( ! current_user_can( 'update_plugins' ) || ! isset( $_GET['puc_slug'], $_GET['puc_update_check_result'] ) || sanitize_key( wp_unslash( $_GET['puc_slug'] ) ) !== $this->checker->slug || 'error' !== sanitize_key( wp_unslash( $_GET['puc_update_check_result'] ) ) ) {
 			return;
 		}
@@ -84,13 +84,14 @@ final class PUE_Update_Notices {
 			return $message;
 		}
 		$limit = get_site_transient( 'pue_github_limit' );
-		$text  = 'Disable Other Plugin Notices could not reach its update service. Please try again later. This does not affect its notice grouping.';
+		$text  = __( 'Post Update Email Notifier could not reach its update service. Please try again later. Email notifications are not affected.', 'hackrepair-post-update-email-notifier' );
 		if ( is_array( $limit ) && isset( $limit['reset'] ) && $limit['reset'] > time() ) {
-			$text = 'GitHub’s request limit has been reached. Please try again after ' . wp_date( 'g:i a T', $limit['reset'] ) . '. Disable Other Plugin Notices continues to work normally.';
+			/* translators: %s: local time when checks can resume. */
+			$text = sprintf( __( 'GitHub’s request limit has been reached. Please try again after %s. Post Update Email Notifier continues to work normally.', 'hackrepair-post-update-email-notifier' ), wp_date( 'g:i a T', $limit['reset'] ) );
 		} elseif ( is_array( $limit ) ) {
-			$text = 'GitHub temporarily limited update requests. Please try again later. Disable Other Plugin Notices continues to work normally.';
+			$text = __( 'GitHub temporarily limited update requests. Please try again later. Post Update Email Notifier continues to work normally.', 'hackrepair-post-update-email-notifier' );
 		}
-		$html    = '<strong>Update check temporarily unavailable</strong><br>' . esc_html( $text );
+		$html    = '<strong>' . esc_html__( 'Update check temporarily unavailable', 'hackrepair-post-update-email-notifier' ) . '</strong><br>' . esc_html( $text );
 		$details = '';
 		foreach ( $this->errors as $item ) {
 			if ( ! is_array( $item ) || ! isset( $item['error'] ) || ! is_wp_error( $item['error'] ) ) {
@@ -99,7 +100,7 @@ final class PUE_Update_Notices {
 			$details .= '<p>' . esc_html( $item['error']->get_error_message() ) . ' <code>' . esc_html( $item['error']->get_error_code() ) . '</code></p>';
 		}
 		if ( $details ) {
-			$html .= '<details><summary>Technical details</summary>' . $details . '</details>';
+			$html .= '<details><summary>' . esc_html__( 'Technical details', 'hackrepair-post-update-email-notifier' ) . '</summary>' . $details . '</details>';
 		}
 		return $html;
 	}

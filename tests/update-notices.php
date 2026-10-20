@@ -15,6 +15,8 @@ function get_site_transient($key) { return $GLOBALS['transients'][$key]??false; 
 function delete_site_transient($key) { unset($GLOBALS['transients'][$key]); }
 function wp_date($fmt,$time) { return '12:27 pm PDT'; }
 function esc_html($s) { return htmlspecialchars($s,ENT_QUOTES,'UTF-8'); }
+function __($s,$d=null) { return $s; }
+function esc_html__($s,$d=null) { return esc_html($s); }
 class WP_Error {
  function get_error_message() { return '<script>bad</script>'; }
  function get_error_code() { return 'puc-no-update-source'; }
@@ -26,6 +28,7 @@ $n=new PUE_Update_Notices($c);
 function check($label,$ok) { if(!$ok){fwrite(STDERR,"FAIL $label\n");exit(1);}echo "PASS $label\n"; }
 check('successful results preserved',$n->message('original','no_update')==='original' && $n->message('available','update_available')==='available');
 check('generic failure gives no false up-to-date claim',strpos($n->message('','error'),'could not reach')!==false);
+check('failure message names this plugin, not a sibling plugin',strpos($n->message('','error'),'Post Update Email Notifier')!==false && strpos($n->message('','error'),'Disable Other Plugin Notices')===false);
 $url='https://api.github.com/repos/hackrepair/hackrepair-post-update-email-notifier/releases/latest';
 $n->record_limit(null,['code'=>403,'headers'=>[]],$url,$c->slug);
 check('ordinary forbidden response is not called rate limiting',get_site_transient('pue_github_limit')===false);

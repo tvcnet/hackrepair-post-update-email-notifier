@@ -17,7 +17,7 @@ Updating a page is easy. Remembering to tell everyone who needs to know is anoth
 
 **The Hack Repair Guy's Post Update Email Notifier** sends individual HTML emails to users in selected WordPress roles when you announce an update to published content. Customize the message and branding, include a link to the updated page, and optionally exclude the person making the change.
 
-Notifications are intentional: **Don’t send email notifications** is checked by default. Uncheck it for the update you want to announce. Afterward, the post returns to its default skip setting, helping routine edits stay quiet.
+Notifications are intentional: **Don’t send email notifications** is checked by default. Uncheck it for the update you want to announce. Afterward, the post returns to the site default, helping routine edits stay quiet. Prefer the opposite? Switch the site default so updates send unless an editor opts out.
 
 **[Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)** · **[Plugin documentation](readme.txt)** · **[Report an issue](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues)**
 
@@ -26,13 +26,16 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 | Feature | What you control |
 | --- | --- |
 | Role-based recipients | Choose which WordPress roles receive notifications and optionally exclude the updating user. |
-| Per-update choice | Announce a particular published-content update using the checkbox in the editor. |
+| Per-update choice | Announce a particular update using the checkbox in the editor, which shows how many people will be emailed. Choose whether editors opt in or opt out, and whether first publishes notify. |
+| Calm sending | A per-post cooldown prevents bursts from repeated saves, and larger lists are sent in background WP-Cron batches so saving stays fast. |
+| What changed | `[change_summary]` lists title changes, words added or removed and excerpt updates; `[revision_url]` links to the revision comparison. |
 | Content selection | Limit notifications to selected public post types. |
 | Branded HTML email | Customize the subject, message, header, colors, footer, From and Reply-To settings. The email wrapper fills the available width. |
 | Template placeholders | Include the title, public URL, author, editor, site name and update time without rewriting each message. |
 | Recognizable subjects | Identify the site and plugin: `[example.com] [Post Update Email Notifier] Post Updated: About Us`. |
-| Email previews | Send a single-recipient test before enabling notifications. An optional plain-text alternative is also available. |
-| Optional email log | Keep 50, 200 or 1,000 entries, inspect failures and skipped notifications, and export a CSV. |
+| Email previews | Preview the email right in Settings without sending, or send yourself a test. An optional plain-text alternative is also available. |
+| Optional email log | Keep 50, 200 or 1,000 entries, inspect failures, skip reasons and background progress, and export a CSV. Included in WordPress personal data export and erasure. |
+| Site Health and WP-CLI | Site Health flags repeated failures and sender-domain mismatches; `wp pue` tests, sends, counts recipients and exports the log. |
 | Familiar WordPress interface | Settings cards, inline feedback, native View Details and an Other THRG Plugins guide. |
 | GitHub updates | Receive standard WordPress update notices for matching published release packages. |
 
@@ -43,7 +46,7 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 3. **Announce an update.** Edit published content, uncheck **Don’t send email notifications**, and save the update.
 4. **Review the result.** Each selected recipient receives an individual message through WordPress mail. If logging is enabled, inspect the recorded sending results.
 
-Autosaves and revisions are skipped. Creating a new post does not trigger an update notification. The per-post checkbox returns to the skip setting after the announced update.
+Autosaves and revisions are skipped. Programmatic inserts never notify. The per-post checkbox returns to the site default after each update, and the log explains any opted-in update that could not be sent.
 
 ## Installation
 

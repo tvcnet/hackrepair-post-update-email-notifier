@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'PUE_Notification_Service' ) ) {
+	/** Decides whether a saved post notifies, then composes and delivers. */
 	class PUE_Notification_Service {
 		private static $instance = null;
 
@@ -14,125 +15,204 @@ if ( ! class_exists( 'PUE_Notification_Service' ) ) {
 			return self::$instance;
 		}
 
+		/**
+		 * Handle a saved post (wp_after_insert_post).
+		 *
+		 * @param int          $post_ID Post ID.
+		 * @param WP_Post      $post_after Saved post.
+		 * @param WP_Post|null $post_before Post before the save (null when unavailable).
+		 * @return int|null
+		 */
 		public function handle_post_update( $post_ID, $post_after, $post_before ) {
-			if ( wp_is_post_autosave( $post_ID ) || wp_is_post_revision( $post_ID ) ) {
-				return;
+			return $this->process( (int) $post_ID, $post_after, $post_before, false );
+		}
+
+		/**
+		 * Send a notification for a published post now, ignoring the per-post flag, policy and cooldown.
+		 *
+		 * @param int $post_ID Post ID.
+		 * @return int|null
+		 */
+		public function send_for_post( $post_ID ) {
+			$post = get_post( (int) $post_ID );
+			return $post ? $this->process( (int) $post_ID, $post, null, true ) : null;
+		}
+
+		private function process( $post_ID, $post_after, $post_before, $force ) {
+			if ( ! $post_after || wp_is_post_autosave( $post_ID ) || wp_is_post_revision( $post_ID ) ) {
+				return null;
 			}
 			if ( 'publish' !== $post_after->post_status ) {
-				return;
+				return null;
 			}
-			if ( ! apply_filters( 'pue_should_notify', true, $post_ID, $post_after, $post_before ) ) {
-				return;
+			$event = ( $post_before && isset( $post_before->post_status ) && 'publish' !== $post_before->post_status ) ? 'publish' : 'update';
+			if ( ! $force && 'publish' === $event && 'updates' === PUE_Defaults::option( 'pue_notify_events' ) ) {
+				return null;
 			}
+			if ( ! $force && ! apply_filters( 'pue_should_notify', true, $post_ID, $post_after, $post_before ) ) {
+				pue_consume_opt_in( $post_ID );
+				return null;
+			}
+			// Reaching this point under the skip policy means an editor opted in, so record why nothing was sent.
+			$explicit = $force || 'skip' === pue_send_policy();
 
-			$allowed_types = get_option( 'pue_post_types', array() );
-			if ( ! empty( $allowed_types ) && ! in_array( $post_after->post_type, (array) $allowed_types, true ) ) {
-				return;
+			$allowed_types = (array) PUE_Defaults::option( 'pue_post_types' );
+			if ( ! empty( $allowed_types ) && ! in_array( $post_after->post_type, $allowed_types, true ) ) {
+				return $this->not_sent( 'post_type', $post_ID, $post_after, $event, $explicit );
 			}
-
-			$selected_roles = get_option( 'pue_roles', array() );
+			$selected_roles = (array) PUE_Defaults::option( 'pue_roles' );
 			if ( empty( $selected_roles ) ) {
-				return;
+				return $this->not_sent( 'no_roles', $post_ID, $post_after, $event, $explicit );
+			}
+			$cooldown = (int) PUE_Defaults::option( 'pue_cooldown_minutes' );
+			if ( ! $force && $cooldown > 0 ) {
+				$last = (int) get_post_meta( $post_ID, '_pue_last_sent', true );
+				if ( $last && ( time() - $last ) < $cooldown * MINUTE_IN_SECONDS ) {
+					return $this->not_sent( 'cooldown', $post_ID, $post_after, $event, $explicit );
+				}
 			}
 
-			$subject_template = get_option( 'pue_subject', __( 'Post Updated: [post_title]', 'hackrepair-post-update-email-notifier' ) );
-			$message_template = get_option( 'pue_message', __( '<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier' ) );
-
-			$editor     = wp_get_current_user();
-			$post_title = $post_after->post_title;
-
-			$maps = pue_build_placeholder_maps_update( $post_ID, $post_after, $post_before, $editor );
-			$maps = apply_filters( 'pue_placeholders', $maps, $post_ID, $post_after, $post_before, $editor );
+			$editor = wp_get_current_user();
+			$maps   = pue_build_placeholder_maps_update( $post_ID, $post_after, $post_before, $editor );
+			$maps   = apply_filters( 'pue_placeholders', $maps, $post_ID, $post_after, $post_before, $editor );
 
 			list($subject, $body_html, $headers) = pue_compose_email(
 				'update',
-				$subject_template,
-				$message_template,
+				PUE_Defaults::option( 'pue_subject' ),
+				PUE_Defaults::option( 'pue_message' ),
 				$maps,
 				array(
-					'post_id'     => (int) $post_ID,
+					'post_id'     => $post_ID,
 					'post_after'  => $post_after,
 					'post_before' => $post_before,
 				),
 				$editor
 			);
+			$alt                                 = PUE_Email_Composer::instance()->last_plaintext();
 
-			$recipients = array();
-			foreach ( $selected_roles as $role ) {
-				$users = get_users( array( 'role' => $role ) );
-				foreach ( $users as $user ) {
-					$recipients[] = $user->user_email;
-				}
-			}
-
-			$exclude_updater = (int) get_option( 'pue_exclude_updater', 0 );
-			if ( $exclude_updater && ! empty( $editor->user_email ) ) {
-				$recipients = array_filter(
-					$recipients,
-					function ( $email ) use ( $editor ) {
-						return strtolower( $email ) !== strtolower( $editor->user_email );
-					}
-				);
-			}
-
-			$recipients = array_unique( $recipients );
+			$exclude    = (int) PUE_Defaults::option( 'pue_exclude_updater' ) && ! empty( $editor->user_email ) ? $editor->user_email : '';
+			$recipients = pue_get_recipients( $selected_roles, $exclude );
 			$recipients = apply_filters( 'pue_email_recipients', $recipients, $post_ID, $post_after, $post_before, $editor );
 			$recipients = pue_sanitize_emails( (array) $recipients );
-			if ( ! empty( $recipients ) ) {
-				$all_ok     = true;
-				$sent_count = 0;
-				$total      = count( $recipients );
-				foreach ( $recipients as $rcpt ) {
-					$ok = wp_mail( $rcpt, $subject, $body_html, $headers );
-					if ( $ok ) {
-						++$sent_count;
-					} else {
-						$all_ok = false; }
-				}
-				$sent = $all_ok;
-				pue_log_event(
-					'update',
-					$sent,
-					$recipients,
-					$subject,
-					$post_ID,
+			if ( empty( $recipients ) ) {
+				return $this->not_sent( 'no_recipients', $post_ID, $post_after, $event, $explicit );
+			}
+
+			// Consume the opt-in before sending so a quick second save cannot repeat it.
+			pue_consume_opt_in( $post_ID );
+			update_post_meta( $post_ID, '_pue_last_sent', time() );
+
+			$extra = array(
+				'post_title' => $post_after->post_title,
+				'post_type'  => $post_after->post_type,
+				'editor_id'  => isset( $editor->ID ) ? (int) $editor->ID : 0,
+				'event'      => $event,
+				'total'      => count( $recipients ),
+			);
+
+			if ( PUE_Delivery::should_queue( count( $recipients ) ) ) {
+				$job_id = PUE_Delivery::queue(
 					array(
-						'post_title' => $post_title,
-						'post_type'  => $post_after->post_type,
-						'editor_id'  => $editor->ID,
-						'mode'       => 'individual',
-						'sent_count' => isset( $sent_count ) ? (int) $sent_count : ( $sent ? count( $recipients ) : 0 ),
-						'total'      => isset( $total ) ? (int) $total : count( $recipients ),
+						'post_id'    => $post_ID,
+						'editor_id'  => $extra['editor_id'],
+						'subject'    => $subject,
+						'body'       => $body_html,
+						'headers'    => $headers,
+						'alt'        => $alt,
+						'recipients' => $recipients,
 					)
 				);
-				do_action( 'pue_email_sent', $sent, $recipients, $subject, $body_html, $post_ID, $post_after, $post_before, $editor );
+				if ( $job_id ) {
+					pue_log_event(
+						'update',
+						false,
+						$recipients,
+						$subject,
+						$post_ID,
+						array_merge(
+							$extra,
+							array(
+								'mode'       => 'queued',
+								'job_id'     => $job_id,
+								'sent_count' => 0,
+							)
+						)
+					);
+					return $post_ID;
+				}
+			}
+
+			$result = PUE_Delivery::send_now( $recipients, $subject, $body_html, $headers, $alt );
+			pue_log_event(
+				'update',
+				$result['sent'],
+				$recipients,
+				$subject,
+				$post_ID,
+				array_merge(
+					$extra,
+					array(
+						'mode'       => 'individual',
+						'sent_count' => $result['sent_count'],
+						'error'      => $result['error'],
+						'error_code' => $result['error_code'],
+					)
+				)
+			);
+			do_action( 'pue_email_sent', $result['sent'], $recipients, $subject, $body_html, $post_ID, $post_after, $post_before, $editor );
+			return $post_ID;
+		}
+
+		/**
+		 * Consume the per-post choice and, when an editor opted in, log why nothing was sent.
+		 */
+		private function not_sent( $reason, $post_ID, $post_after, $event, $explicit ) {
+			pue_consume_opt_in( $post_ID );
+			if ( $explicit ) {
+				$editor = wp_get_current_user();
+				pue_log_event(
+					'update',
+					false,
+					array(),
+					'',
+					$post_ID,
+					array(
+						'post_title' => $post_after->post_title,
+						'post_type'  => $post_after->post_type,
+						'editor_id'  => isset( $editor->ID ) ? (int) $editor->ID : 0,
+						'mode'       => 'skipped',
+						'reason'     => $reason,
+						'event'      => $event,
+						'sent_count' => 0,
+						'total'      => 0,
+					)
+				);
 			}
 			return $post_ID;
 		}
 
 		public function send_test_email( $to, $subject, $message, $log = true ) {
-			$headers                             = array(
-				'Content-Type: text/html; charset=UTF-8',
-				'X-PUE: 1',
-				'X-PUE-Type: test',
-				'X-PUE-Post: 0',
-			);
+			$to = sanitize_email( $to );
+			if ( ! is_email( $to ) ) {
+				return false;
+			}
 			$user                                = wp_get_current_user();
 			$maps                                = pue_build_placeholder_maps_test( $user );
-			list($subject, $body_html, $headers) = pue_compose_email(
-				'test',
-				$subject,
-				$message,
-				$maps,
-				array( 'post_id' => 0 ),
-				$user
-			);
-			$to                                  = sanitize_email( $to );
-			if ( ! is_email( $to ) ) {
-				return false; }
-			$sent = wp_mail( $to, $subject, $body_html, $headers );
+			list($subject, $body_html, $headers) = pue_compose_email( 'test', $subject, $message, $maps, array( 'post_id' => 0 ), $user );
+			$sent                                = PUE_Delivery::send_one( $to, $subject, $body_html, $headers, PUE_Email_Composer::instance()->last_plaintext() );
 			if ( $log ) {
-				pue_log_event( 'test', $sent, array( $to ), $subject, 0, array() );
+				$error = $sent ? null : PUE_Logger::instance()->take_last_error();
+				pue_log_event(
+					'test',
+					$sent,
+					array( $to ),
+					$subject,
+					0,
+					array(
+						'error'      => $error ? $error['error'] : '',
+						'error_code' => $error ? $error['code'] : '',
+					)
+				);
 			}
 			return $sent;
 		}

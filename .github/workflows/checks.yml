@@ -17,10 +17,19 @@ jobs:
           php-version: ${{ matrix.php }}
       - name: Syntax and behavior
         run: |
-          find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+          find . -name '*.php' -not -path './vendor/*' -not -path './tests/integration/*' -print0 | xargs -0 -n1 php -l
           php tests/notifications.php
+          php tests/compatibility.php
+          php tests/export-log.php
           php tests/updater.php
           php tests/update-notices.php
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: JavaScript syntax
+        run: |
+          node --check assets/js/admin.js
+          node --check assets/js/editor.js
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
@@ -28,3 +37,19 @@ jobs:
         run: |
           python3 tests/package-permissions.py
           python3 scripts/build-release.py
+  wordpress:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.4', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Start WordPress
+        env:
+          WP_ENV_PHP_VERSION: ${{ matrix.php }}
+        run: npx --yes @wordpress/env@10 start
+      - name: Integration checks
+        run: npx --yes @wordpress/env@10 run cli wp eval-file wp-content/plugins/hackrepair-post-update-email-notifier/tests/integration/run.php

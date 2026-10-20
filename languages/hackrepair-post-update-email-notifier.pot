@@ -1,0 +1,880 @@
+# Copyright (C) 2026 Jim Walker, The Hack Repair Guy
+# This file is distributed under the GPL2.
+msgid ""
+msgstr ""
+"Project-Id-Version: The Hack Repair Guy's Post Update Email Notifier 1.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-20T01:56:53+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: hackrepair-post-update-email-notifier\n"
+
+#. Plugin Name of the plugin
+#: post-update-email-notifier.php
+msgid "The Hack Repair Guy's Post Update Email Notifier"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: post-update-email-notifier.php
+msgid "https://github.com/tvcnet/hackrepair-post-update-email-notifier"
+msgstr ""
+
+#. Description of the plugin
+#: post-update-email-notifier.php
+msgid "Sends an HTML email to selected user roles whenever a post or page is updated. Includes settings to configure roles, subject, message, branding, email identity, and a test email."
+msgstr ""
+
+#. Author of the plugin
+#: post-update-email-notifier.php
+msgid "Jim Walker, The Hack Repair Guy"
+msgstr ""
+
+#. Author URI of the plugin
+#: post-update-email-notifier.php
+msgid "https://hackrepair.com/"
+msgstr ""
+
+#: includes/admin-handlers.php:114
+msgid "No one is currently selected to receive update emails."
+msgstr ""
+
+#. translators: %d: number of recipients.
+#: includes/admin-handlers.php:117
+#, php-format
+msgid "Currently %d person receives update emails (before developer filters)."
+msgid_plural "Currently %d people receive update emails (before developer filters)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin.php:16
+msgid "Settings"
+msgstr ""
+
+#: includes/admin.php:40
+msgid "Done!"
+msgstr ""
+
+#: includes/admin.php:41
+msgid "Request failed. Please try again."
+msgstr ""
+
+#: includes/admin.php:42
+msgid "Save failed. Please try again."
+msgstr ""
+
+#: includes/admin.php:43
+msgid "Session expired — please refresh."
+msgstr ""
+
+#: includes/admin.php:44
+msgid "Permission denied."
+msgstr ""
+
+#: includes/admin.php:45
+msgid "Email was not accepted for sending. Review the message and try again."
+msgstr ""
+
+#: includes/admin.php:46
+msgid "Update check complete."
+msgstr ""
+
+#: includes/admin.php:47
+msgid "Update information is temporarily unavailable. Plugin features continue to work."
+msgstr ""
+
+#. translators: 1: message count, 2: address.
+#: includes/admin.php:49
+#, php-format
+msgid "This sends %1$d test emails to %2$s. Continue?"
+msgstr ""
+
+#: includes/admin.php:50
+msgid "The preview could not be created. Please try again."
+msgstr ""
+
+#: includes/admin.php:62
+#: includes/admin.php:74
+msgid "Post Update Email Notifier log"
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:51
+msgid "You do not have permission to change these settings."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:58
+msgid "Your session expired. Please reload the page and try again."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:113
+msgid "Notification settings saved."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:124
+msgid "Branding saved."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:135
+msgid "Email identity saved."
+msgstr ""
+
+#. translators: %s: recipient address.
+#: includes/class-pue-admin-actions.php:144
+#, php-format
+msgid "Email accepted for sending to %s. Acceptance does not confirm delivery."
+msgstr ""
+
+#. translators: %s: recipient address.
+#: includes/class-pue-admin-actions.php:147
+#, php-format
+msgid "The test email to %s was not accepted for sending. Check your mail setup or use an SMTP plugin for more reliable delivery."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:155
+msgid "Invalid email address."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:161
+msgid "The daily bulk test limit has been reached. Try again tomorrow."
+msgstr ""
+
+#. translators: 1: accepted count, 2: total count.
+#: includes/class-pue-admin-actions.php:193
+#, php-format
+msgid "Bulk test complete. Accepted for sending: %1$d of %2$d. Acceptance does not confirm delivery."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:195
+msgid "The count was reduced to stay within the daily bulk test limit."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:216
+msgid "Log cleared."
+msgstr ""
+
+#: includes/class-pue-admin-actions.php:225
+msgid "All settings have been restored to their defaults."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:95
+msgid "The Hack Repair Guy’s"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:95
+#: includes/class-pue-site-health.php:53
+msgid "Post Update Email Notifier"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:95
+msgid "Choose who hears about your content updates, and review the outcome."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:96
+msgid "SMTP transport detected. Acceptance for sending does not confirm delivery."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:96
+msgid "Using your WordPress email configuration. Test delivery before enabling notifications."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:102
+#: includes/class-pue-admin-interface.php:145
+msgid "Notifications"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:103
+#: includes/class-pue-admin-interface.php:263
+msgid "Branding"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:104
+#: includes/class-pue-admin-interface.php:281
+msgid "Email Identity"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:105
+#: includes/class-pue-admin-interface.php:298
+msgid "Test & Preview"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:107
+msgid "Logging"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:109
+msgid "Update Status"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:110
+msgid "Bulk Test"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:111
+msgid "Reset"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:112
+#: includes/class-pue-admin-interface.php:404
+msgid "Support"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:149
+msgid "Select Roles to Notify"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:152
+msgid "The <strong>Hack Repair Guy’s Post Update Email Notifier</strong> keeps your team in the loop by sending branded HTML updates whenever posts or pages are modified."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:153
+msgid "Tip: Uncheck all roles and save to pause notifications. Leaving post types empty allows all post types."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:166
+msgid "Default for each update"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:168
+msgid "Don’t send unless the editor opts in (recommended)"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:169
+msgid "Send unless the editor opts out"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:171
+msgid "Sets the starting state of the “Don’t send email notifications” checkbox. After each update the post returns to this default."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:175
+msgid "Notify on"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:177
+msgid "First publish and later updates"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:178
+msgid "Updates to already published content only"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:180
+msgid "First publish includes drafts and scheduled posts going live."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:184
+msgid "Cooldown per post"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:186
+msgid "Off"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:187
+msgid "5 minutes"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:188
+msgid "15 minutes"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:189
+msgid "1 hour"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:191
+msgid "Prevents a burst of emails when the same post is saved several times in a row."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:195
+msgid "Delivery"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:197
+msgid "Automatic: small lists right away, larger lists in the background"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:198
+msgid "Always send right away"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:199
+msgid "Always send in the background"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:201
+msgid "Background sending uses WP-Cron in small batches so saving a post stays fast."
+msgstr ""
+
+#. translators: %s: list of placeholders.
+#: includes/class-pue-admin-interface.php:204
+#: includes/class-pue-admin-interface.php:336
+#: includes/class-pue-logger.php:263
+msgid "Subject"
+msgstr ""
+
+#. translators: %s: list of placeholders.
+#: includes/class-pue-admin-interface.php:204
+#, php-format
+msgid "Placeholders supported: %s"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:207
+msgid "Message"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:222
+msgid "[change_summary] lists what changed (title, content length, excerpt). [revision_url] links to the latest revision comparison."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:226
+msgid "Post Types"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:233
+msgid "If none are selected, every post type can notify. The editor checkbox appears on public post types."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:237
+msgid "Exclude Updating User"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:238
+msgid "Do not email the user who performed the update."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:241
+msgid "Enable Logging"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:243
+msgid "Log recent emails (50/200/1000 entries) with CSV export."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:244
+msgid "The log stores recipient addresses. It is included in WordPress personal data export and erasure requests."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:250
+msgid "Log Retention"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:256
+msgid "Number of recent entries kept."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:258
+msgid "Save Notifications"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:266
+msgid "Header Text"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:268
+msgid "Header Background Color"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:273
+msgid "Use a HEX color (e.g., #0073aa)."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:277
+msgid "Footer Text"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:278
+msgid "Save Branding"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:285
+msgid "From Name"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:285
+msgid "Optional. Overrides the sender name. Supports [site_name], [editor_name], [updated_at] and [year]."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:286
+msgid "From Email"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:286
+msgid "Optional: For better deliverability, use an email address that matches your website's domain. Messages sent this way are less likely to end up in spam or junk folders. If you're using an SMTP plugin, note that its settings may override the email address entered here."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:287
+msgid "Reply-To Email"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:287
+msgid "Optional. Where replies should go."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:288
+msgid "Save Email Identity"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:302
+msgid "Send a Test"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:304
+msgid "Preview without sending"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:305
+msgid "Send a sample of the saved template to your address, or preview the current form values here with sample post details."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:322
+msgid "Recent Email Log"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:325
+msgid "No log entries yet."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:331
+#: includes/class-pue-logger.php:259
+msgid "Time"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:332
+msgid "Type"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:333
+#: includes/class-pue-logger.php:267
+msgid "Status"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:334
+#: includes/class-pue-placeholder-engine.php:56
+msgid "Post"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:335
+msgid "Recipients"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:350
+msgid "Clear Log"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:350
+msgid "Clear the email log?"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:353
+msgid "Export CSV"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:366
+msgid "Update status"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:368
+msgid "Current version:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:369
+msgid "Latest available (GitHub):"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:369
+msgid "Not checked yet"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:370
+msgid "Last checked:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:372
+msgid "Check for updates now"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:377
+msgid "Bulk Test (Testing Only)"
+msgstr ""
+
+#. translators: %d: messages remaining today.
+#: includes/class-pue-admin-interface.php:382
+#, php-format
+msgid "Enter an email address and a count to send multiple test messages (individual sends) for deliverability and error testing. Uses the current template. Please respect provider rate limits. Remaining today: %d."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:386
+msgid "Email:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:387
+msgid "Count:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:388
+msgid "Generate plus-aliases (name+1..+N@domain) — useful for Gmail to see N deliveries in one inbox."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:389
+msgid "Log detail (one row per message)"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:390
+msgid "Run Bulk Test"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:395
+#: includes/class-pue-admin-interface.php:400
+msgid "Reset to Defaults"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:397
+msgid "Restore Default Settings"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:398
+msgid "This will reset all plugin settings to their original defaults, including Notifications, Branding, Email Identity, and Logging. Your posts and users are not affected."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:400
+msgid "Are you sure you want to reset all settings to defaults?"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:406
+msgid "If you found this plugin helpful, please <a href=\"https://hackrepair.com/donations/buy-jim-a-coffee\" target=\"_blank\" rel=\"noopener\">buy Jim a cup of coffee?</a>"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:407
+msgid "Questions and Feedback: For questions, ideas, or help with the plugin, <a href=\"https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions\" target=\"_blank\" rel=\"noopener\">visit GitHub Discussions</a>."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:413
+msgid "Close"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:419
+msgid "Delivery Error"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:423
+msgid "Code:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:424
+msgid "When:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:425
+msgid "Mode:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:434
+#: includes/class-pue-admin-interface.php:439
+msgid "Email preview"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:438
+msgid "Subject:"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:459
+msgid "(no post)"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:464
+msgid "editor chose not to send"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:465
+msgid "post type not selected"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:466
+msgid "no roles selected"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:467
+msgid "no recipients"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:468
+msgid "cooldown"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:471
+msgid "Sent"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:472
+msgid "Not sent"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:473
+msgid "Queued"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:474
+msgid "Partial"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:475
+msgid "Failed"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:493
+msgid "View error"
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:538
+msgid "Update checking is temporarily unavailable. Plugin features continue to work."
+msgstr ""
+
+#: includes/class-pue-admin-interface.php:542
+msgid "GitHub update information is temporarily unavailable. Plugin features continue to work. Try again later."
+msgstr ""
+
+#: includes/class-pue-defaults.php:21
+msgid "Post Updated: [post_title]"
+msgstr ""
+
+#: includes/class-pue-defaults.php:22
+msgid "<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href=\"[post_url]\">View the latest update?</a></p>"
+msgstr ""
+
+#: includes/class-pue-defaults.php:27
+msgid "[site_name] Notification"
+msgstr ""
+
+#: includes/class-pue-defaults.php:29
+msgid "Thank you for supporting [site_name]"
+msgstr ""
+
+#: includes/class-pue-logger.php:255
+msgid "Post update emails"
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:47
+msgid "Title changed from “Draft title” to “Sample Post”."
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:47
+msgid "Content: 42 words added (now 350)."
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:52
+msgid "Sample Post"
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:61
+#: includes/class-pue-placeholder-engine.php:96
+msgid "updated"
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:62
+msgid "Draft title"
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:96
+msgid "published"
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:117
+msgid "First published."
+msgstr ""
+
+#. translators: 1: previous title, 2: new title.
+#: includes/class-pue-placeholder-engine.php:121
+#, php-format
+msgid "Title changed from “%1$s” to “%2$s”."
+msgstr ""
+
+#. translators: 1: words added, 2: new total.
+#: includes/class-pue-placeholder-engine.php:127
+#, php-format
+msgid "Content: %1$d word added (now %2$d)."
+msgid_plural "Content: %1$d words added (now %2$d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: words removed, 2: new total.
+#: includes/class-pue-placeholder-engine.php:130
+#, php-format
+msgid "Content: %1$d word removed (now %2$d)."
+msgid_plural "Content: %1$d words removed (now %2$d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-pue-placeholder-engine.php:132
+msgid "Content edited."
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:135
+msgid "Excerpt updated."
+msgstr ""
+
+#: includes/class-pue-placeholder-engine.php:138
+msgid "No title, content or excerpt changes."
+msgstr ""
+
+#: includes/class-pue-site-health.php:25
+msgid "Post update email delivery"
+msgstr ""
+
+#: includes/class-pue-site-health.php:29
+msgid "Post update email sender address"
+msgstr ""
+
+#: includes/class-pue-site-health.php:33
+msgid "Post update email background sending"
+msgstr ""
+
+#: includes/class-pue-site-health.php:57
+msgid "Open notification settings"
+msgstr ""
+
+#: includes/class-pue-site-health.php:64
+msgid "Post update email logging is off"
+msgstr ""
+
+#: includes/class-pue-site-health.php:64
+msgid "Enable logging in the plugin settings to monitor delivery failures here."
+msgstr ""
+
+#. translators: %d: failures in the last 24 hours.
+#: includes/class-pue-site-health.php:70
+msgid "Post update emails are failing"
+msgstr ""
+
+#. translators: %d: failures in the last 24 hours.
+#: includes/class-pue-site-health.php:70
+#, php-format
+msgid "%d post update emails failed in the last 24 hours. An SMTP plugin and a domain-aligned From address usually improve delivery."
+msgstr ""
+
+#: includes/class-pue-site-health.php:72
+msgid "No repeated post update email failures"
+msgstr ""
+
+#: includes/class-pue-site-health.php:72
+msgid "Fewer than three post update emails failed in the last 24 hours. Skipped updates are not counted."
+msgstr ""
+
+#: includes/class-pue-site-health.php:89
+msgid "Post update emails use the WordPress default sender"
+msgstr ""
+
+#: includes/class-pue-site-health.php:89
+msgid "No custom From address is set, so WordPress or your SMTP plugin chooses the sender."
+msgstr ""
+
+#. translators: 1: From domain, 2: site domain.
+#: includes/class-pue-site-health.php:95
+msgid "Post update email sender domain differs from the site"
+msgstr ""
+
+#. translators: 1: From domain, 2: site domain.
+#: includes/class-pue-site-health.php:95
+#, php-format
+msgid "The From address uses %1$s but the site is %2$s. Mail providers are more likely to filter messages whose sender domain does not match the sending server."
+msgstr ""
+
+#: includes/class-pue-site-health.php:97
+msgid "Post update email sender matches the site domain"
+msgstr ""
+
+#: includes/class-pue-site-health.php:97
+msgid "The From address matches the site domain."
+msgstr ""
+
+#: includes/class-pue-site-health.php:103
+msgid "Background sending depends on a server cron job"
+msgstr ""
+
+#: includes/class-pue-site-health.php:103
+msgid "WP-Cron is disabled on this site. Make sure a server cron job runs wp-cron.php regularly, or choose “Always send right away”."
+msgstr ""
+
+#: includes/class-pue-site-health.php:105
+msgid "Background sending can run"
+msgstr ""
+
+#: includes/class-pue-site-health.php:105
+msgid "Large recipient lists are sent in small WP-Cron batches."
+msgstr ""
+
+#: includes/class-pue-update-notices.php:87
+msgid "Post Update Email Notifier could not reach its update service. Please try again later. Email notifications are not affected."
+msgstr ""
+
+#. translators: %s: local time when checks can resume.
+#: includes/class-pue-update-notices.php:90
+#, php-format
+msgid "GitHub’s request limit has been reached. Please try again after %s. Post Update Email Notifier continues to work normally."
+msgstr ""
+
+#: includes/class-pue-update-notices.php:92
+msgid "GitHub temporarily limited update requests. Please try again later. Post Update Email Notifier continues to work normally."
+msgstr ""
+
+#: includes/class-pue-update-notices.php:94
+msgid "Update check temporarily unavailable"
+msgstr ""
+
+#: includes/class-pue-update-notices.php:103
+msgid "Technical details"
+msgstr ""
+
+#: includes/editor.php:72
+msgid "This post type is not set to send update emails."
+msgstr ""
+
+#: includes/editor.php:78
+msgid "No recipients are selected in Settings, so no email would be sent."
+msgstr ""
+
+#. translators: %d: number of recipients.
+#: includes/editor.php:81
+#, php-format
+msgid "When sent, this update emails %d person."
+msgid_plural "When sent, this update emails %d people."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/editor.php:99
+#: assets/js/editor.js:23
+msgid "Don’t send email notifications"
+msgstr ""
+
+#. translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message.
+#: includes/helpers.php:419
+msgid "Email delivery appears to be failing."
+msgstr ""
+
+#. translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message.
+#: includes/helpers.php:419
+msgid "We detected repeated mail failures in the last 24 hours."
+msgstr ""
+
+#. translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message.
+#: includes/helpers.php:419
+#, php-format
+msgid "Consider installing an SMTP plugin (e.g., <a href=\"%1$s\">WP Mail SMTP</a>, Post SMTP, FluentSMTP) and using a domain‑aligned From address."
+msgstr ""
+
+#. translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message.
+#: includes/helpers.php:419
+msgid "Dismiss for 24 hours"
+msgstr ""
+
+#: includes/settings.php:21
+msgid "Post Update Notifier Settings"
+msgstr ""
+
+#: includes/settings.php:22
+msgid "Post Update Notifier"
+msgstr ""

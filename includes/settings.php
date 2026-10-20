@@ -20,7 +20,7 @@ function pue_create_menu() {
 	add_options_page(
 		__( 'Post Update Notifier Settings', 'hackrepair-post-update-email-notifier' ),
 		__( 'Post Update Notifier', 'hackrepair-post-update-email-notifier' ),
-		'manage_options',
+		pue_capability(),
 		'pue-settings',
 		'pue_settings_page_router'
 	);

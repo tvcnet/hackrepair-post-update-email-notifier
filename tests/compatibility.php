@@ -17,3 +17,25 @@ for($i=0;$i<55;$i++){pue_log_event('update',true,array('reader@example.test'),'I
 $logs=$GLOBALS['options']['pue_logs'];verify(count($logs)===50 && $logs[0]['post_id']===5 && $logs[49]['post_id']===54,'log wrapper retains the latest configured number of entries');
 $GLOBALS['options']['pue_enable_logging']=0;pue_log_event('test',false,array(),'Skipped');verify($GLOBALS['options']['pue_logs']===$logs,'disabled logging remains unchanged');
 verify(pue_csv_safe(' =1+1')==="' =1+1" && pue_csv_safe('Safe')==='Safe','CSV compatibility wrapper retains formula protection');
+
+// Bulk test daily cap
+add_filter('pue_bulk_daily_cap',function(){return 30;});unset($GLOBALS['options']['pue_bulk_usage']);
+verify(pue_bulk_remaining()===30,'bulk cap starts full each day');pue_record_bulk_usage(25);verify(pue_bulk_remaining()===5,'bulk usage reduces the remaining allowance');
+$GLOBALS['options']['pue_bulk_usage']=array('day'=>'2000-01-01','count'=>999);verify(pue_bulk_remaining()===30,'bulk allowance resets on a new day');
+
+// Privacy export and erase of logged addresses
+$GLOBALS['options']['pue_enable_logging']=1;$GLOBALS['options']['pue_logs']=array(array('ts'=>1,'type'=>'update','sent'=>1,'recipients'=>array('Keep@example.test','gone@example.test'),'subject'=>'S'));
+$export=PUE_Logger::instance()->privacy_export('GONE@example.test');verify(count($export['data'])===1&&$export['done'],'privacy exporter finds log entries by address');
+$erase=PUE_Logger::instance()->privacy_erase('gone@example.test');verify($erase['items_removed']&&$GLOBALS['options']['pue_logs'][0]['recipients']===array('Keep@example.test'),'privacy eraser removes only the requested address');
+
+// Site Health sender alignment
+function esc_url_raw($u){return $u;}
+$GLOBALS['options']['pue_from_email']='news@other-domain.test';verify(PUE_Site_Health::test_from_alignment()['status']==='recommended','mismatched From domain is flagged in Site Health');
+$GLOBALS['options']['pue_from_email']='news@example.test';verify(PUE_Site_Health::test_from_alignment()['status']==='good','aligned From domain passes Site Health');
+$GLOBALS['options']['pue_logs']=array(array('ts'=>time(),'sent'=>0,'mode'=>'skipped'),array('ts'=>time(),'sent'=>0,'mode'=>'skipped'),array('ts'=>time(),'sent'=>0,'mode'=>'skipped'));
+verify(PUE_Site_Health::test_failures()['status']==='good','skipped updates never trigger the delivery-failure warning');
+
+// View Details keeps the update checker's reported version
+function wp_enqueue_style(...$a){}function plugins_url($p='',$f=''){return 'https://example.test/'.$p;}
+$info=(object)array('version'=>'9.9.9','sections'=>array('description'=>'x'));$args=(object)array('slug'=>'hackrepair-post-update-email-notifier');
+$out=pue_companion_plugin_info($info,'plugin_information',$args);verify($out->version==='9.9.9'&&isset($out->sections['other_THRG_plugins']),'View Details shows the available version, not the installed one');

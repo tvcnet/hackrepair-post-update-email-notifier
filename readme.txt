@@ -7,62 +7,74 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.1
+Stable tag: 1.6.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Send branded HTML emails to selected user roles whenever a published post or page is updated. Configure the subject and message templates, preview with a Test Email (AJAX), set email identity (From/Reply‑To), and control which post types trigger notifications. Includes options to exclude the updating user, optional logging + CSV export, a Reset to Defaults action, and developer hooks.
+Send branded HTML emails to selected user roles when you announce an update to published content. Choose who is notified, whether editors opt in or opt out for each update, and how the email looks. Preview the email without sending, send yourself a test, and review the results in an optional log.
 
 = Features =
+- Role-based recipients, with a live count of who will be emailed and an option to exclude the updating user
+- Per-post “Don’t send email notifications” checkbox in the Classic and Block editors, showing how many people the update will email
+- Site-wide default: editors opt in for each update (recommended) or opt out
+- Notify on first publish (including scheduled posts) and later updates, or on updates only
+- Per-post cooldown so repeated saves do not send a burst of emails
+- Background sending in small WP-Cron batches for larger lists, so saving a post stays fast
+- “What changed” summary placeholder: title changes, words added or removed, excerpt updates, plus a link to the revision comparison
 - Branded HTML wrapper with customizable header text/color and footer (supports placeholders, incl. [year])
-- Notify selected user roles on post/page updates (non‑autosave/revision)
-- Configurable subject and message templates (HTML supported)
-- Test Email (AJAX) to preview the current template — with inline success/error
-- Post type filter and “Exclude Updating User” option
-- Per‑post “Don’t send email notifications” checkbox (explicit opt-in per announced update)
-- Email Identity options for From/Reply‑To (no SMTP credentials)
-- Optional logging of email send events (50/200/1000) with CSV export and Clear Log; captures failure details for plugin emails and records “Not sent” when an update is intentionally skipped
-- SMTP “Active” status chip + guidance notice after repeated failures
-- Reset to Defaults action to restore all plugin options
-- Smooth, accessible admin UX: card layout, sidebar nav, spinners, and inline “Done!”
-- Developer hooks to customize placeholders, recipients, subject, headers, and final HTML
+- Preview the email in the settings page without sending, or send a test to yourself
+- Email Identity options for From/Reply-To (no SMTP credentials)
+- Optional log (50/200/1000 entries) with CSV export, failure details, skip reasons and background progress
+- Site Health checks for repeated delivery failures, sender-domain alignment and background sending
+- WordPress personal data export and erasure for addresses stored in the log
+- WP-CLI commands: `wp pue test`, `wp pue send`, `wp pue recipients`, `wp pue log`
+- Works with or without JavaScript; translation-ready (POT included)
+- Developer hooks to customize placeholders, recipients, subject, headers, change summaries and final HTML
 
 = How it works =
-- On `wp_after_insert_post`, if the post remains published, an email is sent to all users in the selected roles.
-- Autosaves and revisions are skipped.
-- If you select post types in Settings, only those types trigger notifications; otherwise, all types do.
-- Optionally exclude the user who performed the update from recipients.
-- If the per‑post “Don’t send” checkbox is checked, the next update is skipped and (when logging is enabled) a “Not sent” entry is added to the Recent Email Log and CSV.
-- The Test Email button sends a preview to your user email (falls back to the site admin email if your account has no email).
-- If repeated mail failures are detected in the last 24 hours, an on‑page admin notice suggests installing an SMTP plugin.
+- On `wp_after_insert_post`, if the post is published, the plugin checks the per-post choice, the site default, the post type, the selected roles and the cooldown, then emails each recipient individually.
+- Autosaves, revisions and brand-new programmatic inserts are skipped.
+- If you select post types in Settings, only those types trigger notifications; otherwise, all types can.
+- After an update is processed, the post’s checkbox returns to the site default.
+- When an editor opted in but nothing could be sent (no roles, excluded post type, no recipients, cooldown), the log records why.
+- Lists larger than 20 recipients are sent in the background in Automatic delivery mode (filter `pue_background_threshold`).
+- The Test Email button sends the saved template to your user email (falls back to the site admin email).
 
 = Admin UX =
-- Section save actions run over AJAX with a small spinner and a green “Done!” indicator (no page reload)
-- Clear Log and Reset provide inline feedback and spinners; CSV export triggers a normal file download
+- Section saves run over AJAX with inline feedback; without JavaScript the same forms save and return with a notice
+- Clear Log, Reset and CSV export work through standard form posts
 
 = Template placeholders =
 - `[post_title]` — The post/page title
 - `[post_url]` — The public permalink to the post/page
-- `[editor_name]` — The display name of the user performing the update
+- `[editor_name]` — The display name of the user performing the update (the author for scheduled posts)
 - `[author_name]` — The post author’s display name
 - `[post_type]` — The post type (singular label)
 - `[site_name]` — Your site’s name
 - `[updated_at]` — Update timestamp using your site’s date/time formats
 - `[post_edit_url]` — Admin edit URL for the post
-- `[year]` — Current 4‑digit year
+- `[year]` — Current 4-digit year
+- `[event]` — “published” or “updated”
+- `[previous_title]` — The title before this save
+- `[change_summary]` — A short list of what changed
+- `[revision_url]` — The latest revision comparison
 
 = Developers =
 Filters/actions available:
-- `pue_should_notify( bool $should, int $post_ID, WP_Post $post_after, WP_Post $post_before )`
-- `pue_placeholders( array $maps, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor )` (`$maps = ['subject'=>[], 'message'=>[]]`)
-- `pue_email_subject( string $subject, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor, array $subject_map )`
-- `pue_email_message( string $message, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor, array $message_map )`
-- `pue_email_recipients( array $recipients, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor )`
-- `pue_email_headers( array $headers, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor )`
-- `pue_email_template_html( string $html, string $message, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor )`
-- `pue_email_sent( bool $sent, array $recipients, string $subject, string $message, int $post_ID, WP_Post $post_after, WP_Post $post_before, WP_User $editor )`
+- `pue_should_notify( bool $should, int $post_ID, WP_Post $post_after, WP_Post|null $post_before )`
+- `pue_placeholders( array $maps, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor )` (`$maps = ['subject'=>[], 'message'=>[], 'brand'=>[]]`)
+- `pue_email_subject( string $subject, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor, array $subject_map )`
+- `pue_email_message( string $message, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor, array $message_map )`
+- `pue_email_recipients( array $recipients, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor )`
+- `pue_email_headers( array $headers, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor )`
+- `pue_email_template_html( string $html, string $message, int $post_ID, WP_Post $post_after, WP_Post|null $post_before, WP_User $editor )`
+- `pue_email_sent( bool $sent, array $recipients, string $subject, string $message, int $post_ID, WP_Post|null $post_after, WP_Post|null $post_before, WP_User|null $editor )` (background sends pass a null `$post_before`)
+- `pue_change_summary( string[] $items, int $post_ID, WP_Post $post_after, WP_Post|null $post_before )`
+- `pue_background_threshold` (default 20), `pue_background_batch_size` (default 20), `pue_bulk_daily_cap` (default 1000), `pue_settings_capability` (default `manage_options`)
+
+Since 1.6.0, `$post_before` is the post as it was before the save (WordPress 5.6+), instead of always null.
 
 == Examples ==
 
@@ -97,25 +109,7 @@ Note for developers: this plugin sends one email per recipient (individual-only)
 
 == Uninstall ==
 
-Deleting the plugin removes its settings:
-
-- `pue_roles`
-- `pue_subject`
-- `pue_message`
-- `pue_post_types`
-- `pue_exclude_updater`
- - `pue_enable_logging`
- - `pue_log_retention`
- - `pue_logs`
- - `pue_header_text`
- - `pue_header_bg_color`
- - `pue_footer_text`
- - `pue_from_name`
- - `pue_from_email`
- - `pue_reply_to_email`
- - `pue_smtp_notice_dismiss_until`
-
-On multisite, these options are deleted from every site.
+Deleting the plugin removes its settings and data on every site of a multisite network: all `pue_*` options (settings, log, bulk-test usage, SMTP notice state), the `_pue_do_not_notify` and `_pue_last_sent` post meta, queued background jobs and their WP-Cron events, and its update-status transients.
 
 == Support ==
 
@@ -131,55 +125,40 @@ https://github.com/tvcnet/hackrepair-post-update-email-notifier/blob/main/SECURI
 == Frequently Asked Questions ==
 
 = When are emails sent? =
-On the `wp_after_insert_post` action, if the post is still published. Autosaves and revisions are skipped.
+When a published post is saved and the update is set to send: by default an editor unchecks “Don’t send email notifications” for that update. You can switch the site default so updates send unless the editor checks the box. Autosaves and revisions are skipped.
 
 = Who receives the emails? =
-All users in the selected roles (deduplicated). If enabled, the updating user is excluded.
+All users in the selected roles (deduplicated, case-insensitive). If enabled, the updating user is excluded. Settings and the editor show the current count.
 
 = Does it work with custom post types? =
-Yes. If you leave the “Post Types to Notify” section empty, all post types are eligible. Select specific post types to limit notifications.
+Yes. If you leave Post Types empty, all post types are eligible. The editor checkbox appears on public post types.
 
 = Does it work with SMTP plugins? =
-Yes. The plugin uses `wp_mail()` so it’s compatible with SMTP plugins (WP Mail SMTP, Post SMTP, FluentSMTP, etc.). The settings page displays an “SMTP Active” status when SMTP is detected.
+Yes. The plugin uses `wp_mail()`, so it is compatible with SMTP plugins (WP Mail SMTP, Post SMTP, FluentSMTP, etc.). The settings page notes when an SMTP transport is detected.
 
 = How do I improve deliverability? =
-Optional: For better deliverability, use an email address that matches your website’s domain. It’s less likely to land in spam or junk folders. Use an SMTP plugin (e.g., WP Mail SMTP) and verify domain authentication (SPF/DKIM). Check spam/junk folders when testing.
+Use a From address that matches your website’s domain (Site Health flags a mismatch), an SMTP plugin, and domain authentication (SPF/DKIM). Check spam/junk folders when testing.
 
-= Can I add a plain‑text alternative? =
-Yes. Developers can enable a plain‑text alternative via `add_filter( 'pue_email_plaintext_enabled', '__return_true' );`. You can also adjust wrap width with `pue_email_plaintext_width` and customize the final text with `pue_email_plaintext`.
+= Can I add a plain-text alternative? =
+Yes. `add_filter( 'pue_email_plaintext_enabled', '__return_true' );` adds one to every recipient’s message. Adjust the wrap width with `pue_email_plaintext_width` and the text with `pue_email_plaintext`.
+
+= What happens with large recipient lists? =
+In Automatic delivery mode, lists above 20 recipients are queued and sent in WP-Cron batches of 20, so the editor’s save returns quickly. The log shows “Queued (sent/total)” until the job completes. If WP-Cron is disabled, make sure a server cron job runs, or choose “Always send right away”.
 
 = How do I reset to defaults? =
-Go to Settings → Post Update Notifier and click “Reset to Defaults” at the bottom. This restores all plugin options to their original defaults and clears the local log (posts/users are unaffected).
+Go to Settings → Post Update Notifier and click “Reset to Defaults”. This restores all plugin options and clears the log (posts/users are unaffected).
 
 = Updates =
 
-Updates come from GitHub releases at https://github.com/tvcnet/hackrepair-post-update-email-notifier. The repository remains under tvcnet. Only a published release with matching vX.Y.Z tag and hackrepair-post-update-email-notifier.X.Y.Z.zip asset is offered. Auto-generated source archives are rejected.
+Updates come from GitHub releases at https://github.com/tvcnet/hackrepair-post-update-email-notifier. Only a published release with a matching vX.Y.Z tag and hackrepair-post-update-email-notifier.X.Y.Z.zip asset is offered. Auto-generated source archives are rejected. View Details shows the available version and works from the bundled readme when remote information is unavailable.
 
-Existing Google Drive installations need a one-time manual upload to move to the GitHub updater. This build does not change the old Drive manifest. GitHub update checks and downloads expose standard connection information but do not include post content, account lists or email recipients.
-
-Native View Details works from the bundled readme when remote information is unavailable. Other THRG Plugins links to the four companion tools. Update errors explain temporary availability and confirmed rate limits without implying the notification feature is broken.
-
-= Performance =
-For very large recipient lists, sending one email per recipient can take longer. Use an SMTP service/provider and, if needed, implement a queue/cron-based sending strategy via custom hooks.
+Existing Google Drive installations need a one-time manual upload to move to the GitHub updater.
 
 = What data does the plugin store? =
-Only WordPress options listed above and the optional recent email log (50/200/1000 entries). The log option is stored with autoload disabled.
+The settings options, the optional recent email log (autoload disabled), short-lived background job records, and two post meta keys (the per-post choice and the last send time). The log can contain recipient addresses, subjects, post titles and failure details; it is included in WordPress personal data export and erasure. Treat CSV exports as potentially private data.
 
 = Security notes =
-Admin actions require `manage_options` and are protected by nonces. All inputs pass through sanitizers; mail headers are built from sanitized values and From Name defensively strips CR/LF.
-= Where are the settings? =
-Go to Settings → Post Update Notifier. Configure roles, subject/body template, post types, and the exclude‑updater option. Use the Send Test Email button to preview.
-
-
-= What are the current defaults and mail limits? =
-
-No roles are selected by default. The per-post checkbox defaults to checked; explicitly uncheck it for an update you want to announce. After that update, the flag returns to checked. Notification emails are sent individually and synchronously; consider request limits before targeting a large role. The testing-only bulk action is capped at 200.
-
-Subjects begin with [domain] [Post Update Email Notifier], retaining the customized subject purpose. Saved templates are not overwritten. The HTML wrapper uses full available width. Test feedback distinguishes acceptance for sending from confirmed delivery.
-
-= Where is mail information stored? =
-
-Optional logs can contain recipient addresses, subjects, post titles and failure details. Retention options are 50, 200 or 1000. Treat CSV exports as potentially private data. From/Reply-To settings contain no SMTP credentials; WordPress mail plugins can override the transport.
+Admin actions require the `manage_options` capability (filterable with `pue_settings_capability`) and are protected by nonces. Inputs pass through sanitizers; mail headers are built from sanitized values and From Name strips CR/LF. Bulk tests are capped at 200 per request and 1,000 per day.
 
 == Installation ==
 
@@ -196,6 +175,21 @@ Optional logs can contain recipient addresses, subjects, post titles and failure
 1. Settings screen showing roles, post types, template, and options
 
 == Changelog ==
+
+= 1.6.0 =
+* New: Site-wide default for the per-post checkbox (opt in or opt out), first-publish vs updates-only notifications, and a per-post cooldown.
+* New: Background sending in WP-Cron batches for larger recipient lists, with progress in the log.
+* New: [change_summary], [revision_url], [previous_title] and [event] placeholders.
+* New: Preview the email without sending; live recipient counts in Settings and the editor.
+* New: Site Health checks, WP-CLI commands (`wp pue`), personal data export/erasure for the log, translation template, and a daily cap for bulk tests.
+* Fixed: A failed update check named another plugin; View Details showed the installed version instead of the available one.
+* Fixed: Developer filters now receive `$post_before` instead of null.
+* Fixed: Skipped updates no longer trigger the “Email delivery appears to be failing” notice, and each failure is logged once with its error.
+* Fixed: Branding and Email Identity now save without JavaScript; form actions redirect after saving so reloading does not resend a test email.
+* Fixed: An editor’s opt-in is no longer silently lost when nothing can be sent; the log records the reason.
+* Fixed: The optional plain-text part is attached to every recipient and never to unrelated email.
+* Fixed: Unsaved branding now uses the same defaults the settings screen shows.
+* Changed: One query loads recipient addresses; uninstall also removes post meta, queued jobs and update transients; accessible modals; no inline script handlers.
 
 = 1.5.1 =
 * Fixed: Export Log no longer fails with a fatal error, and the CSV download is sent before the settings page renders.

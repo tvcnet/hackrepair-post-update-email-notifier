@@ -17,3 +17,4 @@ MAINTAINING.md
 SECURITY.md
 AGENTS.md
 phpcs.xml.dist
+.wp-env.json

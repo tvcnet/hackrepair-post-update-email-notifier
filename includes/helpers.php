@@ -35,14 +35,62 @@ function pue_build_identity_headers( $headers, $placeholders, $user ) {
 	}
 	return $headers;
 }
-// Attach AltBody for our plugin emails, when present
+// Attach the plaintext part only while this plugin is sending a message.
 add_action( 'phpmailer_init', 'pue_phpmailer_set_altbody' );
 function pue_phpmailer_set_altbody( $phpmailer ) {
-	if ( ! empty( $GLOBALS['pue_altbody'] ) ) {
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PHPMailer defines this public property name.
-		$phpmailer->AltBody     = $GLOBALS['pue_altbody'];
-		$GLOBALS['pue_altbody'] = null;
+	PUE_Delivery::apply_altbody( $phpmailer );
+}
+
+/**
+ * Capability required to manage this plugin's settings.
+ *
+ * @return string
+ */
+function pue_capability() {
+	return (string) apply_filters( 'pue_settings_capability', 'manage_options' );
+}
+
+/**
+ * Settings page URL, optionally anchored to a section.
+ *
+ * @param string $section Section id.
+ * @return string
+ */
+function pue_settings_url( $section = '' ) {
+	return admin_url( 'options-general.php?page=pue-settings' ) . ( $section ? '#' . rawurlencode( $section ) : '' );
+}
+
+/**
+ * Unique, valid email addresses of users in the given roles.
+ *
+ * @param array  $roles Role keys.
+ * @param string $exclude_email Address to leave out (case-insensitive).
+ * @return string[]
+ */
+function pue_get_recipients( $roles, $exclude_email = '' ) {
+	$roles = array_values( array_filter( (array) $roles, 'is_string' ) );
+	if ( empty( $roles ) ) {
+		return array();
 	}
+	$users = get_users(
+		array(
+			'role__in' => $roles,
+			'fields'   => array( 'user_email' ),
+			'number'   => -1,
+		)
+	);
+	$out   = array();
+	foreach ( (array) $users as $user ) {
+		$email = isset( $user->user_email ) ? sanitize_email( $user->user_email ) : '';
+		if ( ! $email || ! is_email( $email ) ) {
+			continue;
+		}
+		if ( $exclude_email && 0 === strcasecmp( $email, $exclude_email ) ) {
+			continue;
+		}
+		$out[ strtolower( $email ) ] = $email;
+	}
+	return array_values( $out );
 }
 
 /**
@@ -100,9 +148,9 @@ function pue_sanitize_emails( $emails ) {
 	foreach ( (array) $emails as $e ) {
 		$e = sanitize_email( $e );
 		if ( $e && is_email( $e ) ) {
-			$out[] = $e; }
+			$out[ strtolower( $e ) ] = $e; }
 	}
-	return array_values( array_unique( $out ) );
+	return array_values( $out );
 }
 
 function pue_csv_safe( $value ) {
@@ -273,9 +321,14 @@ function pue_is_smtp_active() {
 			$active = true;
 			break; }
 	}
-	// 2) Runtime PHPMailer probe (no send): ask plugins to configure PHPMailer and inspect
+	// 2) Runtime PHPMailer probe (no send). It runs other plugins' phpmailer_init hooks, so cache the result.
 	if ( ! $active ) {
-		$active = pue_probe_phpmailer_smtp();
+		$cached = get_transient( 'pue_smtp_probe' );
+		if ( false === $cached ) {
+			$cached = pue_probe_phpmailer_smtp() ? 'yes' : 'no';
+			set_transient( 'pue_smtp_probe', $cached, 10 * MINUTE_IN_SECONDS );
+		}
+		$active = 'yes' === $cached;
 	}
 	return (bool) apply_filters( 'pue_smtp_active', $active );
 }
@@ -326,13 +379,13 @@ function pue_probe_phpmailer_smtp() {
 // Show SMTP recommendation notice after repeated failures in the last 24h
 add_action( 'admin_init', 'pue_handle_dismiss_smtp_notice' );
 function pue_handle_dismiss_smtp_notice() {
-	if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+	if ( ! is_admin() || ! current_user_can( pue_capability() ) ) {
 		return;
 	}
 	if ( ! isset( $_GET['pue_dismiss_smtp_notice'] ) || ! isset( $_GET['_wpnonce'] ) ) {
 		return;
 	}
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'pue_dismiss_smtp_notice' ) ) {
+	if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'pue_dismiss_smtp_notice' ) ) {
 		return;
 	}
 	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
@@ -341,40 +394,22 @@ function pue_handle_dismiss_smtp_notice() {
 
 add_action( 'admin_notices', 'pue_maybe_show_smtp_notice' );
 function pue_maybe_show_smtp_notice() {
-	if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+	if ( ! is_admin() || ! current_user_can( pue_capability() ) ) {
 		return;
 	}
-	// Only show on our settings page to avoid noise
+	// Only show on our settings page to avoid noise.
 	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-	if ( $screen && 'settings_page_pue-settings' !== $screen->id ) {
+	if ( ! $screen || 'settings_page_pue-settings' !== $screen->id ) {
 		return;
 	}
-
+	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
+	$now           = current_time( 'timestamp' );
 	$dismiss_until = (int) get_option( 'pue_smtp_notice_dismiss_until', 0 );
-	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
-	if ( $dismiss_until && $dismiss_until > current_time( 'timestamp' ) ) {
+	if ( $dismiss_until && $dismiss_until > $now ) {
 		return;
 	}
-
-	$logs = get_option( 'pue_logs', array() );
-	if ( empty( $logs ) || ! is_array( $logs ) ) {
-		return;
-	}
-	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
-	$cut   = current_time( 'timestamp' ) - DAY_IN_SECONDS;
-	$fails = 0;
-	foreach ( $logs as $entry ) {
-		if ( ! empty( $entry['sent'] ) ) {
-			continue;
-		}
-		$ts = isset( $entry['ts'] ) ? (int) $entry['ts'] : 0;
-		if ( $ts >= $cut ) {
-			++$fails; }
-		if ( $fails >= 3 ) {
-			break;
-		}
-	}
-	if ( $fails < 3 ) {
+	// Skipped and queued entries are not delivery failures.
+	if ( PUE_Logger::instance()->count_failures_since( $now - DAY_IN_SECONDS ) < 3 ) {
 		return;
 	}
 
@@ -386,9 +421,9 @@ function pue_maybe_show_smtp_notice() {
 
 // Branded template (uses options)
 function pue_email_template_branded_legacy( $content, $placeholders = array() ) {
-	$heading     = get_option( 'pue_header_text', 'Post Update Notification' );
-	$bg          = get_option( 'pue_header_bg_color', '#0073aa' );
-	$footer_text = get_option( 'pue_footer_text', 'Thank you for supporting us.' );
+	$heading     = PUE_Defaults::option( 'pue_header_text' );
+	$bg          = PUE_Defaults::option( 'pue_header_bg_color' );
+	$footer_text = PUE_Defaults::option( 'pue_footer_text' );
 	$bg          = pue_sanitize_hex( $bg );
 	if ( empty( $bg ) ) {
 		$bg = '#0073aa'; }

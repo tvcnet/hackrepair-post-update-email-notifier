@@ -1,23 +1,48 @@
 <?php
 /**
- * Compatibility functions extracted from the original bootstrap.
+ * Per-post "Don't send email notifications" control for the Classic and Block editors.
  *
  * @package PostUpdateEmailNotifier
  */
 
 defined( 'ABSPATH' ) || exit;
 
-// ---------- 0.2 Per‑post "Do Not Notify" toggle ----------
-// Register post meta so both Classic and Block editor UIs can read/write it.
+/**
+ * Site-wide default for the per-post flag: 'skip' (editors opt in) or 'send' (editors opt out).
+ *
+ * @return string
+ */
+function pue_send_policy() {
+	return 'send' === PUE_Defaults::option( 'pue_send_policy' ) ? 'send' : 'skip';
+}
+
+/**
+ * Whether the next published update of this post is skipped.
+ *
+ * @param int $post_id Post ID.
+ * @return bool
+ */
+function pue_post_is_skipped( $post_id ) {
+	if ( metadata_exists( 'post', $post_id, '_pue_do_not_notify' ) ) {
+		return (bool) get_post_meta( $post_id, '_pue_do_not_notify', true );
+	}
+	return 'skip' === pue_send_policy();
+}
+
+/**
+ * Return a post to the site default once an update has been processed.
+ *
+ * @param int $post_id Post ID.
+ */
+function pue_consume_opt_in( $post_id ) {
+	delete_post_meta( $post_id, '_pue_do_not_notify' );
+}
+
+// Register the flag for all public post types so the Block editor saves it everywhere.
 add_action(
 	'init',
 	function () {
-		if ( ! function_exists( 'register_post_meta' ) ) {
-			return;
-		}
-		// Register the flag for all public post types so Gutenberg saves it everywhere
-		$pts = get_post_types( array( 'public' => true ), 'names' );
-		foreach ( (array) $pts as $pt ) {
+		foreach ( (array) get_post_types( array( 'public' => true ), 'names' ) as $pt ) {
 			register_post_meta(
 				$pt,
 				'_pue_do_not_notify',
@@ -25,17 +50,38 @@ add_action(
 					'show_in_rest'  => true,
 					'single'        => true,
 					'type'          => 'boolean',
-					'default'       => true, // default to skip until explicitly unchecked
-					'auth_callback' => function () {
-						return current_user_can( 'edit_posts' ); },
+					'default'       => 'skip' === pue_send_policy(),
+					'auth_callback' => function ( $allowed, $meta_key, $object_id ) {
+						return current_user_can( 'edit_post', (int) $object_id );
+					},
 				)
 			);
 		}
 	}
 );
 
-// Classic editor: add a checkbox in the Submit box (appears above Move to Trash).
-// Use a high priority so it renders after most other misc lines.
+/**
+ * Plain-language recipient note for the editor controls.
+ *
+ * @param string $post_type Post type.
+ * @return string
+ */
+function pue_editor_recipient_note( $post_type ) {
+	$allowed = (array) PUE_Defaults::option( 'pue_post_types' );
+	if ( ! empty( $allowed ) && ! in_array( $post_type, $allowed, true ) ) {
+		return __( 'This post type is not set to send update emails.', 'hackrepair-post-update-email-notifier' );
+	}
+	$user    = wp_get_current_user();
+	$exclude = (int) PUE_Defaults::option( 'pue_exclude_updater' ) && ! empty( $user->user_email ) ? $user->user_email : '';
+	$count   = count( pue_get_recipients( (array) PUE_Defaults::option( 'pue_roles' ), $exclude ) );
+	if ( 0 === $count ) {
+		return __( 'No recipients are selected in Settings, so no email would be sent.', 'hackrepair-post-update-email-notifier' );
+	}
+	/* translators: %d: number of recipients. */
+	return sprintf( _n( 'When sent, this update emails %d person.', 'When sent, this update emails %d people.', $count, 'hackrepair-post-update-email-notifier' ), $count );
+}
+
+// Classic editor: checkbox in the Submit box.
 add_action(
 	'post_submitbox_misc_actions',
 	function () {
@@ -43,47 +89,43 @@ add_action(
 		if ( ! ( $post instanceof WP_Post ) ) {
 			return;
 		}
-		// Limit to public post types by default
-		$ptype = get_post_type( $post );
-		$obj   = get_post_type_object( $ptype );
+		$obj = get_post_type_object( get_post_type( $post ) );
 		if ( ! $obj || empty( $obj->public ) ) {
 			return;
 		}
-		$meta_exists = metadata_exists( 'post', $post->ID, '_pue_do_not_notify' );
-		$checked     = $meta_exists ? (bool) get_post_meta( $post->ID, '_pue_do_not_notify', true ) : true;
 		wp_nonce_field( 'pue_dnn_meta', 'pue_dnn_nonce' );
 		echo '<div class="misc-pub-section pue-dnn"><label>'
-		. '<input type="checkbox" name="pue_do_not_notify" value="1" ' . checked( $checked, true, false ) . ' /> '
+		. '<input type="checkbox" name="pue_do_not_notify" value="1" ' . checked( pue_post_is_skipped( $post->ID ), true, false ) . ' /> '
 		. esc_html__( 'Don’t send email notifications', 'hackrepair-post-update-email-notifier' )
-		. '</label></div>';
+		. '</label><p class="description">' . esc_html( pue_editor_recipient_note( $post->post_type ) ) . '</p></div>';
 	},
 	99
 );
 
-// Save handler for Classic editor checkbox.
+// Classic editor save: store a value only when it differs from the site default.
 add_action(
 	'save_post',
 	function ( $post_id ) {
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_revision( $post_id ) ) {
 			return;
 		}
-		if ( wp_is_post_revision( $post_id ) ) {
-			return;
-		}
-		if ( ! isset( $_POST['pue_dnn_nonce'] ) || ! wp_verify_nonce( $_POST['pue_dnn_nonce'], 'pue_dnn_meta' ) ) {
+		if ( ! isset( $_POST['pue_dnn_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pue_dnn_nonce'] ) ), 'pue_dnn_meta' ) ) {
 			return;
 		}
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
-
-		$val = isset( $_POST['pue_do_not_notify'] ) ? 1 : 0;
-		// Store explicit values so defaults don't mask user intent
-		update_post_meta( $post_id, '_pue_do_not_notify', $val );
+		$skip         = isset( $_POST['pue_do_not_notify'] );
+		$default_skip = 'skip' === pue_send_policy();
+		if ( $default_skip === $skip ) {
+			delete_post_meta( $post_id, '_pue_do_not_notify' );
+		} else {
+			update_post_meta( $post_id, '_pue_do_not_notify', $skip ? 1 : 0 );
+		}
 	}
 );
 
-// Block editor UI: small checkbox in Status & visibility panel.
+// Block editor: checkbox in the Status & visibility panel.
 add_action(
 	'enqueue_block_editor_assets',
 	function () {
@@ -94,67 +136,58 @@ add_action(
 			PUE_VERSION,
 			true
 		);
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		$type   = $screen && ! empty( $screen->post_type ) ? $screen->post_type : 'post';
+		$obj    = get_post_type_object( $type );
+		wp_localize_script(
+			'pue-editor',
+			'PUE_Editor',
+			array(
+				'enabled' => $obj && ! empty( $obj->public ),
+				'note'    => pue_editor_recipient_note( $type ),
+			)
+		);
+		wp_set_script_translations( 'pue-editor', 'hackrepair-post-update-email-notifier', PUE_PLUGIN_DIR . 'languages' );
 	}
 );
 
-// Honor the per‑post flag: if set, skip notifications once and clear it.
+// Honor the per-post flag. Consumption happens in the notification service after the decision.
 add_filter(
 	'pue_should_notify',
-	function ( $should, $post_ID, $post_after, $post_before ) {
+	function ( $should, $post_ID, $post_after ) {
 		if ( ! $should ) {
 			return false;
 		}
-		$has_meta = metadata_exists( 'post', $post_ID, '_pue_do_not_notify' );
-		$skip     = $has_meta ? (bool) get_post_meta( $post_ID, '_pue_do_not_notify', true ) : true; // default to skip until explicitly unchecked
-
-		// If flagged to skip, optionally log only when the user explicitly set the flag.
-		if ( $skip ) {
-			if ( $has_meta && (int) get_option( 'pue_enable_logging', 0 ) === 1 ) {
-				$subject_tmpl  = get_option( 'pue_subject', __( 'Post Updated: [post_title]', 'hackrepair-post-update-email-notifier' ) );
-				$message_tmpl  = get_option( 'pue_message', __( '<p>A post at [site_name] has been updated by [editor_name]:<br /><strong>[post_title]</strong>, <a href="[post_url]">View the latest update?</a></p>', 'hackrepair-post-update-email-notifier' ) );
-				$editor        = wp_get_current_user();
-				$maps          = pue_build_placeholder_maps_update( $post_ID, $post_after, $post_before, $editor );
-				$maps          = apply_filters( 'pue_placeholders', $maps, $post_ID, $post_after, $post_before, $editor );
-				list($subject) = pue_compose_email(
-					'update',
-					$subject_tmpl,
-					$message_tmpl,
-					$maps,
-					array(
-						'post_id'     => (int) $post_ID,
-						'post_after'  => $post_after,
-						'post_before' => $post_before,
-					),
-					$editor
-				);
-				pue_log_event(
-					'update',
-					false,
-					array(),
-					$subject,
-					$post_ID,
-					array(
-						'post_title' => $post_after ? $post_after->post_title : get_the_title( $post_ID ),
-						'post_type'  => $post_after ? $post_after->post_type : get_post_type( $post_ID ),
-						'editor_id'  => $editor ? (int) $editor->ID : 0,
-						'mode'       => 'skipped', // signal UI to show "Not sent"
-						'sent_count' => 0,
-						'total'      => 0,
-					)
-				);
-			}
-			return false;
+		if ( ! pue_post_is_skipped( $post_ID ) ) {
+			return true;
 		}
-
-		// If we got here, user explicitly unchecked; allow sending and reset to skip afterward.
-		update_post_meta( $post_ID, '_pue_do_not_notify', 1 );
-		return true;
+		// Log a skip only when an editor explicitly chose it (not the silent default).
+		if ( metadata_exists( 'post', $post_ID, '_pue_do_not_notify' ) ) {
+			$editor = wp_get_current_user();
+			pue_log_event(
+				'update',
+				false,
+				array(),
+				'',
+				$post_ID,
+				array(
+					'post_title' => $post_after ? $post_after->post_title : get_the_title( $post_ID ),
+					'post_type'  => $post_after ? $post_after->post_type : get_post_type( $post_ID ),
+					'editor_id'  => $editor ? (int) $editor->ID : 0,
+					'mode'       => 'skipped',
+					'reason'     => 'editor_choice',
+					'sent_count' => 0,
+					'total'      => 0,
+				)
+			);
+		}
+		return false;
 	},
 	5,
-	4
+	3
 );
 
-// Ensure certain options are created with autoload disabled (performance/privacy)
+// Ensure the log option is created with autoload disabled.
 add_action(
 	'init',
 	function () {
