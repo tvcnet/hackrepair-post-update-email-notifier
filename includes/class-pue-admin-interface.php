@@ -110,7 +110,6 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 						<?php if ( $enable_logging ) : ?>
 						<li><a href="#logging">🧾 <?php esc_html_e( 'Logging', 'hackrepair-post-update-email-notifier' ); ?></a></li>
 						<?php endif; ?>
-						<li><a href="#updates">⬆️ <?php esc_html_e( 'Update Status', 'hackrepair-post-update-email-notifier' ); ?></a></li>
 						<li><a href="#bulk-test">📦 <?php esc_html_e( 'Bulk Test', 'hackrepair-post-update-email-notifier' ); ?></a></li>
 						<li><a href="#reset-defaults">↩️ <?php esc_html_e( 'Reset', 'hackrepair-post-update-email-notifier' ); ?></a></li>
 						<li><a href="#support">❓ <?php esc_html_e( 'Support', 'hackrepair-post-update-email-notifier' ); ?></a></li>
@@ -392,21 +391,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 		}
 
 		private function render_tools() {
-			$manifest   = get_site_transient( 'pue_github_status' );
-			$latest_v   = is_array( $manifest ) && ! empty( $manifest['latest_version'] ) ? $manifest['latest_version'] : '';
-			$fetched_at = is_array( $manifest ) && ! empty( $manifest['fetched_at'] ) ? $manifest['fetched_at'] : 0;
 			?>
-			<h2 id="updates"><?php esc_html_e( 'Update status', 'hackrepair-post-update-email-notifier' ); ?></h2>
-			<div class="pue-card">
-				<p><strong><?php esc_html_e( 'Current version:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-current"><?php echo esc_html( PUE_VERSION ); ?></span></p>
-				<p><strong><?php esc_html_e( 'Latest available (GitHub):', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-latest"><?php echo $latest_v ? esc_html( $latest_v ) : esc_html__( 'Not checked yet', 'hackrepair-post-update-email-notifier' ); ?></span></p>
-				<p><strong><?php esc_html_e( 'Last checked:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $fetched_at ) ) : '—'; ?></span></p>
-				<div class="pue-inline">
-					<button type="button" id="pue-check-updates-btn" class="button button-primary"><?php esc_html_e( 'Check for updates now', 'hackrepair-post-update-email-notifier' ); ?></button><?php PUE_Help::render( 'pue_updates', __( 'Check for updates now', 'hackrepair-post-update-email-notifier' ) ); ?>
-					<input type="hidden" id="pue-force-check-nonce" value="<?php echo esc_attr( wp_create_nonce( 'pue_force_check' ) ); ?>" />
-				</div>
-			</div>
-
 			<h2 id="bulk-test"><?php esc_html_e( 'Bulk Test (Testing Only)', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
 				<p class="description">
@@ -557,40 +542,6 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 
 		public function ajax_save_identity() {
 			PUE_Admin_Actions::instance()->handle( 'pue_save_identity' );
-		}
-
-		public function ajax_force_check_now() {
-			if ( ! current_user_can( 'update_plugins' ) ) {
-				wp_send_json_error( array( 'msg' => 'forbidden' ), 403 );
-			}
-			$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-			if ( ! wp_verify_nonce( $nonce, 'pue_force_check' ) ) {
-				wp_send_json_error( array( 'msg' => 'bad_nonce' ), 400 );
-			}
-			$checker = isset( $GLOBALS['pue_update_checker'] ) ? $GLOBALS['pue_update_checker'] : null;
-			if ( ! $checker ) {
-				wp_send_json_error( array( 'error' => __( 'Update checking is temporarily unavailable. Plugin features continue to work.', 'hackrepair-post-update-email-notifier' ) ), 503 );
-			}
-			$info = $checker->requestInfo();
-			if ( ! $info ) {
-				wp_send_json_error( array( 'error' => __( 'GitHub update information is temporarily unavailable. Plugin features continue to work. Try again later.', 'hackrepair-post-update-email-notifier' ) ), 503 );
-			}
-			$ts = time();
-			set_site_transient(
-				'pue_github_status',
-				array(
-					'latest_version' => $info->version,
-					'fetched_at'     => $ts,
-				),
-				12 * HOUR_IN_SECONDS
-			);
-			wp_send_json_success(
-				array(
-					'latest_version' => $info->version,
-					'last_checked'   => wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts ),
-					'download_url'   => $info->download_url,
-				)
-			);
 		}
 	}
 }

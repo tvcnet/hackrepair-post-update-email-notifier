@@ -187,7 +187,8 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 == Changelog ==
 
 = 1.6.1 =
-* New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, logs, updates and bulk testing.
+* Cleanup: Removed the settings-page Update status container and its manual-check code. Use the standard WordPress Plugins screen for plugin updates.
+* New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, logs and bulk testing.
 * Accessibility: Help opens with hover, keyboard focus or tap; Escape and clicking outside close it. Native disclosures remain usable without JavaScript.
 * Includes the unreleased 1.6.0 features and reliability fixes.
 

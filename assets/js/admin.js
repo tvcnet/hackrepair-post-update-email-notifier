@@ -244,31 +244,5 @@
       if(ev.target && ev.target.getAttribute && ev.target.getAttribute('data-modal-close') === '1'){ ev.preventDefault(); closeModal(); }
     });
 
-    // Update checks always report failures and clear stale feedback on retry.
-    var updateBtn = document.getElementById('pue-check-updates-btn');
-    if(updateBtn){
-      updateBtn.addEventListener('click', function(ev){
-        ev.preventDefault();
-        var nonceEl = document.getElementById('pue-force-check-nonce');
-        var data = new FormData();
-        data.append('action','pue_force_check_now');
-        data.append('nonce', nonceEl ? nonceEl.value : '');
-        busy(updateBtn, true);
-        post(data)
-          .then(function(res){
-            if(res && res.success && res.data){
-              var latest = document.querySelector('.pue-updates-latest');
-              var fetched = document.querySelector('.pue-updates-fetched');
-              if(latest){ latest.textContent = res.data.latest_version || ''; }
-              if(fetched){ fetched.textContent = res.data.last_checked || ''; }
-              showFeedback(updateBtn, true, str('updateDone','Update check complete.'));
-            } else {
-              showFeedback(updateBtn, false, errorText(res, str('updateFailed','Update information is temporarily unavailable. Plugin features continue to work.')));
-            }
-          })
-          .catch(function(){ showFeedback(updateBtn, false); })
-          .finally(function(){ busy(updateBtn, false); });
-      });
-    }
   });
 })();

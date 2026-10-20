@@ -44,8 +44,6 @@ function pue_admin_enqueue_assets( $hook ) {
 				'expired'       => __( 'Session expired — please refresh.', 'hackrepair-post-update-email-notifier' ),
 				'forbidden'     => __( 'Permission denied.', 'hackrepair-post-update-email-notifier' ),
 				'notAccepted'   => __( 'Email was not accepted for sending. Review the message and try again.', 'hackrepair-post-update-email-notifier' ),
-				'updateDone'    => __( 'Update check complete.', 'hackrepair-post-update-email-notifier' ),
-				'updateFailed'  => __( 'Update information is temporarily unavailable. Plugin features continue to work.', 'hackrepair-post-update-email-notifier' ),
 				/* translators: 1: message count, 2: address. */
 				'bulkConfirm'   => __( 'This sends %1$d test emails to %2$s. Continue?', 'hackrepair-post-update-email-notifier' ),
 				'previewFailed' => __( 'The preview could not be created. Please try again.', 'hackrepair-post-update-email-notifier' ),

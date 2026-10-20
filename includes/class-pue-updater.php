@@ -58,7 +58,6 @@ final class PUE_Updater {
 			'hackrepair-post-update-email-notifier'
 		);
 
-		$GLOBALS['pue_update_checker'] = $this->checker;
 		$this->checker->setBranch( self::BRANCH );
 
 		$api = $this->checker->getVcsApi();

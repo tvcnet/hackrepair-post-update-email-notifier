@@ -46,12 +46,6 @@ function pue_handle_export_log() {
 	PUE_Admin_Actions::instance()->handle( 'pue_export_log' );
 }
 
-// AJAX: force update check (stay on page).
-add_action( 'wp_ajax_pue_force_check_now', 'pue_ajax_force_check_now' );
-function pue_ajax_force_check_now() {
-	return PUE_Admin_Interface::instance()->ajax_force_check_now();
-}
-
 /**
  * Store a one-time notice for the current user, shown after the redirect.
  *
