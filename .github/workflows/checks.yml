@@ -1,0 +1,30 @@
+name: Plugin checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.4', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+      - name: Syntax and behavior
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+          php tests/notifications.php
+          php tests/updater.php
+          php tests/update-notices.php
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Permission-safe package
+        run: |
+          python3 tests/package-permissions.py
+          python3 scripts/build-release.py

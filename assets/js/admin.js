@@ -334,6 +334,10 @@
               // No download button in UI anymore; keep compatibility if present
               if(dl){ dl.style.display = 'none'; }
               // No changelog rendering in Settings card
+              } else {
+                var feedback = document.getElementById('pue-update-feedback');
+                if (!feedback) { feedback = document.createElement('p'); feedback.id = 'pue-update-feedback'; feedback.setAttribute('role', 'status'); btn.parentNode.appendChild(feedback); }
+                feedback.textContent = res && res.data && res.data.error ? res.data.error : 'Update information is temporarily unavailable. Plugin features continue to work.';
               }
             })
           .catch(function(){ /* ignore */ })

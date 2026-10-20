@@ -1,4 +1,4 @@
-.pue-theme{--pue-accent:#ff6f00;--pue-accent2:#e53935;--pue-bg:#fff7f0;--pue-card:#fff;--pue-border:#ffd7b3;--pue-muted:#6b7280}
+.pue-theme{--pue-accent:#b34700;--pue-accent2:#b34700;--pue-bg:#fff7f0;--pue-card:#fff;--pue-border:#ffd7b3;--pue-muted:#6b7280}
 .pue-theme h2{background:linear-gradient(90deg,#fff3e6,#fff);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent2);border-radius:10px;padding:12px 16px;margin:0}
 .pue-theme .form-table{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:0 20px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);margin-top:0}
 /* Increase left padding for content cells so inputs/text align comfortably inside cards */
@@ -111,3 +111,5 @@
 .pue-modal__body{padding:16px}
 .pue-modal__line{margin:0 0 8px}
 .pue-modal__pre{background:#f6f7f7;border:1px solid #e2e4e7;border-radius:6px;padding:12px;max-height:360px;overflow:auto}
+
+.pue-head{display:flex;align-items:center;gap:14px;margin:12px 0 18px;color:#18354b}.pue-head h1{color:#18354b;margin:2px 0;padding:0;font-size:28px;font-weight:700}.pue-head p{margin:0}.pue-head .pue-eyebrow{color:#b34700;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.pue-version{font-size:12px;font-weight:400;color:#50575e;margin-left:6px;white-space:nowrap}

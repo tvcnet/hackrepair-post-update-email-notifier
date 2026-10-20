@@ -5,9 +5,9 @@ Tags: email notifications, post update, roles, html email, admin
 Donate link: https://hackrepair.com/donations/buy-jim-a-coffee
 Support link: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
 Requires at least: 6.6
-Tested up to: 6.8.2
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.3
+Stable tag: 1.5.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ Send branded HTML emails to selected user roles whenever a published post or pag
 - Configurable subject and message templates (HTML supported)
 - Test Email (AJAX) to preview the current template — with inline success/error
 - Post type filter and “Exclude Updating User” option
-- Per‑post “Don’t send email notifications” checkbox (one‑time skip)
+- Per‑post “Don’t send email notifications” checkbox (explicit opt-in per announced update)
 - Email Identity options for From/Reply‑To (no SMTP credentials)
 - Optional logging of email send events (50/200/1000) with CSV export and Clear Log; captures failure details for plugin emails and records “Not sent” when an update is intentionally skipped
 - SMTP “Active” status chip + guidance notice after repeated failures
@@ -30,7 +30,7 @@ Send branded HTML emails to selected user roles whenever a published post or pag
 - Developer hooks to customize placeholders, recipients, subject, headers, and final HTML
 
 = How it works =
-- On `post_updated`, if the post remains published, an email is sent to all users in the selected roles.
+- On `wp_after_insert_post`, if the post remains published, an email is sent to all users in the selected roles.
 - Autosaves and revisions are skipped.
 - If you select post types in Settings, only those types trigger notifications; otherwise, all types do.
 - Optionally exclude the user who performed the update from recipients.
@@ -120,7 +120,7 @@ On multisite, these options are deleted from every site.
 == Frequently Asked Questions ==
 
 = When are emails sent? =
-On the `post_updated` action, if the post is still published. Autosaves and revisions are skipped.
+On the `wp_after_insert_post` action, if the post is still published. Autosaves and revisions are skipped.
 
 = Who receives the emails? =
 All users in the selected roles (deduplicated). If enabled, the updating user is excluded.
@@ -141,23 +141,14 @@ Yes. Developers can enable a plain‑text alternative via `add_filter( 'pue_emai
 Go to Settings → Post Update Notifier and click “Reset to Defaults” at the bottom. This restores all plugin options to their original defaults and clears the local log (posts/users are unaffected).
 
 = Updates =
-This plugin includes a lightweight self‑updater that checks a Google Drive manifest for new versions.
 
-- Manifest format (hosted on Drive as a JSON file; public “Anyone with the link: Viewer”):
-```
-{ 
-  "latest_version": "1.3.4",
-  "download_file_id": "DRIVE_FILE_ID_FOR_THE_ZIP"
-  // optional: "sha256": "64_hex_chars"
-}
-```
-- Direct links (Drive):
-  - Manifest: `https://drive.google.com/uc?export=download&id=MANIFEST_FILE_ID`
-  - ZIP: `https://drive.google.com/uc?export=download&id=ZIP_FILE_ID`
-- Caching: The manifest is cached for ~12 hours. Use the plugin’s Settings → Update Status (Cacheless) button to force a refresh.
-- Integrity (optional): If you include `sha256` in the manifest, the ZIP’s SHA‑256 will be verified before install. If omitted, updates still work (hash is optional by default).
+Updates come from GitHub releases at https://github.com/tvcnet/hackrepair-post-update-email-notifier. The repository remains under tvcnet. Only a published release with matching vX.Y.Z tag and hackrepair-post-update-email-notifier.X.Y.Z.zip asset is offered. Auto-generated source archives are rejected.
 
-= Performance
+Existing Google Drive installations need a one-time manual upload to move to the GitHub updater. This build does not change the old Drive manifest. GitHub update checks and downloads expose standard connection information but do not include post content, account lists or email recipients.
+
+Native View Details works from the bundled readme when remote information is unavailable. Other THRG Plugins links to the four companion tools. Update errors explain temporary availability and confirmed rate limits without implying the notification feature is broken.
+
+= Performance =
 For very large recipient lists, sending one email per recipient can take longer. Use an SMTP service/provider and, if needed, implement a queue/cron-based sending strategy via custom hooks.
 
 = What data does the plugin store? =
@@ -168,12 +159,23 @@ Admin actions require `manage_options` and are protected by nonces. All inputs p
 = Where are the settings? =
 Go to Settings → Post Update Notifier. Configure roles, subject/body template, post types, and the exclude‑updater option. Use the Send Test Email button to preview.
 
+
+= What are the current defaults and mail limits? =
+
+No roles are selected by default. The per-post checkbox defaults to checked; explicitly uncheck it for an update you want to announce. After that update, the flag returns to checked. Notification emails are sent individually and synchronously; consider request limits before targeting a large role. The testing-only bulk action is capped at 200.
+
+Subjects begin with [domain] [Post Update Email Notifier], retaining the customized subject purpose. Saved templates are not overwritten. The HTML wrapper uses full available width. Test feedback distinguishes acceptance for sending from confirmed delivery.
+
+= Where is mail information stored? =
+
+Optional logs can contain recipient addresses, subjects, post titles and failure details. Retention options are 50, 200 or 1000. Treat CSV exports as potentially private data. From/Reply-To settings contain no SMTP credentials; WordPress mail plugins can override the transport.
+
 == Installation ==
 
-= Quick install from WordPress =
-1. Go to Plugins → Add New.
-2. Search for “The Hack Repair Guy’s Post Update Email Notifier”.
-3. Install and Activate.
+= Install a GitHub review or release ZIP =
+1. Download the plugin ZIP from the repository's Releases page (or the supplied local review build).
+2. Go to Plugins > Add New > Upload Plugin, select the ZIP, install and activate.
+3. Open Settings > Post Update Notifier. No roles are selected by default.
 
 = Manual installation =
 1. Upload the `hackrepair-post-update-email-notifier` folder to `/wp-content/plugins/`
@@ -183,6 +185,15 @@ Go to Settings → Post Update Notifier. Configure roles, subject/body template,
 1. Settings screen showing roles, post types, template, and options
 
 == Changelog ==
+
+= 1.5.0 =
+* Standardized project structure, reproducible 0644 ZIP packaging, and shared PHPCS.
+* Migrated update discovery to GitHub releases in tvcnet/hackrepair-post-update-email-notifier.
+* Added native View Details, THRG icons and accessible opening animation.
+
+
+= 1.4.4 =
+- Fix: The per‑post “Don’t send email notifications” checkbox now defaults to off (send by default) and respects later unchecking. We store an explicit value and only skip when the box is checked; one-time skips still clear after use.
 
 = 1.4.3 =
 - Change: The per‑post “Don’t send email notifications” checkbox is now checked by default for new posts (and posts with no prior setting), making it easier to pause notifications intentionally. Existing posts with an explicit setting are respected.
