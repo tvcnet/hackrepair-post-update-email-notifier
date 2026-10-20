@@ -105,9 +105,9 @@ if ( ! class_exists( 'PUE_Logger' ) ) {
 			$export_logs = get_option( 'pue_logs', array() );
 			nocache_headers();
 			header( 'Content-Type: text/csv; charset=utf-8' );
-			header( 'Content-Disposition: attachment; filename=post-update-email-notifier-log-' . gmgmdate( 'Ymd-His' ) . '.csv' );
+			header( 'Content-Disposition: attachment; filename=post-update-email-notifier-log-' . gmdate( 'Ymd-His' ) . '.csv' );
 			$out = fopen( 'php://output', 'w' );
-			fputcsv( $out, array( 'time', 'type', 'status', 'post_id', 'post_title', 'post_type', 'editor_id', 'recipients', 'subject' ) );
+			fputcsv( $out, array( 'time', 'type', 'status', 'post_id', 'post_title', 'post_type', 'editor_id', 'recipients', 'subject' ), ',', '"', '' );
 			foreach ( (array) $export_logs as $entry ) {
 				$time         = isset( $entry['ts'] ) ? (int) $entry['ts'] : time();
 				$type         = isset( $entry['type'] ) ? (string) $entry['type'] : 'update';
@@ -130,7 +130,10 @@ if ( ! class_exists( 'PUE_Logger' ) ) {
 						$editor_id,
 						$recips,
 						$subject_line,
-					)
+					),
+					',',
+					'"',
+					''
 				);
 			}
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the CSV response stream, not a filesystem file.

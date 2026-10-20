@@ -8,7 +8,7 @@ The latest 1.4.4 ZIP matched all plugin source bytes; its .git/index differed. I
 
 ## Current version
 
-1.5.0, approved for GitHub publication on October 19, 2026. Bootstrap constants/autoloader plus explicit focused includes. Preserve installed folder, PHP entrypoint, `pue_*` option keys, meta key and developer hook names. Replace Google Drive update discovery with vetted GitHub release assets. No repository transfer. No Drive manifest publication is implied. The user approved packaging and full GitHub publication after reviewing the build.
+1.5.1 is the review candidate (unpublished; see "1.5.1 review candidate" below). 1.5.0, approved for GitHub publication on October 19, 2026. Bootstrap constants/autoloader plus explicit focused includes. Preserve installed folder, PHP entrypoint, `pue_*` option keys, meta key and developer hook names. Replace Google Drive update discovery with vetted GitHub release assets. No repository transfer. No Drive manifest publication is implied. The user approved packaging and full GitHub publication after reviewing the build.
 
 ## Source map
 
@@ -58,3 +58,9 @@ The repository landing page follows Disable Other Plugin Notices: original View 
 ## Community support
 
 Questions, ideas and community help: https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions. Reproducible bugs: https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues. Security reports stay private. GitHub Discussions is enabled; Reddit is no longer the support destination. Documentation and support-link updates are committed for future packages without replacing published release assets.
+
+## 1.5.1 review candidate (October 19, 2026)
+
+Implements docs/reviews/2026-10-19-refactor-cleanup.md items 1-4: Export Log fatal error (`gmgmdate()`) fixed with the export handled on `load-settings_page_pue-settings` before page output and PHP 8.4-safe `fputcsv()` calls; AJAX/update-check feedback now follows the response result and clears stale messages; duplicate helper, sanitizer, logging and export fallbacks delegate to the service classes (public wrappers, settings keys, meta key and hooks preserved); obsolete download-button code, unused `bulkNonce`, dead CSS and the card width cap removed. Item 5 (duplicate icon PNGs) intentionally not done: no demonstrated runtime benefit and both pairs are still referenced.
+
+Evidence: shared PHPCS 21/21; notifications, update-notices, updater, compatibility and export-log tests and the package-permissions regression pass (PHP 8.4.11 on the Mac); `node --check` passes for both scripts. Review ZIP `dist/hackrepair-post-update-email-notifier.1.5.1.zip`, 151 files, SHA-256 `ff19b8e9ebff79bbd273fcca0394c3dc11345c5f9b266445ceb3f9791939ca30`, installed on Zendogs (prior 1.5.0 install backed up in the container at /tmp/pue-1.5.0-installed-backup.tgz). In the browser on Zendogs: heading and body left/right edges match for all nine sections at emulated widths 1624, 1100, 800 and the 507px minimum, with no horizontal overflow; a real POST of the Export Log form returned text/csv with an attachment header, no page HTML and formula-escaped fields; with fetch stubbed, test-email unsuccessful and rejected responses and update-check rejection showed errors, and a retry/success cleared them; View Details shows version 1.5.1, the original banner, a visually hidden but present heading and no overflow; a real Test Email was captured by Mailpit (19 to 20 messages). Not verified: external delivery, PHP 7.4/8.3 CI for these changes (push required), the full editor matrix, the 390px width (browser minimum was 507px). Not committed, tagged or published; publication needs approval of this build.

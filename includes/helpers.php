@@ -85,49 +85,7 @@ function pue_compose_email( $context, $subject_tmpl, $message_tmpl, $maps, $meta
  * Returns ['subject'=>[], 'message'=>[], 'brand'=>[]].
  */
 function pue_build_placeholder_maps_test( $user ) {
-	if ( class_exists( 'PUE_Placeholder_Engine' ) ) {
-		return PUE_Placeholder_Engine::instance()->build_test_maps( $user );
-	}
-	$site_name = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
-	$now_str     = function_exists( 'pue_format_datetime' ) ? pue_format_datetime( current_time( 'timestamp' ) ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), current_time( 'timestamp' ) );
-	$editor_name = $user ? $user->display_name : '';
-	$sample_post = __( 'Sample Post', 'hackrepair-post-update-email-notifier' );
-	$sample_url  = home_url( '/' );
-	$edit_url    = admin_url( 'edit.php' );
-	$subject_map = array(
-		'[post_title]'    => $sample_post,
-		'[post_url]'      => $sample_url,
-		'[editor_name]'   => $editor_name,
-		'[site_name]'     => $site_name,
-		'[post_type]'     => __( 'Post', 'hackrepair-post-update-email-notifier' ),
-		'[updated_at]'    => $now_str,
-		'[author_name]'   => $editor_name,
-		'[post_edit_url]' => $edit_url,
-		'[year]'          => wp_date( 'Y' ),
-	);
-	$message_map = array(
-		'[post_title]'    => esc_html( $sample_post ),
-		'[post_url]'      => esc_url( $sample_url ),
-		'[editor_name]'   => esc_html( $editor_name ),
-		'[site_name]'     => esc_html( get_bloginfo( 'name' ) ),
-		'[post_type]'     => esc_html( __( 'Post', 'hackrepair-post-update-email-notifier' ) ),
-		'[updated_at]'    => esc_html( $now_str ),
-		'[author_name]'   => esc_html( $editor_name ),
-		'[post_edit_url]' => esc_url( $edit_url ),
-		'[year]'          => esc_html( wp_date( 'Y' ) ),
-	);
-	$brand_map   = array(
-		'[site_name]'   => $site_name,
-		'[updated_at]'  => $now_str,
-		'[editor_name]' => $editor_name,
-		'[year]'        => wp_date( 'Y' ),
-	);
-	return array(
-		'subject' => $subject_map,
-		'message' => $message_map,
-		'brand'   => $brand_map,
-	);
+	return PUE_Placeholder_Engine::instance()->build_test_maps( $user );
 }
 
 /**
@@ -135,54 +93,7 @@ function pue_build_placeholder_maps_test( $user ) {
  * Returns ['subject'=>[], 'message'=>[], 'brand'=>[]].
  */
 function pue_build_placeholder_maps_update( $post_ID, $post_after, $post_before, $editor ) {
-	if ( class_exists( 'PUE_Placeholder_Engine' ) ) {
-		return PUE_Placeholder_Engine::instance()->build_update_maps( $post_ID, $post_after, $post_before, $editor );
-	}
-	$post_title  = $post_after ? $post_after->post_title : get_the_title( $post_ID );
-	$post_url    = get_permalink( $post_ID );
-	$site_name   = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-	$ptype_obj   = $post_after ? get_post_type_object( $post_after->post_type ) : null;
-	$ptype_label = ( $ptype_obj && isset( $ptype_obj->labels->singular_name ) ) ? $ptype_obj->labels->singular_name : ( $post_after ? $post_after->post_type : get_post_type( $post_ID ) );
-	// phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested -- Existing log and notice values use site-local timestamps; preserve compatibility.
-	$updated_at  = function_exists( 'pue_format_datetime' ) ? pue_format_datetime( current_time( 'timestamp' ) ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), current_time( 'timestamp' ) );
-	$author_name = $post_after ? get_the_author_meta( 'display_name', $post_after->post_author ) : '';
-	$edit_url    = get_edit_post_link( $post_ID );
-	if ( ! $edit_url ) {
-		$edit_url = admin_url( 'post.php?post=' . (int) $post_ID . '&action=edit' );
-	}
-	$subject_map = array(
-		'[post_title]'    => wp_strip_all_tags( (string) $post_title ),
-		'[post_url]'      => (string) $post_url,
-		'[editor_name]'   => $editor ? (string) $editor->display_name : '',
-		'[site_name]'     => (string) $site_name,
-		'[post_type]'     => (string) $ptype_label,
-		'[updated_at]'    => (string) $updated_at,
-		'[author_name]'   => (string) $author_name,
-		'[post_edit_url]' => (string) $edit_url,
-		'[year]'          => wp_date( 'Y' ),
-	);
-	$message_map = array(
-		'[post_title]'    => esc_html( (string) $post_title ),
-		'[post_url]'      => esc_url( (string) $post_url ),
-		'[editor_name]'   => esc_html( $editor ? (string) $editor->display_name : '' ),
-		'[site_name]'     => esc_html( get_bloginfo( 'name' ) ),
-		'[post_type]'     => esc_html( (string) $ptype_label ),
-		'[updated_at]'    => esc_html( (string) $updated_at ),
-		'[author_name]'   => esc_html( (string) $author_name ),
-		'[post_edit_url]' => esc_url( (string) $edit_url ),
-		'[year]'          => esc_html( wp_date( 'Y' ) ),
-	);
-	$brand_map   = array(
-		'[site_name]'   => (string) $site_name,
-		'[updated_at]'  => (string) $updated_at,
-		'[editor_name]' => $editor ? (string) $editor->display_name : '',
-		'[year]'        => wp_date( 'Y' ),
-	);
-	return array(
-		'subject' => $subject_map,
-		'message' => $message_map,
-		'brand'   => $brand_map,
-	);
+	return PUE_Placeholder_Engine::instance()->build_update_maps( $post_ID, $post_after, $post_before, $editor );
 }
 function pue_sanitize_emails( $emails ) {
 	$out = array();
@@ -195,16 +106,7 @@ function pue_sanitize_emails( $emails ) {
 }
 
 function pue_csv_safe( $value ) {
-	if ( class_exists( 'PUE_Logger' ) ) {
-		return PUE_Logger::instance()->csv_safe( $value );
-	}
-	if ( ! is_string( $value ) ) {
-		return $value; }
-	$trim = ltrim( $value );
-	if ( '' !== $trim && in_array( $trim[0], array( '=', '+', '-', '@' ), true ) ) {
-		return "'" . $value; // prefix single-quote to prevent CSV injection in spreadsheet apps
-	}
-	return $value;
+	return PUE_Logger::instance()->csv_safe( $value );
 }
 
 function pue_generate_plaintext( $html, $width = 78 ) {

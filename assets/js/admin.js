@@ -1,4 +1,26 @@
 (function(){
+
+  function clearFeedback(btn){
+    if(!btn) return;
+    var node = btn.nextElementSibling;
+    while(node && node.classList){
+      var next = node.nextElementSibling;
+      if(node.classList.contains('pue-done') || node.classList.contains('pue-error')){ node.remove(); }
+      else if(!node.classList.contains('pue-spinner')){ break; }
+      node = next;
+    }
+  }
+  function showFeedback(btn, success, message){
+    if(!btn) return;
+    clearFeedback(btn);
+    var span = document.createElement('span');
+    span.className = success ? 'pue-done' : 'pue-error';
+    span.setAttribute('role','status');
+    span.setAttribute('aria-live','polite');
+    span.textContent = message || (success ? 'Done!' : 'Request failed. Please try again.');
+    var after = btn.nextElementSibling && btn.nextElementSibling.classList.contains('pue-spinner') ? btn.nextElementSibling : btn;
+    after.insertAdjacentElement('afterend', span);
+  }
   document.addEventListener('DOMContentLoaded', function(){
     // Sidebar active state
     var links = document.querySelectorAll('#pue-nav a');
@@ -78,7 +100,7 @@
           btn.insertAdjacentElement('afterend', span);
         }
       };
-      var formIds = ['pue-form-notifications','pue-form-branding','pue-form-identity','pue-form-clear-log','pue-form-reset-defaults','pue-form-export-csv'];
+      var formIds = ['pue-form-notifications','pue-form-branding','pue-form-identity','pue-form-clear-log','pue-form-reset-defaults'];
       formIds.forEach(function(id){
         var f = document.getElementById(id);
         if(!f) return;
@@ -94,9 +116,7 @@
           try{
             var btn = f.querySelector('input.button-primary,button.button-primary');
             if(btn){
-              if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-done')){
-                btn.nextElementSibling.remove();
-              }
+              clearFeedback(btn);
               var spin = document.createElement('span');
               spin.className = 'pue-spinner';
               btn.classList.add('is-busy');
@@ -122,29 +142,12 @@
               fetch(url, { method:'POST', credentials:'same-origin', body:data })
                 .then(function(r){ return r.json(); })
                 .then(function(res){
-                  if(btn){
-                    // Clean any prior status next to button (not the spinner)
-                    if(btn.nextElementSibling && btn.nextElementSibling.classList && (btn.nextElementSibling.classList.contains('pue-done') || btn.nextElementSibling.classList.contains('pue-error'))){
-                      btn.nextElementSibling.remove();
-                    }
-                    var after = (btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-spinner')) ? btn.nextElementSibling : btn;
-                    var span = document.createElement('span');
-                    if(res && res.success){
-                      span.className = 'pue-done';
-                      span.setAttribute('role','status');
-                      span.setAttribute('aria-live','polite');
-                      span.textContent = 'Done!';
-                    } else {
-                      span.className = 'pue-error';
-                      var msg = (res && res.data && (res.data.msg || res.data.error)) ? res.data.msg || res.data.error : 'Save failed';
-                      if(msg === 'bad_nonce'){ msg = 'Session expired — please refresh.'; }
-                      if(msg === 'forbidden'){ msg = 'Permission denied.'; }
-                      span.textContent = msg;
-                    }
-                    after.insertAdjacentElement('afterend', span);
-                  }
+                  var msg = res && res.data && (res.data.msg || res.data.error);
+                  if(msg === 'bad_nonce'){ msg = 'Session expired — please refresh.'; }
+                  if(msg === 'forbidden'){ msg = 'Permission denied.'; }
+                  showFeedback(btn, !!(res && res.success), res && res.success ? 'Done!' : (msg || 'Save failed. Please try again.'));
                 })
-                .catch(function(){ /* ignore */ })
+                .catch(function(){ showFeedback(btn, false); })
                 .finally(function(){
                   try{
                     if(btn){ btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); btn.disabled = false; }
@@ -174,10 +177,8 @@
           var result = document.getElementById('pue-test-result');
           var nonceEl = tform.querySelector('input[name="pue_test_email_nonce"]');
           var nonce = nonceEl ? nonceEl.value : (window.PUE_Ajax ? PUE_Ajax.nonce : '');
-          // Remove any existing Done! before new request
-          if(btn && btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-done')){
-            btn.nextElementSibling.remove();
-          }
+          clearFeedback(btn);
+          if(result){ result.textContent = ""; }
           // Show busy state + spinner
           var spinner = document.createElement('span');
           spinner.className = 'pue-spinner';
@@ -192,24 +193,9 @@
               if(result && res && res.data && typeof res.data.html === 'string'){
                 result.innerHTML = res.data.html;
               }
-              // Show Done! next to button
-              if(btn){
-                if(!btn.nextElementSibling || !btn.nextElementSibling.classList || !btn.nextElementSibling.classList.contains('pue-done')){
-                  var span = document.createElement('span');
-                  span.className = 'pue-done';
-                  span.setAttribute('role','status');
-                  span.setAttribute('aria-live','polite');
-                  span.textContent = 'Done!';
-                  // If spinner exists, insert after spinner; otherwise after button
-                  if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-spinner')){
-                    btn.nextElementSibling.insertAdjacentElement('afterend', span);
-                  } else {
-                    btn.insertAdjacentElement('afterend', span);
-                  }
-                }
-              }
+              showFeedback(btn, !!(res && res.success), res && res.success ? 'Done!' : 'Email was not accepted for sending. Review the message and try again.');
             })
-            .catch(function(){ /* ignore */ })
+            .catch(function(){ showFeedback(btn, false); })
             .finally(function(){
               if(spinner && spinner.parentNode){ spinner.parentNode.removeChild(spinner); }
               if(btn){ btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); btn.disabled = false; }
@@ -259,10 +245,9 @@
           ev.preventDefault();
           var btn = bform.querySelector('input.button-primary,button.button-primary');
           var result = document.getElementById('pue-bulk-result');
+          if(result){ result.textContent = ''; }
           if(btn){
-            if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-done')){
-              btn.nextElementSibling.remove();
-            }
+            clearFeedback(btn);
             var spin = document.createElement('span');
             spin.className = 'pue-spinner';
             btn.classList.add('is-busy');
@@ -279,20 +264,9 @@
               if(result && res && res.data && typeof res.data.html === 'string'){
                 result.innerHTML = res.data.html;
               }
-              if(btn){
-                var span = document.createElement('span');
-                span.className = (res && res.success) ? 'pue-done' : 'pue-error';
-                span.setAttribute('role','status');
-                span.setAttribute('aria-live','polite');
-                span.textContent = (res && res.success) ? 'Done!' : ((res && res.data && res.data.error) ? res.data.error : 'Failed');
-                if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-spinner')){
-                  btn.nextElementSibling.insertAdjacentElement('afterend', span);
-                } else {
-                  btn.insertAdjacentElement('afterend', span);
-                }
-              }
+              showFeedback(btn, !!(res && res.success), res && res.success ? 'Done!' : (res && res.data && res.data.error || 'Request failed. Please try again.'));
             })
-            .catch(function(){ if(result){ result.innerHTML = '<div class="pue-notice pue-notice--error"><p>Request failed.</p></div>'; } })
+            .catch(function(){ showFeedback(btn, false); })
             .finally(function(){
               if(btn){ btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); btn.disabled = false; }
               if(btn && btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains('pue-spinner')){
@@ -302,50 +276,42 @@
         });
       }
     }catch(e){}
-  });
-})();
 
-(function(){
-  document.addEventListener('DOMContentLoaded', function(){
-    try{
-      var btn = document.getElementById('pue-check-updates-btn');
-      if(!btn) return;
-      btn.addEventListener('click', function(ev){
-        if(ev && typeof ev.preventDefault === 'function'){ ev.preventDefault(); }
-        var nonceEl = document.getElementById('pue-force-check-nonce');
-        var nonce = nonceEl ? nonceEl.value : '';
-        var latestSpan = document.querySelector('.pue-updates-latest');
-        var fetchedSpan = document.querySelector('.pue-updates-fetched');
-        var dl = document.getElementById('pue-download-latest');
-        // Spinner state
+    // Update checks always report failures and clear stale feedback on retry.
+    var updateBtn = document.getElementById('pue-check-updates-btn');
+    if(updateBtn){
+      updateBtn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        var feedback = document.getElementById('pue-update-feedback');
+        if(feedback){ feedback.remove(); }
+        clearFeedback(updateBtn);
         var spin = document.createElement('span');
         spin.className = 'pue-spinner';
-        btn.classList.add('is-busy'); btn.setAttribute('aria-busy','true'); btn.disabled = true; btn.insertAdjacentElement('afterend', spin);
+        updateBtn.classList.add('is-busy'); updateBtn.setAttribute('aria-busy','true'); updateBtn.disabled = true;
+        updateBtn.insertAdjacentElement('afterend', spin);
+        var nonceEl = document.getElementById('pue-force-check-nonce');
         var data = new FormData();
-        data.append('action', 'pue_force_check_now');
-        data.append('nonce', nonce);
-        var url = (window.PUE_Ajax && PUE_Ajax.ajax_url) ? PUE_Ajax.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '');
-        fetch(url, { method:'POST', credentials:'same-origin', body:data })
+        data.append('action','pue_force_check_now');
+        data.append('nonce',nonceEl ? nonceEl.value : '');
+        var url = window.PUE_Ajax && PUE_Ajax.ajax_url ? PUE_Ajax.ajax_url : (typeof ajaxurl !== 'undefined' ? ajaxurl : '');
+        fetch(url,{method:'POST',credentials:'same-origin',body:data})
           .then(function(r){ return r.json(); })
-            .then(function(res){
-              if(res && res.success && res.data){
-                if(latestSpan){ latestSpan.textContent = res.data.latest_version || ''; }
-                if(fetchedSpan){ fetchedSpan.textContent = res.data.last_checked || ''; }
-              // No download button in UI anymore; keep compatibility if present
-              if(dl){ dl.style.display = 'none'; }
-              // No changelog rendering in Settings card
-              } else {
-                var feedback = document.getElementById('pue-update-feedback');
-                if (!feedback) { feedback = document.createElement('p'); feedback.id = 'pue-update-feedback'; feedback.setAttribute('role', 'status'); btn.parentNode.appendChild(feedback); }
-                feedback.textContent = res && res.data && res.data.error ? res.data.error : 'Update information is temporarily unavailable. Plugin features continue to work.';
-              }
-            })
-          .catch(function(){ /* ignore */ })
+          .then(function(res){
+            if(res && res.success && res.data){
+              var latest = document.querySelector('.pue-updates-latest');
+              var fetched = document.querySelector('.pue-updates-fetched');
+              if(latest){ latest.textContent = res.data.latest_version || ''; }
+              if(fetched){ fetched.textContent = res.data.last_checked || ''; }
+              showFeedback(updateBtn,true,'Update check complete.');
+            } else {
+              showFeedback(updateBtn,false,res && res.data && (res.data.error || res.data.msg) || 'Update information is temporarily unavailable. Plugin features continue to work.');
+            }
+          })
+          .catch(function(){ showFeedback(updateBtn,false); })
           .finally(function(){
-            if(spin && spin.parentNode){ spin.parentNode.removeChild(spin); }
-            btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); btn.disabled = false;
+            spin.remove(); updateBtn.classList.remove('is-busy'); updateBtn.removeAttribute('aria-busy'); updateBtn.disabled = false;
           });
       });
-    }catch(e){}
+    }
   });
 })();

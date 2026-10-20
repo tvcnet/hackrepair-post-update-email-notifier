@@ -7,7 +7,7 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -196,6 +196,12 @@ Optional logs can contain recipient addresses, subjects, post titles and failure
 1. Settings screen showing roles, post types, template, and options
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed: Export Log no longer fails with a fatal error, and the CSV download is sent before the settings page renders.
+* Fixed: Test email, bulk test, settings save and update-check buttons now show an error when a request is rejected or fails, instead of a false "Done!", and clear stale messages on retry.
+* Fixed: Section headings, card bodies and form tables on the settings page now share the same width.
+* Changed: Consolidated duplicate fallback code and removed unused scripts, styles and a redundant nonce value. Public function names, settings keys and hooks are unchanged.
 
 = 1.5.0 =
 * Standardized project structure, reproducible 0644 ZIP packaging, and shared PHPCS.

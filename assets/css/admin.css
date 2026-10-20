@@ -1,5 +1,5 @@
-.pue-theme{--pue-accent:#b34700;--pue-accent2:#b34700;--pue-bg:#fff7f0;--pue-card:#fff;--pue-border:#ffd7b3;--pue-muted:#6b7280}
-.pue-theme h2{background:linear-gradient(90deg,#fff3e6,#fff);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent2);border-radius:10px;padding:12px 16px;margin:0}
+.pue-theme{--pue-accent:#b34700;--pue-card:#fff;--pue-border:#ffd7b3;}
+.pue-theme h2{background:linear-gradient(90deg,#fff3e6,#fff);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:10px;padding:12px 16px;margin:0}
 .pue-theme .form-table{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:0 20px 12px;box-shadow:0 2px 6px rgba(0,0,0,.03);margin-top:0}
 /* Increase left padding for content cells so inputs/text align comfortably inside cards */
 .pue-theme .form-table td{padding-left:26px}
@@ -8,8 +8,6 @@
 .pue-theme .form-table tr:last-child th{display:none}
 .pue-theme .form-table tr:last-child td{padding-left:16px}
 .pue-theme .form-table tr:last-child td .button-primary{margin-left:0}
-.pue-theme .button-primary{background:var(--pue-accent);border-color:var(--pue-accent)}
-.pue-theme .button-primary:hover{background:#ff7a12;border-color:#ff7a12}
 .pue-inline{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .pue-inline .submit{margin:0}
 .pue-done{margin-left:10px;color:#2e7d32;font-weight:600}
@@ -43,6 +41,10 @@
 .pue-nav a:hover{background:#fff1e6;border-color:#ffc38a}
 .pue-nav a.active{background:#ffedd8;border-color:#ffa95c}
 .pue-main{flex:1;min-width:0;padding-bottom:120px}
+.pue-main > h2,.pue-main > .pue-card,.pue-theme .form-table{box-sizing:border-box;width:100%}
+.pue-inline{flex-wrap:wrap}
+.pue-theme input.regular-text,.pue-theme textarea{max-width:100%}
+.pue-card{overflow-wrap:anywhere}
 /* Ensure enough breathing room above WP admin footer so it doesn't overlap clickable controls */
 .pue-theme{padding-bottom:20px}
 /* Extra space before logs section header */
@@ -50,9 +52,7 @@
 /* Spacing for reset block */
 .pue-theme #reset-defaults{margin-top:0}
 /* Generic card body to pair with section headers */
-.pue-card{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.03);max-width:1000px}
-/* Reset section uses standard card styling */
-.pue-reset{ }
+.pue-card{background:var(--pue-card);border:1px solid var(--pue-border);border-left:6px solid var(--pue-accent);border-radius:0 0 10px 10px;padding:12px 16px;box-shadow:0 2px 6px rgba(0,0,0,.03);}
 
 /* Mobile tweaks: stack labels/inputs for readability */
 @media (max-width: 600px){
@@ -62,30 +62,16 @@
   .pue-theme .form-table th{margin-bottom:4px}
 }
 
-/* Ensure helper note box drops below on smaller screens */
-@media (max-width: 900px){
-  .pue-right-note{float:none !important;width:100% !important;margin:8px 0 12px 0 !important}
-}
-@media (max-width: 782px){ /* WordPress admin common breakpoint */
-  .pue-right-note{display:none !important}
-}
-
-/* Desktop refinement: slightly reduce left padding so it tucks in closer */
-@media (min-width: 901px){
-  /* Tuck the helper note in a bit and improve breathing room */
-  .pue-right-note{
-    padding:14px 16px !important;
-    margin:4px 12px 8px 24px !important; /* slightly closer to content, a bit from right edge */
-    width:calc(38% + 20px) !important; /* allow ~20px more content width */
-    max-width:540px !important; /* lift cap to allow ~20px more words per line */
-  }
-  .pue-right-note p{margin:0 0 8px 0 !important; line-height:1.55}
-}
+/* Helper note: keep layout in one stylesheet rather than overriding inline CSS. */
+.pue-right-note{float:right;width:calc(38% + 20px);max-width:540px;padding:14px 16px;margin:4px 12px 8px 24px;background:#fffaf2;border:1px solid #f3d19c;border-radius:6px;box-sizing:border-box}
+.pue-right-note p{margin:0 0 8px;line-height:1.55}
+@media (max-width:900px){.pue-right-note{float:none;width:100%;margin:8px 0 12px}}
+@media (max-width:782px){.pue-right-note{display:none}}
 
 /* Stack sidebar on smaller screens to prioritize content */
 @media (max-width: 960px){
   .pue-container{flex-direction:column;gap:12px}
-  .pue-sidebar{position:static;width:100%;min-width:0}
+  .pue-sidebar{position:static;width:100%;min-width:0;box-sizing:border-box}
   .pue-main{padding-bottom:80px}
 }
 

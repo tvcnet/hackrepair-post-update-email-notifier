@@ -43,26 +43,3 @@ body #plugin-information-title .vignette { display: none; }
 @media (prefers-reduced-motion: reduce), print {
     body #plugin-information-title::before { animation: none; transform: none; }
 }
-
-/* WordPress supplies a more specific .with-banner image rule. Keep that image
-   above the default gradient and place branding below the artwork's focal area. */
-body #plugin-information-title.with-banner {
-    align-items: flex-end;
-    gap: 14px;
-    padding: 18px 24px;
-}
-body #plugin-information-title.with-banner::before {
-    flex-basis: 48px;
-    width: 48px;
-    height: 48px;
-}
-body #plugin-information-title.with-banner h2 {
-    padding: 8px 10px;
-    background: rgba(25, 15, 9, .82);
-    border-radius: 5px;
-    font-size: 22px;
-}
-@media (max-width: 480px) {
-    body #plugin-information-title.with-banner { padding: 14px; gap: 10px; }
-    body #plugin-information-title.with-banner h2 { font-size: 18px; }
-}

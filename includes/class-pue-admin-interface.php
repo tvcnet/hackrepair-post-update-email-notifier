@@ -40,7 +40,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				$current_user = wp_get_current_user();
 				$to_email     = ! empty( $current_user->user_email ) ? $current_user->user_email : get_option( 'admin_email' );
 				$sent         = pue_send_test_email( $to_email, $subject, $message );
-				$test_pressed = true;
+				$test_pressed = $sent;
 				if ( $sent ) {
 					/* translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message. */
 					$test_notice_html = '<div class="pue-notice pue-notice--success"><span class="pue-notice__emoji">🎉</span><p><strong>' . esc_html__( 'Success!', 'hackrepair-post-update-email-notifier' ) . '</strong> ' . sprintf( esc_html__( 'Email accepted for sending to %s. Acceptance does not confirm delivery.', 'hackrepair-post-update-email-notifier' ), esc_html( $to_email ) ) . '</p></div>';
@@ -48,51 +48,6 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 					/* translators: Placeholders contain the recipient address, message counts, or linked SMTP plugin described in this message. */
 					$test_notice_html = '<div class="pue-notice pue-notice--error"><span class="pue-notice__emoji">💥</span><p><strong>' . esc_html__( 'Hmm,', 'hackrepair-post-update-email-notifier' ) . '</strong> ' . sprintf( esc_html__( 'looks like the test email to %s didn’t go through. Double-check your mail setup or try using an SMTP plugin for more reliable delivery.', 'hackrepair-post-update-email-notifier' ), esc_html( $to_email ) ) . '</p></div>';
 				}
-			}
-			// Handle export log (CSV)
-			if ( isset( $_POST['pue_export_log'] ) ) {
-				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'hackrepair-post-update-email-notifier' ) );
-				}
-				check_admin_referer( 'pue_export_log_action', 'pue_export_log_nonce' );
-				if ( class_exists( 'PUE_Logger' ) ) {
-					PUE_Logger::instance()->export_csv_and_exit();
-				}
-				// Fallback to previous inline export if class not found
-				$export_logs = get_option( 'pue_logs', array() );
-				nocache_headers();
-				header( 'Content-Type: text/csv; charset=utf-8' );
-				header( 'Content-Disposition: attachment; filename=post-update-email-notifier-log-' . gmgmdate( 'Ymd-His' ) . '.csv' );
-				$out = fopen( 'php://output', 'w' );
-				fputcsv( $out, array( 'time', 'type', 'status', 'post_id', 'post_title', 'post_type', 'editor_id', 'recipients', 'subject' ) );
-				foreach ( (array) $export_logs as $entry ) {
-					$time         = isset( $entry['ts'] ) ? (int) $entry['ts'] : time();
-					$type         = isset( $entry['type'] ) ? (string) $entry['type'] : 'update';
-					$sent         = ! empty( $entry['sent'] ) ? 'sent' : ( ( isset( $entry['mode'] ) && 'skipped' === $entry['mode'] ) ? 'skipped' : 'failed' );
-					$post_id      = isset( $entry['post_id'] ) ? (int) $entry['post_id'] : 0;
-					$title        = pue_csv_safe( isset( $entry['post_title'] ) ? (string) $entry['post_title'] : '' );
-					$ptype        = pue_csv_safe( isset( $entry['post_type'] ) ? (string) $entry['post_type'] : '' );
-					$editor_id    = isset( $entry['editor_id'] ) ? (int) $entry['editor_id'] : 0;
-					$recips       = isset( $entry['recipients'] ) && is_array( $entry['recipients'] ) ? implode( '; ', array_map( 'pue_csv_safe', $entry['recipients'] ) ) : '';
-					$subject_line = pue_csv_safe( isset( $entry['subject'] ) ? (string) $entry['subject'] : '' );
-					fputcsv(
-						$out,
-						array(
-							date_i18n( 'Y-m-d H:i:s', $time ),
-							$type,
-							$sent,
-							$post_id,
-							$title,
-							$ptype,
-							$editor_id,
-							$recips,
-							$subject_line,
-						)
-					);
-				}
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the CSV response stream, not a filesystem file.
-				fclose( $out );
-				exit;
 			}
 			// Handle clear log
 			if ( isset( $_POST['pue_clear_log'] ) ) {
@@ -185,7 +140,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 						<tr>
 							<th scope="row"><?php echo esc_html__( 'Select Roles to Notify', 'hackrepair-post-update-email-notifier' ); ?></th>
 							<td>
-								<div class="pue-right-note" style="float:right; width:40%; max-width:520px; padding:12px 14px; margin:0 24px 10px 16px; background:#fffaf2; border:1px solid #f3d19c; border-radius:6px;">
+								<div class="pue-right-note">
 									<p style="margin:0 0 8px 0;">
 										<?php echo wp_kses_post( __( 'The <strong>Hack Repair Guy’s Post Update Email Notifier</strong> keeps your team in the loop by sending branded HTML updates whenever posts or pages are modified.', 'hackrepair-post-update-email-notifier' ) ); ?>
 									</p>
@@ -361,7 +316,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<?php if ( empty( $logs ) ) : ?>
 					<p><?php echo esc_html__( 'No log entries yet.', 'hackrepair-post-update-email-notifier' ); ?></p>
 				<?php else : ?>
-					<table class="widefat striped" style="max-width: 1000px;">
+					<table class="widefat striped">
 						<thead>
 							<tr>
 								<th><?php echo esc_html__( 'Time', 'hackrepair-post-update-email-notifier' ); ?></th>

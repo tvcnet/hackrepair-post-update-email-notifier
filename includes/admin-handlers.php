@@ -127,3 +127,16 @@ function pue_save_identity_group( $data ) {
 
 // ---------- 6. HTML Email Template ----------
 // Legacy pue_email_template() removed in 1.2.4; use pue_email_template_branded().
+
+/** Export before WordPress renders the settings page or sends HTML headers. */
+function pue_handle_export_log() {
+	if ( ! isset( $_POST['pue_export_log'] ) ) {
+		return;
+	}
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Sorry, you are not allowed to perform this action.', 'hackrepair-post-update-email-notifier' ) );
+	}
+	check_admin_referer( 'pue_export_log_action', 'pue_export_log_nonce' );
+	PUE_Logger::instance()->export_csv_and_exit();
+}
+add_action( 'load-settings_page_pue-settings', 'pue_handle_export_log' );

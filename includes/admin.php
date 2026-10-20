@@ -39,9 +39,8 @@ function pue_admin_enqueue_assets( $hook ) {
 			'pue-admin',
 			'PUE_Ajax',
 			array(
-				'ajax_url'  => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'pue_test_email_action' ),
-				'bulkNonce' => wp_create_nonce( 'pue_bulk_test_action' ),
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'nonce'    => wp_create_nonce( 'pue_test_email_action' ),
 			)
 		);
 	}
