@@ -187,7 +187,7 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 == Changelog ==
 
 = 1.6.1 =
-* New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, logs, updates, bulk testing and reset.
+* New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, logs, updates and bulk testing.
 * Accessibility: Help opens with hover, keyboard focus or tap; Escape and clicking outside close it. Native disclosures remain usable without JavaScript.
 * Includes the unreleased 1.6.0 features and reliability fixes.
 

@@ -16,4 +16,4 @@ ob_start();PUE_Help::render('pue_subject','"><script>bad</script>');$html=ob_get
 help_assert(strpos($html,'<script>')===false&&strpos($html,'&lt;script&gt;')!==false,'dynamic accessible labels are escaped');
 ob_start();PUE_Help::render('unknown','Unknown');$html=ob_get_clean();help_assert($html==='','unknown help never renders an empty disclosure');
 help_assert(strpos(PUE_Help::text('pue_preview'),'without sending')!==false&&strpos(PUE_Help::text('pue_test_email'),'real test email')!==false,'preview help distinguishes no-send preview from real saved-template test');
-help_assert(strpos(PUE_Help::text('pue_reset'),'cancel queued')!==false&&strpos(PUE_Help::text('pue_bulk_count'),'200')!==false,'action help explains side effects and test limits');
+help_assert(strpos(PUE_Help::text('pue_bulk_count'),'200')!==false,'bulk-test help explains message limits');

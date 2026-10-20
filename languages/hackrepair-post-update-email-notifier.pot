@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T18:14:05+00:00\n"
+"POT-Creation-Date: 2026-10-20T18:38:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: hackrepair-post-update-email-notifier\n"
@@ -219,7 +219,6 @@ msgstr ""
 
 #: includes/class-pue-admin-interface.php:116
 #: includes/class-pue-admin-interface.php:438
-#: includes/class-pue-admin-interface.php:440
 msgid "Support"
 msgstr ""
 
@@ -576,96 +575,96 @@ msgstr ""
 msgid "Are you sure you want to reset all settings to defaults?"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:441
+#: includes/class-pue-admin-interface.php:440
 msgid "If you found this plugin helpful, please <a href=\"https://hackrepair.com/donations/buy-jim-a-coffee\" target=\"_blank\" rel=\"noopener\">buy Jim a cup of coffee?</a>"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:442
+#: includes/class-pue-admin-interface.php:441
 msgid "Questions and Feedback: For questions, ideas, or help with the plugin, <a href=\"https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions\" target=\"_blank\" rel=\"noopener\">visit GitHub Discussions</a>."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:448
+#: includes/class-pue-admin-interface.php:447
 msgid "Close"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:454
+#: includes/class-pue-admin-interface.php:453
 msgid "Delivery Error"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:458
+#: includes/class-pue-admin-interface.php:457
 msgid "Code:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:459
+#: includes/class-pue-admin-interface.php:458
 msgid "When:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:460
+#: includes/class-pue-admin-interface.php:459
 msgid "Mode:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:469
-#: includes/class-pue-admin-interface.php:474
+#: includes/class-pue-admin-interface.php:468
+#: includes/class-pue-admin-interface.php:473
 msgid "Email preview"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:473
+#: includes/class-pue-admin-interface.php:472
 msgid "Subject:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:494
+#: includes/class-pue-admin-interface.php:493
 msgid "(no post)"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:499
+#: includes/class-pue-admin-interface.php:498
 msgid "editor chose not to send"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:500
+#: includes/class-pue-admin-interface.php:499
 msgid "post type not selected"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:501
+#: includes/class-pue-admin-interface.php:500
 msgid "no roles selected"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:502
+#: includes/class-pue-admin-interface.php:501
 msgid "no recipients"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:503
+#: includes/class-pue-admin-interface.php:502
 msgid "cooldown"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:506
+#: includes/class-pue-admin-interface.php:505
 msgid "Sent"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:507
+#: includes/class-pue-admin-interface.php:506
 msgid "Not sent"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:508
+#: includes/class-pue-admin-interface.php:507
 msgid "Queued"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:509
+#: includes/class-pue-admin-interface.php:508
 msgid "Partial"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:510
+#: includes/class-pue-admin-interface.php:509
 msgid "Failed"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:528
+#: includes/class-pue-admin-interface.php:527
 msgid "View error"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:573
+#: includes/class-pue-admin-interface.php:572
 msgid "Update checking is temporarily unavailable. Plugin features continue to work."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:577
+#: includes/class-pue-admin-interface.php:576
 msgid "GitHub update information is temporarily unavailable. Plugin features continue to work. Try again later."
 msgstr ""
 
@@ -825,16 +824,8 @@ msgstr ""
 msgid "When logging is enabled, record each bulk test message separately instead of one summary entry. This can quickly fill the retention limit. It does not turn logging on or change whether messages are sent."
 msgstr ""
 
-#: includes/class-pue-help.php:49
-msgid "Restore plugin options and clear the log after confirmation. This does not undo sent emails, cancel queued notifications, remove stored per-post choices or reset today’s bulk-test usage. Review the notification roles and send policy before using the plugin again."
-msgstr ""
-
-#: includes/class-pue-help.php:50
-msgid "Use GitHub Discussions for questions, ideas and general help, and Issues for reproducible bugs. Send security concerns privately using the repository security policy. Do not post passwords, reset links or private recipient lists in public discussions."
-msgstr ""
-
 #. translators: %s: feature label.
-#: includes/class-pue-help.php:68
+#: includes/class-pue-help.php:66
 #, php-format
 msgid "Help for %s"
 msgstr ""

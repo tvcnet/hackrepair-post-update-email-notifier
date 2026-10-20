@@ -46,8 +46,6 @@ final class PUE_Help {
 			'pue_bulk_count'       => __( 'Choose how many real test messages to attempt, from 1 to 200 per request. The remaining daily allowance can reduce this count. Start small to avoid overwhelming an inbox or exceeding your mail provider’s limits.', 'hackrepair-post-update-email-notifier' ),
 			'pue_bulk_plus'        => __( 'Send to numbered aliases such as name+1@example.com and name+2@example.com. Existing plus tags are replaced. Only use this if the destination supports plus addressing; otherwise the messages may fail.', 'hackrepair-post-update-email-notifier' ),
 			'pue_bulk_log_detail'  => __( 'When logging is enabled, record each bulk test message separately instead of one summary entry. This can quickly fill the retention limit. It does not turn logging on or change whether messages are sent.', 'hackrepair-post-update-email-notifier' ),
-			'pue_reset'            => __( 'Restore plugin options and clear the log after confirmation. This does not undo sent emails, cancel queued notifications, remove stored per-post choices or reset today’s bulk-test usage. Review the notification roles and send policy before using the plugin again.', 'hackrepair-post-update-email-notifier' ),
-			'pue_support'          => __( 'Use GitHub Discussions for questions, ideas and general help, and Issues for reproducible bugs. Send security concerns privately using the repository security policy. Do not post passwords, reset links or private recipient lists in public discussions.', 'hackrepair-post-update-email-notifier' ),
 		);
 		return isset( $text[ $key ] ) ? $text[ $key ] : '';
 	}

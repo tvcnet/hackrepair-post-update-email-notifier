@@ -431,13 +431,12 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<p><strong><?php esc_html_e( 'Restore Default Settings', 'hackrepair-post-update-email-notifier' ); ?>:</strong>
 				<?php esc_html_e( 'This will reset all plugin settings to their original defaults, including Notifications, Branding, Email Identity, and Logging. Your posts and users are not affected.', 'hackrepair-post-update-email-notifier' ); ?></p>
 				<?php $this->form_open( 'pue-form-reset-defaults', 'pue_reset_defaults', 'pue_reset_defaults_action', 'pue_reset_defaults_nonce', 'pue-inline-form' ); ?>
-					<button type="submit" class="button button-primary" data-confirm="<?php echo esc_attr__( 'Are you sure you want to reset all settings to defaults?', 'hackrepair-post-update-email-notifier' ); ?>"><?php esc_html_e( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ); ?></button><?php PUE_Help::render( 'pue_reset', __( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ) ); ?>
+					<button type="submit" class="button button-primary" data-confirm="<?php echo esc_attr__( 'Are you sure you want to reset all settings to defaults?', 'hackrepair-post-update-email-notifier' ); ?>"><?php esc_html_e( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ); ?></button>
 				</form>
 			</div>
 
 			<h2 id="support"><?php esc_html_e( 'Support', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
-				<?php PUE_Help::render( 'pue_support', __( 'Support', 'hackrepair-post-update-email-notifier' ) ); ?>
 				<p>☕ <?php echo wp_kses_post( __( 'If you found this plugin helpful, please <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener">buy Jim a cup of coffee?</a>', 'hackrepair-post-update-email-notifier' ) ); ?></p>
 				<p><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo wp_kses_post( __( 'Questions and Feedback: For questions, ideas, or help with the plugin, <a href="https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions" target="_blank" rel="noopener">visit GitHub Discussions</a>.', 'hackrepair-post-update-email-notifier' ) ); ?></p>
 			</div>
