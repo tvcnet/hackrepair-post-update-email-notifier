@@ -8,7 +8,7 @@ The latest 1.4.4 ZIP matched all plugin source bytes; its .git/index differed. I
 
 ## Current version
 
-1.6.2 is the approved full release being finalized, incorporating the unpublished 1.5.1, 1.6.0 and 1.6.1 work. The user explicitly authorized packaging and publication as version 1.6.2 on October 20, 2026. Existing saved settings are preserved. Publication and updater evidence will be recorded below after verification; historical candidate evidence is retained.
+1.6.2 is the latest published release, incorporating the previously unpublished 1.5.1, 1.6.0 and 1.6.1 work. The user explicitly authorized publication on October 20, 2026. Published ZIP/checksum, real updater discovery/install, active Zendogs runtime and View Details are verified. Existing saved settings are preserved. See docs/reviews/2026-10-20-1.6.2-release-verification.md; historical candidate evidence is retained.
 
 ## Source map
 
@@ -155,3 +155,13 @@ Preserved unique/action-critical information: the full supported-placeholder ref
 Validation: PHP syntax, seven help assertions, seven export/admin-action assertions and shared PHPCS on 27 files pass. Zendogs browser verifies all 26 help controls remain, both checkboxes have associated field labels, no duplicate text remains in the logging cell, all select options and the placeholder list remain, sender descriptions are removed and bulk/reset warnings remain. Logging help opens on keyboard focus with the privacy/CSV content; Escape closes it. Screenshot visually reviewed. No horizontal overflow at 1624px or 394px; illustration and intro-note right edges still match. No settings saved, logs deleted or mail sent.
 
 Updated both direct dist and review-help 1.6.1 packages; SHA-256 `b84fa490b44ddfd615b1d21e28b26ca25f4287de3e43ddd6f8318447bfcfc4d8`. All 159 installed Zendogs files match the ZIP. Previous review packages preserved under before-description-cleanup, and previous installation backed up at `/tmp/pue-before-description-cleanup.tgz`. Readme, release notes and translations updated. No public release created.
+
+## Version 1.6.2 published (October 20, 2026)
+
+Published release: https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/tag/v1.6.2. Tag points to `547daf2fbf71fb288a17cb00c089d22021e8baef`. Both five-job CI runs pass: main run 39480818075 and tag run 39481297098. Local shared PHPCS covers 27 files; all 69 packaged PHP files lint clean; behavior, JavaScript and permission regressions pass.
+
+Direct dist package: `dist/hackrepair-post-update-email-notifier.1.6.2.zip`, 159 files, 521934 bytes, SHA-256 `869f6e3afc7d7260b4e54e48cae7fe40b8c8d3b1f343bf71671d2350affc8996`. Published asset digest, downloaded ZIP, local ZIP and sidecar agree. Older packages and public v1.5.0 preserved.
+
+Zendogs’ installed update checker discovered the exact public release anonymously. WordPress Plugin_Upgrader installed it; its standalone manual-update path deactivated the plugin until the caller completed activation, so activation was completed through WP-CLI. Final status active, version 1.6.2; all 159 installed files match GitHub. Saved plugin settings/logs compared unchanged during upgrade. Prior installation backed up at `/tmp/pue-before-published-1.6.2.tgz`.
+
+After installation, 14 standard and 8 queue-fault real-WordPress checks pass; options restored, fixtures removed and no pending jobs remain. Mailpit captured one actual release-verification email (22 to 23 messages) with the domain/plugin subject and full-width HTML, without adding a log entry. Browser confirms the compact settings, 26 help controls, no Update status panel, active plugin row, native View Details version 1.6.2, banner and Other THRG Plugins tab. Detailed evidence and limits are in the verification record.
