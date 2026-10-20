@@ -20,3 +20,5 @@ A stale November 2025 rebase-merge directory was preserved in the outer baseline
 The final family guide includes all four companion plugins; native plugin-information output was checked after adding the fourth card.
 
 CI evidence: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39347575049. Final review ZIP SHA-256: `144a5add9cd4785ef45b8ffdef82c741f1ef159605b8179764ee4e979e949b4c`. Zendogs installed files match this ZIP.
+
+Follow-up UI review: removed the redundant custom row-meta link; browser confirms one View Details link. Restored the original 772x250 banner from source artwork and kept overlay branding from obscuring it. Rebuilt the review ZIP; the previous recorded SHA above refers to the earlier review build.

@@ -6,3 +6,21 @@
 #plugin-information .pue-toolkit-card h3 { clear: none; margin: 0 0 6px; font-size: 16px; line-height: 1.4; }
 #plugin-information .pue-toolkit-card p { margin: 6px 0 0; }
 #plugin-information .pue-toolkit > p:last-child { color: #646970; font-size: 12px; }
+
+/* The original banner already includes the title and brand. Keep it unobscured. */
+body #plugin-information-title.with-banner {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #fff;
+}
+body #plugin-information-title.with-banner::before { display: none; }
+body #plugin-information-title.with-banner h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

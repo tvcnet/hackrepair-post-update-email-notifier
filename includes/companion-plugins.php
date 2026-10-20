@@ -82,6 +82,10 @@ function pue_local_plugin_info( $result, $action = null, $args = null ) {
 	$info->requires_php = isset( $readme['requires_php'] ) ? $readme['requires_php'] : '';
 	$info->last_updated = gmdate( 'Y-m-d H:i:s', (int) filemtime( PUE_PLUGIN_FILE ) );
 	$info->sections     = $sections;
+	$info->banners      = array(
+		'low'  => PUE_PLUGIN_URL . 'assets/banner-772x250.png',
+		'high' => PUE_PLUGIN_URL . 'assets/banner-772x250.png',
+	);
 	$info->icons        = array(
 		'1x' => PUE_PLUGIN_URL . 'assets/icon-128x128.png',
 		'2x' => PUE_PLUGIN_URL . 'assets/icon-256x256.png',
@@ -90,27 +94,3 @@ function pue_local_plugin_info( $result, $action = null, $args = null ) {
 	return $info;
 }
 add_filter( 'plugins_api', 'pue_local_plugin_info', 20, 3 );
-
-/** Add a native details link on the Plugins screen.
- * @param array $links Existing links.
- * @param string $file Plugin file.
- * @return array
- */
-function pue_details_link( $links, $file ) {
-	if ( plugin_basename( PUE_MAIN_FILE ) !== $file ) {
-		return $links; }
-	add_thickbox();
-	$url     = add_query_arg(
-		array(
-			'tab'       => 'plugin-information',
-			'plugin'    => 'hackrepair-post-update-email-notifier',
-			'TB_iframe' => 'true',
-			'width'     => 772,
-			'height'    => 700,
-		),
-		admin_url( 'plugin-install.php' )
-	);
-	$links[] = '<a class="thickbox open-plugin-details-modal" href="' . esc_url( $url ) . '">' . esc_html__( 'View details', 'hackrepair-post-update-email-notifier' ) . '</a>';
-	return $links;
-}
-add_filter( 'plugin_row_meta', 'pue_details_link', 10, 2 );
