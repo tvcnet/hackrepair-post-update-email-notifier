@@ -27,7 +27,10 @@ function pue_admin_enqueue_assets( $hook ) {
 	}
 	wp_enqueue_style( 'wp-color-picker' );
 	wp_enqueue_script( 'wp-color-picker' );
-	wp_enqueue_style( 'pue-admin', plugins_url( 'assets/css/admin.css', PUE_MAIN_FILE ), array( 'wp-color-picker' ), PUE_VERSION );
+	// Refresh cached CSS when an updated review package keeps the same plugin version.
+	$admin_css_path    = PUE_PLUGIN_DIR . 'assets/css/admin.css';
+	$admin_css_version = is_readable( $admin_css_path ) ? PUE_VERSION . '.' . filemtime( $admin_css_path ) : PUE_VERSION;
+	wp_enqueue_style( 'pue-admin', plugins_url( 'assets/css/admin.css', PUE_MAIN_FILE ), array( 'wp-color-picker' ), $admin_css_version );
 	wp_enqueue_style( 'pue-brand', plugins_url( 'assets/brand/thrg-brand.css', PUE_MAIN_FILE ), array(), PUE_VERSION );
 	wp_enqueue_script( 'pue-help', plugins_url( 'assets/js/help.js', PUE_MAIN_FILE ), array(), PUE_VERSION, true );
 	wp_enqueue_script( 'pue-admin', plugins_url( 'assets/js/admin.js', PUE_MAIN_FILE ), array( 'wp-color-picker' ), PUE_VERSION, true );

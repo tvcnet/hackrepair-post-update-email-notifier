@@ -189,6 +189,7 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 == Changelog ==
 
 = 1.6.1 =
+* Fixed: Refresh admin styling when an updated package uses the same plugin version.
 * Clarity: Added a post-editor checkbox illustration beside Default for each update, showing how to uncheck the box to send an update email.
 * Cleanup: Removed the settings-page Update status container and its manual-check code. Use the standard WordPress Plugins screen for plugin updates.
 * New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, CSV export and bulk testing.
