@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T18:41:07+00:00\n"
+"POT-Creation-Date: 2026-10-20T18:43:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: hackrepair-post-update-email-notifier\n"
@@ -206,7 +206,7 @@ msgid "Reset"
 msgstr ""
 
 #: includes/class-pue-admin-interface.php:115
-#: includes/class-pue-admin-interface.php:423
+#: includes/class-pue-admin-interface.php:421
 msgid "Support"
 msgstr ""
 
@@ -305,7 +305,7 @@ msgstr ""
 
 #. translators: %s: list of placeholders.
 #: includes/class-pue-admin-interface.php:212
-#: includes/class-pue-admin-interface.php:366
+#: includes/class-pue-admin-interface.php:365
 #: includes/class-pue-logger.php:264
 msgid "Subject"
 msgstr ""
@@ -430,197 +430,195 @@ msgid "Send a sample of the saved template to your address, or preview the curre
 msgstr ""
 
 #: includes/class-pue-admin-interface.php:351
-#: includes/class-pue-admin-interface.php:353
 msgid "Recent Email Log"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:355
+#: includes/class-pue-admin-interface.php:354
 msgid "No log entries yet."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:361
+#: includes/class-pue-admin-interface.php:360
 #: includes/class-pue-logger.php:260
 msgid "Time"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:362
+#: includes/class-pue-admin-interface.php:361
 msgid "Type"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:363
+#: includes/class-pue-admin-interface.php:362
 #: includes/class-pue-logger.php:268
 msgid "Status"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:364
+#: includes/class-pue-admin-interface.php:363
 #: includes/class-pue-placeholder-engine.php:56
 msgid "Post"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:365
+#: includes/class-pue-admin-interface.php:364
 msgid "Recipients"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:380
-#: includes/class-pue-admin-interface.php:381
+#: includes/class-pue-admin-interface.php:379
 msgid "Clear Log"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:380
+#: includes/class-pue-admin-interface.php:379
 msgid "Clear the email log?"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:384
-#: includes/class-pue-admin-interface.php:385
+#: includes/class-pue-admin-interface.php:382
+#: includes/class-pue-admin-interface.php:383
 msgid "Export CSV"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:395
+#: includes/class-pue-admin-interface.php:393
 msgid "Bulk Test (Testing Only)"
 msgstr ""
 
 #. translators: %d: messages remaining today.
-#: includes/class-pue-admin-interface.php:400
+#: includes/class-pue-admin-interface.php:398
 #, php-format
 msgid "Enter an email address and a count to send multiple test messages (individual sends) for deliverability and error testing. Uses the current template. Please respect provider rate limits. Remaining today: %d."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:404
+#: includes/class-pue-admin-interface.php:402
 msgid "Email:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:404
+#: includes/class-pue-admin-interface.php:402
 msgid "Bulk test email address"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:405
+#: includes/class-pue-admin-interface.php:403
 msgid "Count:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:405
+#: includes/class-pue-admin-interface.php:403
 msgid "Bulk test count"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:406
+#: includes/class-pue-admin-interface.php:404
 msgid "Generate plus-aliases (name+1..+N@domain) — useful for Gmail to see N deliveries in one inbox."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:406
+#: includes/class-pue-admin-interface.php:404
 msgid "Generate plus-aliases"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:407
+#: includes/class-pue-admin-interface.php:405
 msgid "Log detail (one row per message)"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:407
+#: includes/class-pue-admin-interface.php:405
 msgid "Log detail"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:408
-#: includes/class-pue-admin-interface.php:409
+#: includes/class-pue-admin-interface.php:406
+#: includes/class-pue-admin-interface.php:407
 msgid "Run Bulk Test"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:414
-#: includes/class-pue-admin-interface.php:419
+#: includes/class-pue-admin-interface.php:412
+#: includes/class-pue-admin-interface.php:417
 msgid "Reset to Defaults"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:416
+#: includes/class-pue-admin-interface.php:414
 msgid "Restore Default Settings"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:417
+#: includes/class-pue-admin-interface.php:415
 msgid "This will reset all plugin settings to their original defaults, including Notifications, Branding, Email Identity, and Logging. Your posts and users are not affected."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:419
+#: includes/class-pue-admin-interface.php:417
 msgid "Are you sure you want to reset all settings to defaults?"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:425
+#: includes/class-pue-admin-interface.php:423
 msgid "If you found this plugin helpful, please <a href=\"https://hackrepair.com/donations/buy-jim-a-coffee\" target=\"_blank\" rel=\"noopener\">buy Jim a cup of coffee?</a>"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:426
+#: includes/class-pue-admin-interface.php:424
 msgid "Questions and Feedback: For questions, ideas, or help with the plugin, <a href=\"https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions\" target=\"_blank\" rel=\"noopener\">visit GitHub Discussions</a>."
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:432
+#: includes/class-pue-admin-interface.php:430
 msgid "Close"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:438
+#: includes/class-pue-admin-interface.php:436
 msgid "Delivery Error"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:442
+#: includes/class-pue-admin-interface.php:440
 msgid "Code:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:443
+#: includes/class-pue-admin-interface.php:441
 msgid "When:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:444
+#: includes/class-pue-admin-interface.php:442
 msgid "Mode:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:453
-#: includes/class-pue-admin-interface.php:458
+#: includes/class-pue-admin-interface.php:451
+#: includes/class-pue-admin-interface.php:456
 msgid "Email preview"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:457
+#: includes/class-pue-admin-interface.php:455
 msgid "Subject:"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:478
+#: includes/class-pue-admin-interface.php:476
 msgid "(no post)"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:483
+#: includes/class-pue-admin-interface.php:481
 msgid "editor chose not to send"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:484
+#: includes/class-pue-admin-interface.php:482
 msgid "post type not selected"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:485
+#: includes/class-pue-admin-interface.php:483
 msgid "no roles selected"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:486
+#: includes/class-pue-admin-interface.php:484
 msgid "no recipients"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:487
+#: includes/class-pue-admin-interface.php:485
 msgid "cooldown"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:490
+#: includes/class-pue-admin-interface.php:488
 msgid "Sent"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:491
+#: includes/class-pue-admin-interface.php:489
 msgid "Not sent"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:492
+#: includes/class-pue-admin-interface.php:490
 msgid "Queued"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:493
+#: includes/class-pue-admin-interface.php:491
 msgid "Partial"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:494
+#: includes/class-pue-admin-interface.php:492
 msgid "Failed"
 msgstr ""
 
-#: includes/class-pue-admin-interface.php:512
+#: includes/class-pue-admin-interface.php:510
 msgid "View error"
 msgstr ""
 
@@ -745,39 +743,31 @@ msgid "Open an on-screen preview without sending mail or saving changes. It comb
 msgstr ""
 
 #: includes/class-pue-help.php:40
-msgid "Review the newest 20 retained entries for accepted sends, failures, skipped reasons and queued progress. Accepted does not confirm delivery. Queued means background work is pending. A skipped entry is not a delivery failure. Use your mail provider’s logs to investigate missing inbox delivery."
-msgstr ""
-
-#: includes/class-pue-help.php:41
-msgid "Delete the retained email log after confirming the action. This cannot be undone here and does not cancel queued notifications or reset your settings. Export first if you need a record."
-msgstr ""
-
-#: includes/class-pue-help.php:42
 msgid "Download all retained log entries as a CSV file, not only the newest 20 shown on screen. It can include recipient addresses and message details. Store and share it carefully. Exporting does not clear the log or send email."
 msgstr ""
 
-#: includes/class-pue-help.php:43
+#: includes/class-pue-help.php:41
 msgid "This is a diagnostic tool, not a normal content notification. It sends real individual test emails using saved settings. Use a mail catcher or an address you control, start with a small count and respect provider limits. The daily allowance is shared by this site. It does not email selected roles."
 msgstr ""
 
-#: includes/class-pue-help.php:44
+#: includes/class-pue-help.php:42
 msgid "Enter an address you control or a local mail-catcher address. All bulk test messages go here unless plus-address aliases are enabled. This address does not change your normal notification recipients."
 msgstr ""
 
-#: includes/class-pue-help.php:45
+#: includes/class-pue-help.php:43
 msgid "Choose how many real test messages to attempt, from 1 to 200 per request. The remaining daily allowance can reduce this count. Start small to avoid overwhelming an inbox or exceeding your mail provider’s limits."
 msgstr ""
 
-#: includes/class-pue-help.php:46
+#: includes/class-pue-help.php:44
 msgid "Send to numbered aliases such as name+1@example.com and name+2@example.com. Existing plus tags are replaced. Only use this if the destination supports plus addressing; otherwise the messages may fail."
 msgstr ""
 
-#: includes/class-pue-help.php:47
+#: includes/class-pue-help.php:45
 msgid "When logging is enabled, record each bulk test message separately instead of one summary entry. This can quickly fill the retention limit. It does not turn logging on or change whether messages are sent."
 msgstr ""
 
 #. translators: %s: feature label.
-#: includes/class-pue-help.php:65
+#: includes/class-pue-help.php:63
 #, php-format
 msgid "Help for %s"
 msgstr ""

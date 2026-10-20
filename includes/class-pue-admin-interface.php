@@ -350,7 +350,6 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			?>
 			<h2 id="logging"><?php esc_html_e( 'Recent Email Log', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
-			<?php PUE_Help::render( 'pue_log', __( 'Recent Email Log', 'hackrepair-post-update-email-notifier' ) ); ?>
 			<?php if ( empty( $logs ) ) : ?>
 				<p><?php esc_html_e( 'No log entries yet.', 'hackrepair-post-update-email-notifier' ); ?></p>
 			<?php else : ?>
@@ -378,7 +377,6 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<div class="pue-inline pue-log-actions">
 					<?php $this->form_open( 'pue-form-clear-log', 'pue_clear_log', 'pue_clear_log_action', 'pue_clear_log_nonce', 'pue-inline-form' ); ?>
 						<?php submit_button( __( 'Clear Log', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false, array( 'data-confirm' => __( 'Clear the email log?', 'hackrepair-post-update-email-notifier' ) ) ); ?>
-						<?php PUE_Help::render( 'pue_clear_log', __( 'Clear Log', 'hackrepair-post-update-email-notifier' ) ); ?>
 					</form>
 					<?php $this->form_open( 'pue-form-export-csv', 'pue_export_log', 'pue_export_log_action', 'pue_export_log_nonce', 'pue-inline-form' ); ?>
 						<?php submit_button( __( 'Export CSV', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false ); ?>
