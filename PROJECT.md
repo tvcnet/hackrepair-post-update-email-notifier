@@ -53,4 +53,4 @@ Version 1.5.0 is published under tvcnet: https://github.com/tvcnet/hackrepair-po
 
 ## GitHub presentation
 
-The repository landing page follows Disable Other Plugin Notices: animated heart above the centered title, release/requirements/CI badges, product introduction, features, setup, FAQs and maintainer/support links. The GitHub About description and topics identify the notification workflow. Full changelog details remain in readme.txt. This presentation update does not change the published 1.5.0 package.
+The repository landing page follows Disable Other Plugin Notices: original View Details banner above the centered title, release/requirements/CI badges, product introduction, features, setup, FAQs and maintainer/support links. The GitHub About description and topics identify the notification workflow. Full changelog details remain in readme.txt. This presentation update does not change the published 1.5.0 package.

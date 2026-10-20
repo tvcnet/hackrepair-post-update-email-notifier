@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/branding/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench logo" width="144" height="144">
+  <img src="assets/banner-772x250.png" alt="The Hack Repair Guy’s Post Update Email Notifier" width="772" height="250">
 </p>
 
 <h1 align="center">The Hack Repair Guy's Post Update Email Notifier</h1>
