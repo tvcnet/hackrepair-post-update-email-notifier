@@ -8,7 +8,7 @@ The latest 1.4.4 ZIP matched all plugin source bytes; its .git/index differed. I
 
 ## Current version
 
-1.6.1 is the current contextual-help review candidate, superseding unpublished 1.6.0 and 1.5.1. The latest public release remains 1.5.0. Runtime behavior and existing saved options are preserved; help explains controls without changing them. Historical 1.6.0 verification is retained below.
+1.6.2 is the approved full release being finalized, incorporating the unpublished 1.5.1, 1.6.0 and 1.6.1 work. The user explicitly authorized packaging and publication as version 1.6.2 on October 20, 2026. Existing saved settings are preserved. Publication and updater evidence will be recorded below after verification; historical candidate evidence is retained.
 
 ## Source map
 

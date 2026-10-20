@@ -7,7 +7,7 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -190,7 +190,16 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 
 == Changelog ==
 
-= 1.6.1 =
+= 1.6.2 =
+* Release: Consolidates the previously unpublished 1.5.1, 1.6.0 and 1.6.1 review builds.
+* New: Site-wide send policy, first-publish rules, cooldown, live recipient counts, change summaries and revision links.
+* New: Background WP-Cron delivery, interruption-aware queue recovery, WP-CLI tools and Site Health diagnostics.
+* New: Preview without sending, personal data export/erasure support and a daily bulk-test allowance.
+* Clarity: Contextual help, a post-editor checkbox illustration and compact settings without repeated descriptions.
+* Fixed: CSV export, failure feedback, skipped-update reporting, sender-domain checks and stale admin styles.
+* Cleanup: Removed the settings-page Update status container; standard WordPress plugin updates remain available.
+
+= 1.6.1 (unpublished review build) =
 * Clarity: Removed repeated descriptions where help already explains the control; expanded logging help to cover privacy export/erasure and CSV export.
 * Fixed: Refresh admin styling when an updated package uses the same plugin version.
 * Clarity: Added a post-editor checkbox illustration beside Default for each update, showing how to uncheck the box to send an update email.
@@ -199,7 +208,7 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 * Accessibility: Help opens with hover, keyboard focus or tap; Escape and clicking outside close it. Native disclosures remain usable without JavaScript.
 * Includes the unreleased 1.6.0 features and reliability fixes.
 
-= 1.6.0 =
+= 1.6.0 (unpublished review build) =
 * New: Site-wide default for the per-post checkbox (opt in or opt out), first-publish vs updates-only notifications, and a per-post cooldown.
 * New: Background sending in WP-Cron batches for larger recipient lists, with progress in the log.
 * New: [change_summary], [revision_url], [previous_title] and [event] placeholders.
@@ -214,7 +223,7 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 * Fixed: Unsaved branding now uses the same defaults the settings screen shows.
 * Changed: One query loads recipient addresses; uninstall also removes post meta, queued jobs and update transients; accessible modals; no inline script handlers.
 
-= 1.5.1 =
+= 1.5.1 (unpublished review build) =
 * Fixed: Export Log no longer fails with a fatal error, and the CSV download is sent before the settings page renders.
 * Fixed: Test email, bulk test, settings save and update-check buttons now show an error when a request is rejected or fails, instead of a false "Done!", and clear stale messages on retry.
 * Fixed: Section headings, card bodies and form tables on the settings page now share the same width.
