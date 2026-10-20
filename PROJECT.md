@@ -12,7 +12,7 @@ Do not add third-party AI-assistant or provider names, branding, avatars, profil
 
 ## Current version
 
-1.6.3 is the approved release being prepared to remove the Screenshots tab from View Details. The user explicitly authorized publication of 1.6.3 followed by deletion of the 1.6.2 GitHub release and tag. Older local ZIPs and recoverable Git backups will be preserved. The attribution-history rewrite remains unapproved and is separate from this release/tag deletion. Verification and withdrawal results will be recorded below.
+1.6.3 is published and verified on Zendogs. Screenshots is removed from native View Details; the banner and other tabs remain. At the user's explicit request, the 1.6.2 GitHub release and local/remote tag were deleted after replacement verification. Older local ZIPs and recoverable Git backups are preserved. The attribution-history rewrite remains unapproved. See the 1.6.3 verification record below.
 
 ## Source map
 
@@ -175,3 +175,12 @@ After installation, 14 standard and 8 queue-fault real-WordPress checks pass; op
 At the user’s explicit request, deleted every branch except main: 5 GitHub branches and 3 local branches. Only main remains locally and on origin; origin/HEAD is its normal symbolic alias. No commit history was rewritten and the v1.5.0/v1.6.2 release tags and published ZIPs are unchanged. A complete, verified Git bundle and the original ref inventory are preserved outside the distributable repository at `/Volumes/BACKUP8TB2/plugins/Post Update Email Notifier/backups/2026-10-20-branch-cleanup-3v_4bmua`.
 
 Current tracked files are free of the previously unwanted provider/account references. The attribution policy is recorded above and in AGENTS.md. Four historical commits still contain AI co-author/session trailers; removing those from published history would change descendant commit IDs and the v1.6.2 tag, and requires explicit approval under the published-tag protection rule. No such rewrite has been performed.
+
+
+## Version 1.6.3 published and 1.6.2 withdrawn (October 20, 2026)
+
+Published latest release: https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/tag/v1.6.3. Release/tag commit `3315496d60a15f5a3e182faaf8f769edc42b9f3c`. Main and tag CI passed all five jobs (39482808969 and 39483216267). Published ZIP SHA-256 `c65f570ed51ebcc12c7a6a3bb398a375ed376a075ff7ceb1d05cfb19b027d35c` matches the downloaded and local package.
+
+Zendogs' real updater discovered and installed the exact public 1.6.3 asset anonymously through WordPress bulk upgrade. Active status, settings and logs were preserved; all 159 installed files match the published ZIP. Native View Details confirms version 1.6.3, banner and remaining tabs, with no Screenshots tab. Shared PHPCS and regression/package checks pass. See `docs/reviews/2026-10-20-1.6.3-release-verification.md`.
+
+After verification, deleted the 1.6.2 release and local/remote tag as explicitly requested. Local 1.6.2 ZIPs, downloaded assets, release metadata and verified full Git bundle remain in the external withdrawal backup. Version 1.5.0 remains published; main is the only branch. Historical records below describe their original verification date, not current release availability.
