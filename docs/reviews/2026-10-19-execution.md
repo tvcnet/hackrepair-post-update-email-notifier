@@ -26,3 +26,12 @@ Follow-up UI review: removed the redundant custom row-meta link; browser confirm
 ## Release approval and final checks
 
 The user approved full GitHub publication after the banner/details review. Final shared PHPCS (21 files), 13 notification assertions, updater guards, seven update-message checks and package-permissions regression all passed again. Release ZIP SHA-256: `a4176bee2ed1a97555e4567927ad9d71fa311fe3e8f0af617cc5a7dadd28e6bf`. This supersedes the earlier review-build digest. Latest code CI: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39348046849 (PHP 7.4/8.3 passed).
+
+## Published release verification
+
+- Full release: https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/tag/v1.5.0 (not draft or prerelease). Tag and publication commit: `9139c7f8401d17cf2659ba274ccceabed1cd7ed8`. ZIP and SHA-256 sidecar uploaded; GitHub asset digest matches the final ZIP digest above.
+- Main-branch CI passed: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39348638013.
+- Zendogs anonymous GitHub API returned HTTP 403, remaining quota 0. A one-process Authorization filter using existing GitHub CLI authentication verified the active plugin checker returned version 1.5.0 and the exact published release ZIP URL. No token was stored in plugin files, options or the package. Unauthenticated discovery remains subject to the shared IP quota/reset time.
+- Backed up the installed plugin in the container before installation. WordPress Plugin_Upgrader installed the remote published URL successfully; version 1.5.0 stayed active. All 151 installed files match the published ZIP bytes.
+- Browser confirms exactly one View Details link, version 1.5.0, original banner URL, five details tabs including Other THRG Plugins and no horizontal overflow. Banner HTTP response and settings styles checked separately.
+- Old Drive manifest remains unchanged. Existing Drive-based installations require one manual upload to migrate.
