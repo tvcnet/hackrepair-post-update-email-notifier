@@ -134,3 +134,17 @@
 /* Keep native fallback help inside narrow viewports when the enhancement script is unavailable. */
 @media (max-width:782px){.pue-help:not(.pue-help-ready) > .pue-help-content{position:fixed;inset-inline-start:12px;top:72px;max-height:calc(100vh - 84px)}}
 @media print{.pue-help{display:none}}
+
+/* Post-editor example beside the notification default; illustration only. */
+.pue-policy-layout{display:flex;align-items:flex-start;flex-wrap:wrap;gap:16px 20px}
+.pue-policy-control{flex:0 1 375px;min-width:0}
+.pue-policy-control select{max-width:100%}
+.pue-policy-example{flex:0 1 270px;box-sizing:border-box;max-width:100%;margin:0;padding:12px 14px;background:#fffaf2;border:1px solid #f3d19c;border-radius:6px;color:#1d2327}
+.pue-policy-example figcaption{margin:0 0 9px;font-size:12px;font-weight:600;color:#50575e}
+.pue-policy-example-row{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.4}
+.pue-policy-box{position:relative;display:inline-flex;flex:0 0 18px;align-items:center;justify-content:center;box-sizing:border-box;width:18px;height:18px;border:1px solid #8c8f94;border-radius:3px;background:#fff}
+.pue-policy-box--checked{border-color:#2271b1;background:#2271b1;color:#fff;font-size:16px;font-weight:700}
+.pue-policy-box--empty{border:2px solid #b34700}
+.pue-policy-arrow{color:#50575e;font-size:18px}
+.pue-policy-pointer{position:absolute;top:8px;left:8px;max-width:none}
+.pue-policy-example p{margin:10px 0 0;font-size:12px;font-weight:600;color:#8b3700}

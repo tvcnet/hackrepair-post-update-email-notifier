@@ -61,6 +61,40 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			echo '<p class="description">' . esc_html( $help ) . '</p></td></tr>';
 		}
 
+		/** Send-policy dropdown with a non-interactive post-editor illustration. */
+		private function render_send_policy() {
+			?>
+			<tr>
+				<th scope="row"><label for="pue_send_policy"><?php esc_html_e( 'Default for each update', 'hackrepair-post-update-email-notifier' ); ?></label><?php PUE_Help::render( 'pue_send_policy', __( 'Default for each update', 'hackrepair-post-update-email-notifier' ) ); ?></th>
+				<td>
+					<div class="pue-policy-layout">
+						<div class="pue-policy-control">
+							<?php
+							$this->select(
+								'pue_send_policy',
+								array(
+									'skip' => __( 'Don’t send unless the editor opts in (recommended)', 'hackrepair-post-update-email-notifier' ),
+									'send' => __( 'Send unless the editor opts out', 'hackrepair-post-update-email-notifier' ),
+								)
+							);
+							?>
+							<p class="description"><?php esc_html_e( 'Sets the starting state of the “Don’t send email notifications” checkbox. After each update the post returns to this default.', 'hackrepair-post-update-email-notifier' ); ?></p>
+						</div>
+						<figure class="pue-policy-example" role="img" aria-labelledby="pue-policy-example-title pue-policy-example-label pue-policy-example-caption">
+							<figcaption id="pue-policy-example-title"><?php esc_html_e( 'In the post editor', 'hackrepair-post-update-email-notifier' ); ?></figcaption>
+							<div class="pue-policy-example-row" aria-hidden="true">
+								<span class="pue-policy-box pue-policy-box--checked">✓</span><span class="pue-policy-arrow">→</span>
+								<span class="pue-policy-box pue-policy-box--empty"><svg class="pue-policy-pointer" viewBox="0 0 24 28" width="20" height="24" focusable="false" aria-hidden="true"><path d="M3 2v21l5-5 4 8 4-2-4-8h8Z" fill="#1d2327" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></span>
+								<span id="pue-policy-example-label"><?php esc_html_e( 'Don’t send email notifications', 'hackrepair-post-update-email-notifier' ); ?></span>
+							</div>
+							<p id="pue-policy-example-caption"><?php esc_html_e( 'Uncheck to send this update.', 'hackrepair-post-update-email-notifier' ); ?></p>
+						</figure>
+					</div>
+				</td>
+			</tr>
+			<?php
+		}
+
 		/**
 		 * Text input row.
 		 *
@@ -169,15 +203,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 					</td>
 				</tr>
 				<?php
-				$this->select_row(
-					'pue_send_policy',
-					__( 'Default for each update', 'hackrepair-post-update-email-notifier' ),
-					array(
-						'skip' => __( 'Don’t send unless the editor opts in (recommended)', 'hackrepair-post-update-email-notifier' ),
-						'send' => __( 'Send unless the editor opts out', 'hackrepair-post-update-email-notifier' ),
-					),
-					__( 'Sets the starting state of the “Don’t send email notifications” checkbox. After each update the post returns to this default.', 'hackrepair-post-update-email-notifier' )
-				);
+				$this->render_send_policy();
 				$this->select_row(
 					'pue_notify_events',
 					__( 'Notify on', 'hackrepair-post-update-email-notifier' ),

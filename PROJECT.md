@@ -125,3 +125,11 @@ Direct dist and review-help copies rebuilt at version 1.6.1; SHA-256 `200cc7d62a
 Rewrote Default for each update help in plain language: recommended emails-off behavior, the exact editor checkbox to uncheck when sending, the alternative send-by-default option, one-update editor choices, recipient selection and Save Notifications. Other sending rules still apply. Removed the longer historical-migration explanation from this tooltip; notification behavior is unchanged. Updated the existing help-copy assertion and regenerated translations. Seven help assertions and shared PHPCS (27 files) pass.
 
 Rebuilt direct dist and review-help ZIP/checksum copies; SHA-256 `6fdc6f96014279f7240913cb679c385261259fcfba70bf5727c0ff1e21145a13`. Previous review copies preserved under before-send-policy-copy-simplification. Version remains 1.6.1 and publication remains separate.
+
+### 1.6.1 review adjustment: post-editor checkbox illustration
+
+Added a compact illustration to the right of Default for each update: a checked box, an arrow, an unchecked box and pointer, the exact editor label, and “Uncheck to send this update.” It uses HTML/CSS and a small decorative inline SVG, with an accessible image name describing the editor control. It contains no input or action. Existing dropdown values, option names and submission behavior are preserved; no JavaScript or image downloads are needed. Updated readme/release notes and translations.
+
+Zendogs browser verification at 1624px: illustration sits 19px to the right of the dropdown, aligned at the top, with no horizontal overflow. At 394px it stacks below and remains fully visible without horizontal overflow. Screenshots visually reviewed at both widths. Exactly one policy select remains, in pue-form-notifications; the saved skip policy is unchanged. No settings saved or email sent. Shared PHPCS (27 files), PHP syntax and seven help assertions pass.
+
+Rebuilt the 1.6.1 package in direct dist and review-help; SHA-256 `5a208cabbfbc725e98a388839404e24d1f9a5d110b87d6a156e1e14ab2bdc73e`. All 159 installed Zendogs files match the ZIP. Previous review copies preserved under before-policy-graphic and prior installation backed up at `/tmp/pue-before-policy-graphic.tgz`. Publication remains separate.
