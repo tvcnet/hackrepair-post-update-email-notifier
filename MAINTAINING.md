@@ -10,9 +10,11 @@ python3 tests/package-permissions.py
 php tests/notifications.php
 php tests/compatibility.php
 php tests/export-log.php
+php tests/help.php
 php tests/queue-recovery.php
 node --check assets/js/admin.js
 node --check assets/js/editor.js
+node --check assets/js/help.js
 php tests/update-notices.php
 php tests/updater.php
 python3 scripts/build-release.py --output /tmp/pue-review/hackrepair-post-update-email-notifier.review.zip
@@ -41,3 +43,5 @@ Run `wp eval-file tests/integration/run.php` and `wp eval-file tests/integration
 Queue regression coverage includes false/WP_Error scheduling, bounded recovery, transport exceptions, crash checkpoints, concurrent/stale leases, expiry and deactivation/reactivation. Cron may run late. Interrupted recipients are not replayed automatically because the transport outcome may be unknown. `wp pue jobs` exposes status without log contents; `wp pue retry JOB_ID --yes` retries scheduling for unattempted recipients only. Failed scheduling is also visible in Site Health.
 
 For an unpublished candidate, build into a separate review directory; preserve all earlier ZIPs and checksums. Rebuild the versioned dist asset only when finalizing an approved candidate, then verify its digest and source bytes. Consider the separate Codex Security review before publication; do not run it automatically.
+
+For contextual help changes, verify hover, keyboard focus, Escape, tap, outside-click dismissal, a narrow viewport and the native disclosure with JavaScript disabled. Help controls must not save settings or send mail.

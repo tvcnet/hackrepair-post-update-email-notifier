@@ -54,7 +54,9 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 		 * @param string $help Help text.
 		 */
 		private function select_row( $name, $label, $choices, $help ) {
-			echo '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label></th><td>';
+			echo '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label>';
+			PUE_Help::render( $name, $label );
+			echo '</th><td>';
 			$this->select( $name, $choices );
 			echo '<p class="description">' . esc_html( $help ) . '</p></td></tr>';
 		}
@@ -68,7 +70,9 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 		 * @param string $help Help text.
 		 */
 		private function input_row( $name, $label, $type = 'text', $help = '' ) {
-			echo '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label></th><td>';
+			echo '<tr><th scope="row"><label for="' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label>';
+			PUE_Help::render( $name, $label );
+			echo '</th><td>';
 			echo '<input type="' . esc_attr( $type ) . '" id="' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( (string) PUE_Defaults::option( $name ) ) . '" class="regular-text" />';
 			if ( $help ) {
 				echo '<p class="description">' . esc_html( $help ) . '</p>';
@@ -146,7 +150,12 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			<?php $this->form_open( 'pue-form-notifications', 'pue_save_notifications', 'pue_save_notifications', 'pue_save_notifications_nonce' ); ?>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Select Roles to Notify', 'hackrepair-post-update-email-notifier' ); ?></th>
+					<th scope="row">
+					<?php
+					esc_html_e( 'Select Roles to Notify', 'hackrepair-post-update-email-notifier' );
+					PUE_Help::render( 'pue_roles', __( 'Select Roles to Notify', 'hackrepair-post-update-email-notifier' ) );
+					?>
+					</th>
 					<td>
 						<div class="pue-right-note">
 							<p><?php echo wp_kses_post( __( 'The <strong>Hack Repair Guy’s Post Update Email Notifier</strong> keeps your team in the loop by sending branded HTML updates whenever posts or pages are modified.', 'hackrepair-post-update-email-notifier' ) ); ?></p>
@@ -157,7 +166,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 							<label><input type="checkbox" name="pue_roles[]" value="<?php echo esc_attr( $role_key ); ?>" <?php checked( in_array( $role_key, $selected_roles, true ) ); ?> /> <?php echo esc_html( translate_user_role( $role['name'] ) ); ?></label><br />
 						<?php endforeach; ?>
 						</fieldset>
-						<p class="pue-recipient-count" id="pue-recipient-count" aria-live="polite"><?php echo esc_html( pue_recipient_count_text( $count ) ); ?></p>
+						<p class="pue-recipient-count" id="pue-recipient-count" aria-live="polite"><?php echo esc_html( pue_recipient_count_text( $count ) ); ?></p><?php PUE_Help::render( 'pue_recipients', __( 'Recipient count', 'hackrepair-post-update-email-notifier' ) ); ?>
 					</td>
 				</tr>
 				<?php
@@ -204,7 +213,12 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				$this->input_row( 'pue_subject', __( 'Subject', 'hackrepair-post-update-email-notifier' ), 'text', sprintf( __( 'Placeholders supported: %s', 'hackrepair-post-update-email-notifier' ), $placeholders ) );
 				?>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Message', 'hackrepair-post-update-email-notifier' ); ?></th>
+					<th scope="row">
+					<?php
+					esc_html_e( 'Message', 'hackrepair-post-update-email-notifier' );
+					PUE_Help::render( 'pue_message', __( 'Message', 'hackrepair-post-update-email-notifier' ) );
+					?>
+					</th>
 					<td>
 						<?php
 						wp_editor(
@@ -223,7 +237,12 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Post Types', 'hackrepair-post-update-email-notifier' ); ?></th>
+					<th scope="row">
+					<?php
+					esc_html_e( 'Post Types', 'hackrepair-post-update-email-notifier' );
+					PUE_Help::render( 'pue_post_types', __( 'Post Types', 'hackrepair-post-update-email-notifier' ) );
+					?>
+					</th>
 					<td>
 						<fieldset>
 						<?php foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $pt ) : ?>
@@ -234,11 +253,21 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Exclude Updating User', 'hackrepair-post-update-email-notifier' ); ?></th>
+					<th scope="row">
+					<?php
+					esc_html_e( 'Exclude Updating User', 'hackrepair-post-update-email-notifier' );
+					PUE_Help::render( 'pue_exclude_updater', __( 'Exclude Updating User', 'hackrepair-post-update-email-notifier' ) );
+					?>
+					</th>
 					<td><label><input type="checkbox" id="pue_exclude_updater" name="pue_exclude_updater" value="1" <?php checked( $exclude ); ?> /> <?php esc_html_e( 'Do not email the user who performed the update.', 'hackrepair-post-update-email-notifier' ); ?></label></td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Enable Logging', 'hackrepair-post-update-email-notifier' ); ?></th>
+					<th scope="row">
+					<?php
+					esc_html_e( 'Enable Logging', 'hackrepair-post-update-email-notifier' );
+					PUE_Help::render( 'pue_enable_logging', __( 'Enable Logging', 'hackrepair-post-update-email-notifier' ) );
+					?>
+					</th>
 					<td>
 						<label><input type="checkbox" name="pue_enable_logging" value="1" <?php checked( (int) PUE_Defaults::option( 'pue_enable_logging' ) ); ?> /> <?php esc_html_e( 'Log recent emails (50/200/1000 entries) with CSV export.', 'hackrepair-post-update-email-notifier' ); ?></label>
 						<p class="description"><?php esc_html_e( 'The log stores recipient addresses. It is included in WordPress personal data export and erasure requests.', 'hackrepair-post-update-email-notifier' ); ?></p>
@@ -265,7 +294,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			<table class="form-table" role="presentation">
 				<?php $this->input_row( 'pue_header_text', __( 'Header Text', 'hackrepair-post-update-email-notifier' ) ); ?>
 				<tr>
-					<th scope="row"><label for="pue_header_bg_color"><?php esc_html_e( 'Header Background Color', 'hackrepair-post-update-email-notifier' ); ?></label></th>
+					<th scope="row"><label for="pue_header_bg_color"><?php esc_html_e( 'Header Background Color', 'hackrepair-post-update-email-notifier' ); ?></label><?php PUE_Help::render( 'pue_header_bg_color', __( 'Header Background Color', 'hackrepair-post-update-email-notifier' ) ); ?></th>
 					<td>
 						<?php $bg_val = (string) PUE_Defaults::option( 'pue_header_bg_color' ); ?>
 						<input type="text" id="pue_header_bg_color" name="pue_header_bg_color" value="<?php echo esc_attr( $bg_val ); ?>" class="regular-text pue-color-input" />
@@ -300,8 +329,9 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<div class="pue-inline pue-inline--top">
 					<?php $this->form_open( 'pue-test-form', 'pue_send_test_email', 'pue_test_email_action', 'pue_test_email_nonce', 'pue-inline-form' ); ?>
 						<?php submit_button( __( 'Send a Test', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false ); ?>
+						<?php PUE_Help::render( 'pue_test_email', __( 'Send a Test', 'hackrepair-post-update-email-notifier' ) ); ?>
 					</form>
-					<button type="button" class="button" id="pue-preview-btn"><?php esc_html_e( 'Preview without sending', 'hackrepair-post-update-email-notifier' ); ?></button>
+					<button type="button" class="button" id="pue-preview-btn"><?php esc_html_e( 'Preview without sending', 'hackrepair-post-update-email-notifier' ); ?></button><?php PUE_Help::render( 'pue_preview', __( 'Preview without sending', 'hackrepair-post-update-email-notifier' ) ); ?>
 					<span class="description"><?php esc_html_e( 'Send a sample of the saved template to your address, or preview the current form values here with sample post details.', 'hackrepair-post-update-email-notifier' ); ?></span>
 				</div>
 				<div id="pue-test-result">
@@ -321,6 +351,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			?>
 			<h2 id="logging"><?php esc_html_e( 'Recent Email Log', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
+			<?php PUE_Help::render( 'pue_log', __( 'Recent Email Log', 'hackrepair-post-update-email-notifier' ) ); ?>
 			<?php if ( empty( $logs ) ) : ?>
 				<p><?php esc_html_e( 'No log entries yet.', 'hackrepair-post-update-email-notifier' ); ?></p>
 			<?php else : ?>
@@ -348,9 +379,11 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<div class="pue-inline pue-log-actions">
 					<?php $this->form_open( 'pue-form-clear-log', 'pue_clear_log', 'pue_clear_log_action', 'pue_clear_log_nonce', 'pue-inline-form' ); ?>
 						<?php submit_button( __( 'Clear Log', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false, array( 'data-confirm' => __( 'Clear the email log?', 'hackrepair-post-update-email-notifier' ) ) ); ?>
+						<?php PUE_Help::render( 'pue_clear_log', __( 'Clear Log', 'hackrepair-post-update-email-notifier' ) ); ?>
 					</form>
 					<?php $this->form_open( 'pue-form-export-csv', 'pue_export_log', 'pue_export_log_action', 'pue_export_log_nonce', 'pue-inline-form' ); ?>
 						<?php submit_button( __( 'Export CSV', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false ); ?>
+						<?php PUE_Help::render( 'pue_export_log', __( 'Export CSV', 'hackrepair-post-update-email-notifier' ) ); ?>
 					</form>
 				</div>
 			<?php endif; ?>
@@ -368,10 +401,10 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<p><strong><?php esc_html_e( 'Current version:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-current"><?php echo esc_html( PUE_VERSION ); ?></span></p>
 				<p><strong><?php esc_html_e( 'Latest available (GitHub):', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-latest"><?php echo $latest_v ? esc_html( $latest_v ) : esc_html__( 'Not checked yet', 'hackrepair-post-update-email-notifier' ); ?></span></p>
 				<p><strong><?php esc_html_e( 'Last checked:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $fetched_at ) ) : '—'; ?></span></p>
-				<p class="pue-inline">
-					<button type="button" id="pue-check-updates-btn" class="button button-primary"><?php esc_html_e( 'Check for updates now', 'hackrepair-post-update-email-notifier' ); ?></button>
+				<div class="pue-inline">
+					<button type="button" id="pue-check-updates-btn" class="button button-primary"><?php esc_html_e( 'Check for updates now', 'hackrepair-post-update-email-notifier' ); ?></button><?php PUE_Help::render( 'pue_updates', __( 'Check for updates now', 'hackrepair-post-update-email-notifier' ) ); ?>
 					<input type="hidden" id="pue-force-check-nonce" value="<?php echo esc_attr( wp_create_nonce( 'pue_force_check' ) ); ?>" />
-				</p>
+				</div>
 			</div>
 
 			<h2 id="bulk-test"><?php esc_html_e( 'Bulk Test (Testing Only)', 'hackrepair-post-update-email-notifier' ); ?></h2>
@@ -383,11 +416,12 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 					?>
 				</p>
 				<?php $this->form_open( 'pue-form-bulk-test', 'pue_bulk_test_send', 'pue_bulk_test_action', 'pue_bulk_test_nonce', 'pue-bulk-form' ); ?>
-					<label><?php esc_html_e( 'Email:', 'hackrepair-post-update-email-notifier' ); ?> <input type="email" name="pue_bulk_email" required placeholder="you@example.com" /></label>
-					<label><?php esc_html_e( 'Count:', 'hackrepair-post-update-email-notifier' ); ?> <input type="number" name="pue_bulk_count" min="1" max="200" value="50" /></label>
-					<label><input type="checkbox" name="pue_bulk_plus" value="1"> <?php esc_html_e( 'Generate plus-aliases (name+1..+N@domain) — useful for Gmail to see N deliveries in one inbox.', 'hackrepair-post-update-email-notifier' ); ?></label>
-					<label><input type="checkbox" name="pue_bulk_log_detail" value="1"> <?php esc_html_e( 'Log detail (one row per message)', 'hackrepair-post-update-email-notifier' ); ?></label>
+					<label><?php esc_html_e( 'Email:', 'hackrepair-post-update-email-notifier' ); ?> <input type="email" name="pue_bulk_email" required placeholder="you@example.com" /></label><?php PUE_Help::render( 'pue_bulk_email', __( 'Bulk test email address', 'hackrepair-post-update-email-notifier' ) ); ?>
+					<label><?php esc_html_e( 'Count:', 'hackrepair-post-update-email-notifier' ); ?> <input type="number" name="pue_bulk_count" min="1" max="200" value="50" /></label><?php PUE_Help::render( 'pue_bulk_count', __( 'Bulk test count', 'hackrepair-post-update-email-notifier' ) ); ?>
+					<label><input type="checkbox" name="pue_bulk_plus" value="1"> <?php esc_html_e( 'Generate plus-aliases (name+1..+N@domain) — useful for Gmail to see N deliveries in one inbox.', 'hackrepair-post-update-email-notifier' ); ?></label><?php PUE_Help::render( 'pue_bulk_plus', __( 'Generate plus-aliases', 'hackrepair-post-update-email-notifier' ) ); ?>
+					<label><input type="checkbox" name="pue_bulk_log_detail" value="1"> <?php esc_html_e( 'Log detail (one row per message)', 'hackrepair-post-update-email-notifier' ); ?></label><?php PUE_Help::render( 'pue_bulk_log_detail', __( 'Log detail', 'hackrepair-post-update-email-notifier' ) ); ?>
 					<?php submit_button( __( 'Run Bulk Test', 'hackrepair-post-update-email-notifier' ), 'primary', 'submit', false ); ?>
+					<?php PUE_Help::render( 'pue_bulk_test', __( 'Run Bulk Test', 'hackrepair-post-update-email-notifier' ) ); ?>
 				</form>
 				<div id="pue-bulk-result"></div>
 			</div>
@@ -397,12 +431,13 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				<p><strong><?php esc_html_e( 'Restore Default Settings', 'hackrepair-post-update-email-notifier' ); ?>:</strong>
 				<?php esc_html_e( 'This will reset all plugin settings to their original defaults, including Notifications, Branding, Email Identity, and Logging. Your posts and users are not affected.', 'hackrepair-post-update-email-notifier' ); ?></p>
 				<?php $this->form_open( 'pue-form-reset-defaults', 'pue_reset_defaults', 'pue_reset_defaults_action', 'pue_reset_defaults_nonce', 'pue-inline-form' ); ?>
-					<button type="submit" class="button button-primary" data-confirm="<?php echo esc_attr__( 'Are you sure you want to reset all settings to defaults?', 'hackrepair-post-update-email-notifier' ); ?>"><?php esc_html_e( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ); ?></button>
+					<button type="submit" class="button button-primary" data-confirm="<?php echo esc_attr__( 'Are you sure you want to reset all settings to defaults?', 'hackrepair-post-update-email-notifier' ); ?>"><?php esc_html_e( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ); ?></button><?php PUE_Help::render( 'pue_reset', __( 'Reset to Defaults', 'hackrepair-post-update-email-notifier' ) ); ?>
 				</form>
 			</div>
 
 			<h2 id="support"><?php esc_html_e( 'Support', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
+				<?php PUE_Help::render( 'pue_support', __( 'Support', 'hackrepair-post-update-email-notifier' ) ); ?>
 				<p>☕ <?php echo wp_kses_post( __( 'If you found this plugin helpful, please <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener">buy Jim a cup of coffee?</a>', 'hackrepair-post-update-email-notifier' ) ); ?></p>
 				<p><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo wp_kses_post( __( 'Questions and Feedback: For questions, ideas, or help with the plugin, <a href="https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions" target="_blank" rel="noopener">visit GitHub Discussions</a>.', 'hackrepair-post-update-email-notifier' ) ); ?></p>
 			</div>

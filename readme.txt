@@ -7,7 +7,7 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -111,6 +111,10 @@ Note for developers: this plugin sends one email per recipient (individual-only)
 
 Deleting the plugin removes its settings and data on every site of a multisite network: all `pue_*` options (settings, log, bulk-test usage, SMTP notice state), the `_pue_do_not_notify` and `_pue_last_sent` post meta, queued background jobs and their WP-Cron events, and its update-status transients.
 
+== Settings help ==
+
+Use the question-mark icons beside settings and actions for explanations and practical steps. Start with Default for each update to choose opt-in or opt-out behavior. Hover, focus with the keyboard, or tap to open help; press Escape or click outside to close it. Without JavaScript, the icons still work as native expandable help. Opening help never changes settings or sends email.
+
 == Background delivery and recovery ==
 
 Automatic mode queues lists above 20 recipients; batches require WP-Cron or a server cron job. Recovery runs every 15 minutes and retries missing scheduling up to five consecutive failures. Site Health flags scheduling problems even when logging is off. Use `wp pue jobs` to inspect status and `wp pue retry JOB_ID --yes` to schedule only unattempted recipients again.
@@ -181,6 +185,11 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 1. Settings screen showing roles, post types, template, and options
 
 == Changelog ==
+
+= 1.6.1 =
+* New: Contextual help tooltips for notification rules, templates, branding, sender settings, preview/test actions, logs, updates, bulk testing and reset.
+* Accessibility: Help opens with hover, keyboard focus or tap; Escape and clicking outside close it. Native disclosures remain usable without JavaScript.
+* Includes the unreleased 1.6.0 features and reliability fixes.
 
 = 1.6.0 =
 * New: Site-wide default for the per-post checkbox (opt in or opt out), first-publish vs updates-only notifications, and a per-post cooldown.

@@ -4,7 +4,7 @@ Plugin Name: The Hack Repair Guy's Post Update Email Notifier
 Plugin URI: https://github.com/tvcnet/hackrepair-post-update-email-notifier
 Update URI: https://github.com/tvcnet/hackrepair-post-update-email-notifier
 Description: Sends an HTML email to selected user roles whenever a post or page is updated. Includes settings to configure roles, subject, message, branding, email identity, and a test email.
-Version: 1.6.0
+Version: 1.6.1
 Author: Jim Walker, The Hack Repair Guy
 Author URI: https://hackrepair.com/
 License: GPL2
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'PUE_VERSION' ) ) {
-	define( 'PUE_VERSION', '1.6.0' );
+	define( 'PUE_VERSION', '1.6.1' );
 }
 if ( ! defined( 'PUE_MAIN_FILE' ) ) {
 	define( 'PUE_MAIN_FILE', __FILE__ );

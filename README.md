@@ -21,7 +21,7 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 
 **[Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)** · **[Plugin documentation](readme.txt)** · **[Report an issue](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues)**
 
-**Release status:** This branch describes the upcoming 1.6.0 candidate. The latest published release is still 1.5.0; the new features below will ship with 1.6.0 after final review.
+**Release status:** This branch describes the upcoming 1.6.1 candidate. The latest published release is still 1.5.0; the new features below will ship with 1.6.1 after final review.
 
 ## Features
 
@@ -38,6 +38,7 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 | Email previews | Preview the email right in Settings without sending, or send yourself a test. An optional plain-text alternative is also available. |
 | Optional email log | Keep 50, 200 or 1,000 entries, inspect failures, skip reasons and background progress, and export a CSV. Included in WordPress personal data export and erasure. |
 | Site Health and WP-CLI | Site Health flags repeated failures and sender-domain mismatches; `wp pue` tests, sends, counts recipients and exports the log. |
+| Contextual help | Question-mark help beside settings and actions explains what each feature does and how to use it. Hover, focus or tap to read; Escape or click outside to close. |
 | Familiar WordPress interface | Settings cards, inline feedback, native View Details and an Other THRG Plugins guide. |
 | GitHub updates | Receive standard WordPress update notices for matching published release packages. |
 

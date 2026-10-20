@@ -8,9 +8,7 @@ The latest 1.4.4 ZIP matched all plugin source bytes; its .git/index differed. I
 
 ## Current version
 
-Release-readiness fixes are implemented after main `11fbfaf`; local and real-WordPress validation passed. See docs/reviews/2026-10-19-1.6.0-release-readiness.md for the findings and verification results. Version 1.6.0 remains unpublished.
-
-1.6.0 is on main (pushed October 19, 2026; not tagged or released; see "1.6.0 review candidate" below). The unpublished 1.5.1 cleanup is included and superseded by 1.6.0. 1.5.0, approved for GitHub publication on October 19, 2026. Bootstrap constants/autoloader plus explicit focused includes. Preserve installed folder, PHP entrypoint, `pue_*` option keys, meta key and developer hook names. Replace Google Drive update discovery with vetted GitHub release assets. No repository transfer. No Drive manifest publication is implied. The user approved packaging and full GitHub publication after reviewing the build.
+1.6.1 is the current contextual-help review candidate, superseding unpublished 1.6.0 and 1.5.1. The latest public release remains 1.5.0. Runtime behavior and existing saved options are preserved; help explains controls without changing them. Historical 1.6.0 verification is retained below.
 
 ## Source map
 
@@ -25,6 +23,7 @@ Release-readiness fixes are implemented after main `11fbfaf`; local and real-Wor
 - `includes/class-pue-defaults.php`: single source of option defaults. `class-pue-delivery.php`: per-recipient sends, plaintext part, WP-Cron background batches. `class-pue-admin-actions.php`: every settings action for admin-post (no JS, redirect-after-POST) and admin-ajax. `class-pue-site-health.php`, `class-pue-cli.php`: Site Health tests and `wp pue` commands.
 - `tests/integration/run.php`: real-WordPress checks via `wp eval-file`; mail captured with pre_wp_mail, fixture deleted and options restored.
 - `plugin-update-checker/`: complete vendored library and required nested vendor dependencies; never reformat it.
+- `includes/class-pue-help.php` and `assets/js/help.js`: translated native help disclosures with hover/focus/tap enhancement.
 - `assets/`: local styles/scripts/branding/icons. `docs/`: review, plan, history. `tests/`: focused regressions. `scripts/`: deterministic builder. `releases/`: source release notes. `dist/`: ignored ZIPs/checksums.
 
 ## Evidence and limits
@@ -92,3 +91,13 @@ Verification: shared PHPCS 26 files; notifications 35 assertions, compatibility 
 ### Revised 1.6.0 CI confirmation
 
 Implementation commit `355d2ff404bfba94a0b3adcd5bcaee59dda8d53f` passed https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39370866988: standalone PHP 7.4/8.3; WordPress latest on PHP 8.1/8.3; WordPress 6.6 on PHP 8.1. All five jobs passed, including the new queue-fault integration suite. The review package and installed runtime files are unchanged by this documentation-only evidence update. Publication remains pending final review; v1.5.0 is still the latest public release.
+
+## 1.6.1 contextual-help candidate (October 20, 2026)
+
+Added 31 translated help topics, starting with Default for each update: both policies, the per-post choice returning to the site default, saving and recipient requirements. All settings groups and diagnostic actions now explain behavior, practical steps and relevant limits. Native details/summary controls work without the enhancement script; JavaScript adds hover/focus/tap, one-open-at-a-time, Escape/outside dismissal and viewport positioning. A narrow-screen native-fallback overflow found during review was fixed. Sender-name help also clarifies that the override requires a valid From Email. Notification logic and saved options are unchanged.
+
+Local evidence: shared PHPCS passes 27 configured files; notification, compatibility, queue-recovery, export/admin-action, updater and update-notice regressions pass; new help suite passes seven assertions (native semantics, unique IDs, escaping, unknown-key handling and explanatory copy). All three JavaScript syntax checks and the restrictive-source packaging regression pass. Translation template regenerated.
+
+Zendogs browser evidence: v1.6.1 active, all 31 help controls present, no details nested in labels/paragraphs/headings. Hover/focus open, Escape closes while retaining focus, Tab moves to the field, click pins, another help closes the previous one, and outside click dismisses. At 394px the enhanced panel stays inside the viewport with no horizontal overflow. Native disclosure verified with scripts disabled for page load on desktop; at 394px, blocking help.js specifically verified open/close and no overflow after the CSS fix. Browser JavaScript/network/emulation overrides restored. New help tested without saving settings, sending mail or triggering bulk actions; mail transport behavior relies on the unchanged regression-tested path and the prior 1.6.0 integration evidence.
+
+Review ZIP: `dist/review-help/hackrepair-post-update-email-notifier.1.6.1.zip`, 159 files, one correct root, all files 0644, source bytes and complete updater dependencies verified by builder. SHA-256 `006f45d63f57fbbe3ca3fa5b05afbdb3a65609094bae93301292d9df31ca0c0f`. All 159 installed Zendogs files match the ZIP. Previous installed plugin backed up at `/tmp/pue-before-1.6.1.tgz` in the container. Older ZIPs preserved. GitHub CI confirmation is pending the implementation push. No tag or public release created; public latest verified as v1.5.0.

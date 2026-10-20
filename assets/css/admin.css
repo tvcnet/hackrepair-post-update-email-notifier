@@ -119,3 +119,18 @@
 .pue-preview-frame{width:100%;height:60vh;border:1px solid #dcdcde;border-radius:6px;background:#fff}
 .pue-modal__close:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
 @media (max-width:600px){.pue-modal__dialog,.pue-modal__dialog--wide{margin:12px;max-width:none}}
+
+/* Contextual help: a native disclosure also works without JavaScript. */
+.pue-help{position:relative;display:inline-block;vertical-align:middle;margin-inline-start:6px;font-size:13px;font-weight:400;line-height:1.5;text-align:start}
+.pue-help > summary{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;box-sizing:border-box;border:1px solid #b34700;border-radius:50%;background:#fff;color:#8b3700;font-size:14px;font-weight:700;list-style:none;cursor:pointer}
+.pue-help > summary::-webkit-details-marker{display:none}
+.pue-help > summary:hover,.pue-help[open] > summary{background:#fff3e6}
+.pue-help > summary:focus-visible{outline:2px solid #1d4ed8;outline-offset:3px}
+.pue-help-content{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:100100;box-sizing:border-box;width:min(340px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;padding:14px 16px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;color:#1d2327;font-size:13px;font-weight:400;line-height:1.6;box-shadow:0 5px 18px rgba(0,0,0,.16);white-space:normal}
+.pue-help:not([open]) > .pue-help-content{display:none}
+.pue-help[open] > .pue-help-content{display:block}
+.pue-help-ready > .pue-help-content{position:fixed;inset-inline-start:auto;top:auto}
+.pue-recipient-count{display:inline-block}
+/* Keep native fallback help inside narrow viewports when the enhancement script is unavailable. */
+@media (max-width:782px){.pue-help:not(.pue-help-ready) > .pue-help-content{position:fixed;inset-inline-start:12px;top:72px;max-height:calc(100vh - 84px)}}
+@media print{.pue-help{display:none}}
