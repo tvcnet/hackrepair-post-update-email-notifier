@@ -113,6 +113,8 @@ Deleting the plugin removes its settings and data on every site of a multisite n
 
 == Settings help ==
 
+Explanations live in the help icons to keep the settings page compact. The placeholder reference, current recipient count, test-email warning and daily allowance remain visible.
+
 A small illustration beside Default for each update shows where to uncheck “Don’t send email notifications” in the post editor to send an update email. The illustration is a guide, not another setting.
 
 Use the question-mark icons beside settings and actions for explanations and practical steps. Start with Default for each update to choose opt-in or opt-out behavior. Hover, focus with the keyboard, or tap to open help; press Escape or click outside to close it. Without JavaScript, the icons still work as native expandable help. Opening help never changes settings or sends email.
@@ -189,6 +191,7 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 == Changelog ==
 
 = 1.6.1 =
+* Clarity: Removed repeated descriptions where help already explains the control; expanded logging help to cover privacy export/erasure and CSV export.
 * Fixed: Refresh admin styling when an updated package uses the same plugin version.
 * Clarity: Added a post-editor checkbox illustration beside Default for each update, showing how to uncheck the box to send an update email.
 * Cleanup: Removed the settings-page Update status container and its manual-check code. Use the standard WordPress Plugins screen for plugin updates.

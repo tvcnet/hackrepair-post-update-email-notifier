@@ -101,7 +101,6 @@
 .pue-head{display:flex;align-items:center;gap:14px;margin:12px 0 18px;color:#18354b}.pue-head h1{color:#18354b;margin:2px 0;padding:0;font-size:28px;font-weight:700}.pue-head p{margin:0}.pue-head .pue-eyebrow{color:#b34700;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.pue-version{font-size:12px;font-weight:400;color:#50575e;margin-left:6px;white-space:nowrap}
 
 /* 1.6.0: classes replacing inline styles */
-.pue-muted{color:#6b6b6b}
 .pue-inline-form{display:inline-block;margin:0}
 .pue-inline--top{padding-top:8px}
 .pue-log-actions{padding-top:10px}
