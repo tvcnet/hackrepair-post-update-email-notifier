@@ -13,8 +13,10 @@
 
 See PROJECT.md for limitations and the final source state. Consider Codex Security review separately; it has not been run automatically.
 
-Observed runtime: WordPress 7.1, PHP 8.2.33. Tested-up-to metadata is 7.1 for this review candidate; 7.4/8.3 CI is configured but not yet observed.
+Observed runtime: WordPress 7.1, PHP 8.2.33. Tested-up-to metadata is 7.1 for this review candidate; GitHub CI passed on PHP 7.4 and 8.3 (syntax, isolated regressions and packaging), run 39347575049; this does not establish a full WordPress/editor matrix on those runtimes.
 
 A stale November 2025 rebase-merge directory was preserved in the outer baseline backup and cleared with git rebase --quit. HEAD, worktree and index were preserved. The rebuild is isolated on codex/1.5.0-standardization, keeping main and published releases unchanged.
 
 The final family guide includes all four companion plugins; native plugin-information output was checked after adding the fourth card.
+
+CI evidence: https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39347575049. Final review ZIP SHA-256: `144a5add9cd4785ef45b8ffdef82c741f1ef159605b8179764ee4e979e949b4c`. Zendogs installed files match this ZIP.
