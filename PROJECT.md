@@ -50,3 +50,7 @@ View Details review correction: rely on the updater’s existing row link to avo
 ## Publication result
 
 Version 1.5.0 is published under tvcnet: https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/tag/v1.5.0. ZIP digest matches GitHub. Zendogs discovered the published asset and WordPress installed it, preserving active status; all 151 installed files match the ZIP. The anonymous API quota was exhausted during verification, so discovery was verified with temporary process-only authentication. See execution evidence for the exact scope and rate-limit limitation. Main-branch CI passed run 39348638013.
+
+## GitHub presentation
+
+The repository landing page follows Disable Other Plugin Notices: animated heart above the centered title, release/requirements/CI badges, product introduction, features, setup, FAQs and maintainer/support links. The GitHub About description and topics identify the notification workflow. Full changelog details remain in readme.txt. This presentation update does not change the published 1.5.0 package.

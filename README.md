@@ -1,45 +1,121 @@
-<p align="center"><img src=".github/branding/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench" width="144" height="144"></p>
+<p align="center">
+  <img src=".github/branding/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench logo" width="144" height="144">
+</p>
 
 <h1 align="center">The Hack Repair Guy's Post Update Email Notifier</h1>
 
-Notify selected WordPress roles when published content is updated. Customize the email, exclude the updating user, review optional logs, and test your mail configuration.
+**Keep your team or clients informed when published WordPress content changes, with branded emails sent to the roles you choose.**
 
-**Version 1.5.0.** [Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest). Older Google Drive installations require a one-time manual ZIP update to receive the GitHub updater.
+[![Latest release](https://img.shields.io/github/v/release/tvcnet/hackrepair-post-update-email-notifier)](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)
+[![License: GPL v2](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+[![Requires PHP: 7.4+](https://img.shields.io/badge/Requires%20PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
+[![Requires WordPress: 6.6+](https://img.shields.io/badge/WordPress-6.6%2B-21759b.svg)](https://wordpress.org/)
+[![Tested up to: 7.1](https://img.shields.io/badge/Tested%20up%20to-7.1-21759b.svg)](readme.txt)
+[![Plugin checks](https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/workflows/checks.yml/badge.svg)](https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/workflows/checks.yml)
+
+Updating a page is easy. Remembering to tell everyone who needs to know is another task. Editors need to know when a reference changes, clients want to review revised pages, and site owners need a useful record of what was announced.
+
+**The Hack Repair Guy's Post Update Email Notifier** sends individual HTML emails to users in selected WordPress roles when you announce an update to published content. Customize the message and branding, include a link to the updated page, and optionally exclude the person making the change.
+
+Notifications are intentional: **Don’t send email notifications** is checked by default. Uncheck it for the update you want to announce. Afterward, the post returns to its default skip setting, helping routine edits stay quiet.
+
+**[Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)** · **[Plugin documentation](readme.txt)** · **[Report an issue](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues)**
 
 ## Features
 
-- Individual emails to users in selected roles; optional updating-user exclusion and public post-type selection.
-- Per-post **Don’t send email notifications** defaults to checked. Explicitly uncheck it for an update you want to announce; the flag returns to skip afterward.
-- Customizable HTML message, header/footer, and From/Reply-To settings. Existing templates and options are preserved.
-- Subjects identify the configured domain and plugin: `[example.com] [Post Update Email Notifier] Post Updated: …`.
-- Full-width email wrapper, template placeholders, and optional plain-text alternative.
-- Single-recipient test and a separate **Bulk Test (Testing Only)** control. Test buttons send real mail through WordPress; use a local catcher for development.
-- Optional Recent Email Log with 50/200/1000 retention, CSV export, failure context and skipped entries. Acceptance for sending does not confirm delivery.
-- Native View Details, Other THRG Plugins, local branding assets and reduced-motion support.
-- GitHub release updates from the existing `tvcnet/hackrepair-post-update-email-notifier` repository.
+| Feature | What you control |
+| --- | --- |
+| Role-based recipients | Choose which WordPress roles receive notifications and optionally exclude the updating user. |
+| Per-update choice | Announce a particular published-content update using the checkbox in the editor. |
+| Content selection | Limit notifications to selected public post types. |
+| Branded HTML email | Customize the subject, message, header, colors, footer, From and Reply-To settings. The email wrapper fills the available width. |
+| Template placeholders | Include the title, public URL, author, editor, site name and update time without rewriting each message. |
+| Recognizable subjects | Identify the site and plugin: `[example.com] [Post Update Email Notifier] Post Updated: About Us`. |
+| Email previews | Send a single-recipient test before enabling notifications. An optional plain-text alternative is also available. |
+| Optional email log | Keep 50, 200 or 1,000 entries, inspect failures and skipped notifications, and export a CSV. |
+| Familiar WordPress interface | Settings cards, inline feedback, native View Details and an Other THRG Plugins guide. |
+| GitHub updates | Receive standard WordPress update notices for matching published release packages. |
 
-## Installation and use
+## How it works
 
-Upload the release ZIP through Plugins → Add New → Upload Plugin. The installed folder remains `hackrepair-post-update-email-notifier`; the entrypoint remains `post-update-email-notifier.php`. Open **Settings → Post Update Notifier**. No notification roles are selected by default. Configure and test mail before enabling notifications. A PHP/WordPress update can invoke hooks outside the editor: leave default skip behavior intact unless intentionally announcing an update.
+1. **Choose your recipients.** Open **Settings → Post Update Notifier** and select the roles to notify. No roles are selected by default.
+2. **Prepare your email.** Set the subject, message, branding and email identity, then send yourself a test.
+3. **Announce an update.** Edit published content, uncheck **Don’t send email notifications**, and save the update.
+4. **Review the result.** Each selected recipient receives an individual message through WordPress mail. If logging is enabled, inspect the recorded sending results.
 
-Requirements remain WordPress 6.6+ and PHP 7.4+. The verified local runtime is WordPress 7.1 / PHP 8.2.33; see PROJECT.md for the evidence and limitations.
+Autosaves and revisions are skipped. Creating a new post does not trigger an update notification. The per-post checkbox returns to the skip setting after the announced update.
 
-## Privacy and updates
+## Installation
 
-Recipient addresses, subjects and content/context can appear in optional logs. Review retention and exports accordingly. Messages use the site's WordPress mail configuration; no SMTP credentials are stored by this plugin. GitHub update checks reveal standard connection information such as the server IP, but do not include post content or recipient lists.
+1. Download `hackrepair-post-update-email-notifier.<version>.zip` from the [latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest).
+2. In WordPress, open **Plugins → Add New → Upload Plugin** and select the ZIP.
+3. Install and activate **The Hack Repair Guy's Post Update Email Notifier**.
+4. Open **Settings → Post Update Notifier**, configure recipients and send a test email.
 
-The updater accepts only a published release with matching `vX.Y.Z` tag and uploaded `hackrepair-post-update-email-notifier.X.Y.Z.zip`. It rejects source-archive fallbacks. Older Drive-based installations require a one-time manual ZIP update, or an explicitly approved bridge manifest; see [migration notes](docs/plans/1.5.0-standardization.md).
+Requires **WordPress 6.6+** and **PHP 7.4+**. Use the uploaded plugin ZIP from the release assets; it contains the correct installed folder and bundled updater dependencies.
 
-## Development
+**Upgrading from an older Google Drive-based version?** Upload the release ZIP manually once and confirm the replacement in WordPress. Existing settings are preserved. That update installs the GitHub updater for future releases.
 
-Read [PROJECT.md](PROJECT.md), [MAINTAINING.md](MAINTAINING.md) and [the implementation plan](docs/plans/1.5.0-standardization.md). Run the shared PHPCS, PHP regressions and permission-safe builder. Consider Codex Security review separately; do not run that tool automatically.
+## Updates
+
+The plugin checks this repository's [GitHub releases](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases). A matching `vX.Y.Z` tag and uploaded `hackrepair-post-update-email-notifier.X.Y.Z.zip` are required before WordPress offers an update. Source-archive fallbacks are rejected.
+
+GitHub may temporarily rate-limit update checks from a shared server IP. An unavailable update check does not stop notification features from working. See the [migration and update plan](docs/plans/1.5.0-standardization.md) for maintenance details.
+
+## Privacy and email delivery
+
+Messages use your site's WordPress mail configuration. The plugin does not store SMTP credentials. Configure your site's mail service and test it before enabling notifications; **acceptance for sending does not confirm delivery**.
+
+Logging is optional. When enabled, recipient addresses, subjects and message context can appear in the log and CSV exports. Choose an appropriate retention limit and handle exports accordingly.
+
+GitHub receives standard connection information during update checks, such as the server IP. Post content and recipient lists are not included in those checks.
+
+## FAQ
+
+**Will every edit send an email?**
+
+No. The per-post **Don’t send email notifications** checkbox defaults to checked. Explicitly uncheck it for the update you want to announce. No notification roles are enabled by default.
+
+**Can I notify clients as well as editors?**
+
+Recipients must have WordPress accounts in the roles you select. Choose roles carefully: selecting a role includes its eligible users.
+
+**Will recipients see each other's email addresses?**
+
+The default notification workflow sends a separate message to each recipient.
+
+**Can I keep my existing email templates?**
+
+Yes. The upgrade preserves saved templates and settings. Subjects include the configured domain and plugin name, and the HTML wrapper uses the available width.
+
+**What should I check if mail does not arrive?**
+
+Send a test email, review the optional log, and check your site's SMTP or mail-provider logs and the recipient's spam folder. A successful WordPress sending result is not a delivery receipt.
+
+**Is this designed for large mailing lists?**
+
+Sending is synchronous. Large recipient groups can make the update request slow or exceed hosting limits. Evaluate your hosting and mail-provider limits before enabling large groups. The separate Bulk Test control is for testing and sends real mail.
+
+## For developers
+
+The plugin provides hooks for placeholders, recipient selection, subjects, headers and final HTML. See [readme.txt](readme.txt) for signatures and examples.
+
+For the source layout, validation evidence and contribution workflow, read [PROJECT.md](PROJECT.md), [MAINTAINING.md](MAINTAINING.md) and [CONTRIBUTING.md](CONTRIBUTING.md). CI checks PHP 7.4 and 8.3; local WordPress integration was verified on WordPress 7.1 / PHP 8.2.33. These checks do not establish external email delivery or large-recipient performance.
+
+## Third-party code
+
+Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) by Jānis Elsts, included in `plugin-update-checker/` under its MIT license.
+
+## Author and support
+
+**[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
+
+[Report a bug or request a feature](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+
+## License
+
+GPLv2. See the [GNU General Public License v2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) and the repository's [license notice](LICENSE).
 
 ## Changelog
 
-See the **Changelog** section of [readme.txt](readme.txt). Historical project notes are in docs/history and are not current implementation instructions.
-
-## Support and license
-
-[GitHub repository](https://github.com/tvcnet/hackrepair-post-update-email-notifier) · [Issues](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues) · [The Hack Repair Guy](https://hackrepair.com/)
-
-GPLv2. See LICENSE; the original license.txt is retained.
+See the **Changelog** section of [readme.txt](readme.txt).
