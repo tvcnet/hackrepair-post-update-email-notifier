@@ -6,6 +6,10 @@ Canonical Git checkout: `Post Update Email Notifier/hackrepair-post-update-email
 
 The latest 1.4.4 ZIP matched all plugin source bytes; its .git/index differed. It included the Git repository and development metadata. This is the initial packaging defect, independent of the later code refactor. Missing PUE_Notifier bootstrap was conditional, so no container class actually ran. Active services were loaded through the autoloader and global compatibility functions. A duplicated settings renderer and duplicate helper fallbacks obscured the execution path.
 
+## Attribution and naming policy
+
+Do not add third-party AI-assistant or provider names, branding, avatars, profile links, session URLs or credits to plugin code, public documentation, release notes, assets, branch names or commit metadata. Use the human maintainer’s configured Git identity. Do not automatically add AI co-author, generator or session trailers. Preserve legally required third-party dependency license notices. Changes to published Git history or tags require explicit approval and a recoverable backup.
+
 ## Current version
 
 1.6.2 is the latest published release, incorporating the previously unpublished 1.5.1, 1.6.0 and 1.6.1 work. The user explicitly authorized publication on October 20, 2026. Published ZIP/checksum, real updater discovery/install, active Zendogs runtime and View Details are verified. Existing saved settings are preserved. See docs/reviews/2026-10-20-1.6.2-release-verification.md; historical candidate evidence is retained.
@@ -80,7 +84,7 @@ Not verified: Block editor panel in a browser (Zendogs uses the Classic editor; 
 
 ### 1.6.0 on main: CI and post-push checks
 
-Pushed to main (fast-forward from claude/1.6.0, which also carries the 1.5.1 commit). Main CI run https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39358307587 passed: php 7.4 and 8.3 (syntax, all isolated suites, JS syntax, packaging) and wordpress 8.1 and 8.3 (wp-env, latest WordPress, 13 of 13 integration checks). The wp-env PHP 7.4 image failed to build in the first run (Debian package 404s, run 39357388401), so the WordPress job now uses 8.1/8.3; PHP 7.4 remains covered by the php job. After the push, a package built from the main checkout matched all 157 files installed on Zendogs, the integration script passed there again, and the settings page and front page loaded without PHP notices in Ego Lite. No tag or release has been created.
+Pushed to main by fast-forwarding the 1.6.0 development work, which also includes the 1.5.1 commit. Main CI run https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/runs/39358307587 passed: php 7.4 and 8.3 (syntax, all isolated suites, JS syntax, packaging) and wordpress 8.1 and 8.3 (wp-env, latest WordPress, 13 of 13 integration checks). The wp-env PHP 7.4 image failed to build in the first run (Debian package 404s, run 39357388401), so the WordPress job now uses 8.1/8.3; PHP 7.4 remains covered by the php job. After the push, a package built from the main checkout matched all 157 files installed on Zendogs, the integration script passed there again, and the settings page and front page loaded without PHP notices in Ego Lite. No tag or release has been created.
 
 ## 1.6.0 release-readiness fixes
 

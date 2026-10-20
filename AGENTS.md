@@ -1,3 +1,7 @@
 # Project workflow
 
 Refer to the assistant as Dave. Canonical source is this Git checkout; read PROJECT.md and the current plan before changing code. Preserve settings keys, hook names, PHP entrypoint and installed directory. Preserve old ZIPs. Use the shared PHPCS at /Volumes/BACKUP8TB2/plugins/PHPCS/run-phpcs.sh. Never package .git, source artwork, backups, tests, docs or dev tooling. Use scripts/build-release.py; require one hackrepair-post-update-email-notifier/ root, 0644 files, complete updater dependencies and SHA-256. No published tag/asset overwrites. Test only on Zendogs localhost:8081 with Mailpit; no production mail or bulk sends during automated tests. Keep project docs and evidence current. Consider Codex Security review separately; do not run it automatically. Publication is a separate gate after the review build is approved.
+
+## Attribution and naming
+
+Do not add third-party AI-assistant or provider names, branding, avatars, profile links, session URLs or credits to code, public docs, release notes, assets, branch names or commit metadata. Use the human maintainer’s configured Git identity; never automatically add AI co-author, generator or session trailers. Preserve legally required third-party dependency license notices. Published history/tag rewrites require explicit approval and a recoverable backup.
