@@ -42,6 +42,7 @@ function pue_uninstall_site() {
 	delete_transient( 'pue_smtp_probe' );
 	if ( function_exists( 'wp_unschedule_hook' ) ) {
 		wp_unschedule_hook( 'pue_send_batch' );
+		wp_unschedule_hook( 'pue_recover_jobs' );
 	}
 	// Queued background jobs and their locks.
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time uninstall cleanup of this plugin's own rows.

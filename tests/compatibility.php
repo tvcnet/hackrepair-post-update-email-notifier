@@ -31,7 +31,7 @@ $erase=PUE_Logger::instance()->privacy_erase('gone@example.test');verify($erase[
 // Site Health sender alignment
 function esc_url_raw($u){return $u;}
 $GLOBALS['options']['pue_from_email']='news@other-domain.test';verify(PUE_Site_Health::test_from_alignment()['status']==='recommended','mismatched From domain is flagged in Site Health');
-$GLOBALS['options']['pue_from_email']='news@example.test';verify(PUE_Site_Health::test_from_alignment()['status']==='good','aligned From domain passes Site Health');
+$GLOBALS['options']['pue_from_email']='news@news.example.test';verify(PUE_Site_Health::test_from_alignment()['status']==='good','aligned From domain passes Site Health');
 $GLOBALS['options']['pue_logs']=array(array('ts'=>time(),'sent'=>0,'mode'=>'skipped'),array('ts'=>time(),'sent'=>0,'mode'=>'skipped'),array('ts'=>time(),'sent'=>0,'mode'=>'skipped'));
 verify(PUE_Site_Health::test_failures()['status']==='good','skipped updates never trigger the delivery-failure warning');
 
@@ -39,3 +39,18 @@ verify(PUE_Site_Health::test_failures()['status']==='good','skipped updates neve
 function wp_enqueue_style(...$a){}function plugins_url($p='',$f=''){return 'https://example.test/'.$p;}
 $info=(object)array('version'=>'9.9.9','sections'=>array('description'=>'x'));$args=(object)array('slug'=>'hackrepair-post-update-email-notifier');
 $out=pue_companion_plugin_info($info,'plugin_information',$args);verify($out->version==='9.9.9'&&isset($out->sections['other_THRG_plugins']),'View Details shows the available version, not the installed one');
+
+// Literal address-domain comparisons do not guess public suffix ownership.
+foreach(array(
+ array('https://client.co.uk','sender@unrelated.co.uk','recommended'),
+ array('https://client.co.uk','sender@client.co.uk','good'),
+ array('https://www.Client.CO.UK','sender@client.co.uk','good'),
+ array('https://client.co.uk','sender@notclient.co.uk','recommended'),
+ array('https://news.client.co.uk','sender@client.co.uk','recommended'),
+ array('https://client.com.au','sender@unrelated.com.au','recommended')
+) as $case){$GLOBALS['fixture_home_url']=$case[0];$GLOBALS['options']['pue_from_email']=$case[1];verify(PUE_Site_Health::test_from_alignment()['status']===$case[2],'sender comparison '.$case[0].' / '.$case[1]);}
+unset($GLOBALS['fixture_home_url']);
+
+$GLOBALS['options']['pue_logs']=array(array('job_id'=>'recovered','sent'=>0,'mode'=>'queued','error'=>'Old scheduler error','error_code'=>'pue_schedule_failed'));
+PUE_Logger::instance()->update_job_entry('recovered',array('error'=>'','error_code'=>''));
+verify($GLOBALS['options']['pue_logs'][0]['error']===''&&$GLOBALS['options']['pue_logs'][0]['error_code']==='','recovered log entries clear stale scheduling diagnostics');

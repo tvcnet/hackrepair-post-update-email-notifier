@@ -18,3 +18,5 @@ SECURITY.md
 AGENTS.md
 phpcs.xml.dist
 .wp-env.json
+
+.wp-env.override.json

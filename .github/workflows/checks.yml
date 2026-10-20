@@ -20,6 +20,7 @@ jobs:
           find . -name '*.php' -not -path './vendor/*' -not -path './tests/integration/*' -print0 | xargs -0 -n1 php -l
           php tests/notifications.php
           php tests/compatibility.php
+          php tests/queue-recovery.php
           php tests/export-log.php
           php tests/updater.php
           php tests/update-notices.php
@@ -43,7 +44,13 @@ jobs:
       matrix:
         # The wp-env PHP 7.4 image no longer builds (its Debian packages return 404).
         # PHP 7.4 compatibility is covered by the php job's syntax and behavior tests.
-        php: ['8.1', '8.3']
+        include:
+          - php: '8.1'
+            wordpress: latest
+          - php: '8.3'
+            wordpress: latest
+          - php: '8.1'
+            wordpress: '6.6'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -52,6 +59,11 @@ jobs:
       - name: Start WordPress
         env:
           WP_ENV_PHP_VERSION: ${{ matrix.php }}
-        run: npx --yes @wordpress/env@10 start
+          PUE_WP_CORE: ${{ matrix.wordpress }}
+        run: |
+          node -e "require('fs').writeFileSync('.wp-env.override.json', JSON.stringify({core: process.env.PUE_WP_CORE === 'latest' ? null : 'https://wordpress.org/wordpress-' + process.env.PUE_WP_CORE + '.zip'}))"
+          npx --yes @wordpress/env@10 start
       - name: Integration checks
-        run: npx --yes @wordpress/env@10 run cli wp eval-file wp-content/plugins/hackrepair-post-update-email-notifier/tests/integration/run.php
+        run: |
+          npx --yes @wordpress/env@10 run cli wp eval-file wp-content/plugins/hackrepair-post-update-email-notifier/tests/integration/run.php
+          npx --yes @wordpress/env@10 run cli wp eval-file wp-content/plugins/hackrepair-post-update-email-notifier/tests/integration/queue-recovery.php

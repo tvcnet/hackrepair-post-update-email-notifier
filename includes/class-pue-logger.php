@@ -77,9 +77,10 @@ if ( ! class_exists( 'PUE_Logger' ) ) {
 				if ( isset( $logs[ $i ]['job_id'] ) && $logs[ $i ]['job_id'] === $job_id ) {
 					$fields     = array_filter(
 						$fields,
-						static function ( $v ) {
-							return '' !== $v;
-						}
+						static function ( $v, $key ) {
+							return '' !== $v || in_array( $key, array( 'error', 'error_code' ), true );
+						},
+						ARRAY_FILTER_USE_BOTH
 					);
 					$logs[ $i ] = array_merge( $logs[ $i ], $fields );
 					update_option( 'pue_logs', $logs, false );

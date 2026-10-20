@@ -19,7 +19,10 @@ function pue_it_jobs() {
 	$ids = array();
 	foreach ( (array) _get_cron_array() as $events ) {
 		foreach ( (array) ( $events['pue_send_batch'] ?? array() ) as $event ) {
-			$ids[] = $event['args'][0];
+			$job = get_option( 'pue_job_' . $event['args'][0] );
+				if ( is_array( $job ) && (int) $job['post_id'] === (int) ( $GLOBALS['pue_it_post_id'] ?? -1 ) ) {
+					$ids[] = $event['args'][0];
+				}
 		}
 	}
 	return $ids;
@@ -38,7 +41,9 @@ $pue_backup = array();
 foreach ( PUE_Defaults::stored_keys() as $pue_key ) {
 	$pue_backup[ $pue_key ] = get_option( $pue_key, '__pue_missing__' );
 }
+$pue_registered_default = 'skip' === pue_send_policy();
 $pue_id = 0;
+$pue_future_id = 0;
 try {
 	$pue_admin = get_users( array( 'role' => 'administrator', 'number' => 1 ) );
 	wp_set_current_user( $pue_admin[0]->ID );
@@ -47,9 +52,10 @@ try {
 	}
 
 	$reg = get_registered_meta_keys( 'post', 'post' );
-	pue_it_check( isset( $reg['_pue_do_not_notify'] ) && true === $reg['_pue_do_not_notify']['default'], 'per-post flag registered with the skip default' );
+	pue_it_check( isset( $reg['_pue_do_not_notify'] ) && $pue_registered_default === $reg['_pue_do_not_notify']['default'], 'per-post flag registered with the configured site default' );
 
 	$pue_id = wp_insert_post( array( 'post_title' => 'PUE integration fixture', 'post_status' => 'draft', 'post_content' => 'one two', 'post_type' => 'post' ) );
+	$GLOBALS['pue_it_post_id'] = $pue_id;
 	pue_it_check( 0 === count( $pue_captured ), 'creating a draft sends nothing' );
 	wp_update_post( array( 'ID' => $pue_id, 'post_status' => 'publish' ) );
 	pue_it_check( 0 === count( $pue_captured ), 'publishing without an opt-in sends nothing' );
@@ -75,6 +81,16 @@ try {
 	pue_it_check( count( $pue_captured ) === $n, 'cooldown blocks an immediate repeat' );
 	update_option( 'pue_cooldown_minutes', 0 );
 
+	// Exercise WordPress's scheduled-publish callback on a disposable overdue future post.
+	$pue_future_id = wp_insert_post( array( 'post_title' => 'PUE scheduled fixture', 'post_status' => 'future', 'post_date' => gmdate( 'Y-m-d H:i:s', time() + DAY_IN_SECONDS ), 'post_date_gmt' => gmdate( 'Y-m-d H:i:s', time() + DAY_IN_SECONDS ), 'post_type' => 'post' ) );
+	update_post_meta( $pue_future_id, '_pue_do_not_notify', 0 );
+	global $wpdb;
+	$wpdb->update( $wpdb->posts, array( 'post_date' => gmdate( 'Y-m-d H:i:s', time() - MINUTE_IN_SECONDS ), 'post_date_gmt' => gmdate( 'Y-m-d H:i:s', time() - MINUTE_IN_SECONDS ) ), array( 'ID' => $pue_future_id ) );
+	clean_post_cache( $pue_future_id );
+	$n = count( $pue_captured );
+	check_and_publish_future_post( $pue_future_id );
+	pue_it_check( 'publish' === get_post_status( $pue_future_id ) && count( $pue_captured ) > $n, 'scheduled first publish honors the stored opt-in through the real cron callback' );
+
 	update_option( 'pue_delivery_mode', 'background' );
 	update_post_meta( $pue_id, '_pue_do_not_notify', 0 );
 	$n = count( $pue_captured );
@@ -99,6 +115,10 @@ try {
 	pue_it_check( isset( $exporters['hackrepair-post-update-email-notifier'] ), 'privacy exporter registered' );
 	pue_it_check( has_action( 'admin_post_pue_save_branding' ) && has_action( 'wp_ajax_pue_save_branding' ), 'branding saves are routed for admin-post and AJAX' );
 } finally {
+	if ( $pue_future_id ) {
+		wp_clear_scheduled_hook( 'publish_future_post', array( $pue_future_id ) );
+		wp_delete_post( $pue_future_id, true );
+	}
 	if ( $pue_id ) {
 		wp_delete_post( $pue_id, true );
 	}

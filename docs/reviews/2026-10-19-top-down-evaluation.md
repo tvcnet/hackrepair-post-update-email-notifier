@@ -102,7 +102,7 @@ Ranked by value to site owners versus effort. These are planning notes, not comm
 
 Deliberately not recommended: bundling SMTP credentials or a mail transport (the existing advice to use a dedicated SMTP plugin is right); Bcc delivery (one email per recipient is the safer privacy default).
 
-## 5. Suggested sequencing
+## 5. Historical suggested sequencing (superseded by the implemented 1.6.0 scope)
 
 1. **Publish 1.5.1** as already planned, after your approval. This review does not change that build.
 2. **1.5.2 (small, correctness):**
@@ -130,4 +130,4 @@ Deliberately not recommended: bundling SMTP credentials or a mail transport (the
 
 ## Execution status (October 19, 2026)
 
-Implemented locally as 1.6.0 on branch claude/1.6.0 with your scope decisions (local only; fixes, structure and core features F1-F5, F7, F12, F13, F15; skip-by-default kept; WP-Cron for background sending). D6 was implemented as "consume and log the reason" rather than "keep the opt-in pending", so a stale opt-in cannot fire months later. Evidence and remaining limits are recorded in PROJECT.md under "1.6.0 review candidate". Deferred: F6 with the UTC timestamp migration, F8-F11, F14, and the Codex Security review.
+Implemented as 1.6.0, subsequently merged and pushed to main from branch claude/1.6.0 with your scope decisions (fixes, structure and core features F1-F5, F7, F12, F13, F15; skip-by-default kept; WP-Cron for background sending). D6 was implemented as "consume and log the reason" rather than "keep the opt-in pending", so a stale opt-in cannot fire months later. Evidence and remaining limits are recorded in PROJECT.md under "1.6.0 review candidate". Deferred: F6 with the UTC timestamp migration, F8-F11, F14, and the Codex Security review.

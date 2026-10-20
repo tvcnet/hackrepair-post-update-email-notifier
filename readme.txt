@@ -111,6 +111,12 @@ Note for developers: this plugin sends one email per recipient (individual-only)
 
 Deleting the plugin removes its settings and data on every site of a multisite network: all `pue_*` options (settings, log, bulk-test usage, SMTP notice state), the `_pue_do_not_notify` and `_pue_last_sent` post meta, queued background jobs and their WP-Cron events, and its update-status transients.
 
+== Background delivery and recovery ==
+
+Automatic mode queues lists above 20 recipients; batches require WP-Cron or a server cron job. Recovery runs every 15 minutes and retries missing scheduling up to five consecutive failures. Site Health flags scheduling problems even when logging is off. Use `wp pue jobs` to inspect status and `wp pue retry JOB_ID --yes` to schedule only unattempted recipients again.
+
+Progress is persisted per recipient. Interrupted or uncertain sends are not automatically replayed; exactly-once delivery is not guaranteed. Pending payloads expire after seven days and are deleted on the next recovery run. Deactivation pauses callbacks; reactivation may resume unexpired work. Reset and Clear Log do not cancel queued messages. Uninstall removes queued jobs and callbacks. The privacy eraser removes addresses from log recipient lists; it does not cancel queued notifications or remove arbitrary message text.
+
 == Support ==
 
 For questions, ideas and community support, visit GitHub Discussions:

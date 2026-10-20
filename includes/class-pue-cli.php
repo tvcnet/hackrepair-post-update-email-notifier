@@ -87,6 +87,44 @@ class PUE_CLI extends WP_CLI_Command {
 		WP_CLI::success( count( $emails ) . ' recipient(s) before developer filters.' );
 	}
 
+	/** List background jobs, including failures when email logging is off. */
+	public function jobs() {
+		$rows = array();
+		foreach ( PUE_Delivery::jobs() as $job ) {
+			$rows[] = array(
+				'id'        => $job['id'],
+				'state'     => $job['state'] ?? 'queued',
+				'attempted' => $job['offset'],
+				'accepted'  => $job['sent_count'],
+				'total'     => count( $job['recipients'] ),
+				'error'     => $job['error_code'],
+			);
+		}
+		\WP_CLI\Utils\format_items( 'table', $rows, array( 'id', 'state', 'attempted', 'accepted', 'total', 'error' ) );
+	}
+
+	/**
+	 * Retry scheduling for unattempted recipients, preserving accepted and uncertain progress.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <job_id>
+	 * : ID from wp pue jobs.
+	 *
+	 * [--yes]
+	 * : Skip confirmation.
+	 *
+	 * @param array $args Positional arguments.
+	 * @param array $assoc Named arguments.
+	 */
+	public function retry( $args, $assoc ) {
+		WP_CLI::confirm( 'Retry scheduling only the remaining unattempted recipients?', $assoc );
+		if ( ! PUE_Delivery::retry_job( $args[0] ) ) {
+			WP_CLI::error( 'Job missing, expired, busy or still unable to schedule. Inspect Site Health and cron configuration.' );
+		}
+		WP_CLI::success( 'Remaining recipients scheduled. Prior accepted or uncertain sends are not replayed.' );
+	}
+
 	/**
 	 * Export or clear the email log.
 	 *

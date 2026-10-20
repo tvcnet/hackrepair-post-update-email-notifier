@@ -72,17 +72,6 @@ final class PUE_Site_Health {
 		return self::result( 'pue_mail_failures', 'good', __( 'No repeated post update email failures', 'hackrepair-post-update-email-notifier' ), __( 'Fewer than three post update emails failed in the last 24 hours. Skipped updates are not counted.', 'hackrepair-post-update-email-notifier' ) );
 	}
 
-	/**
-	 * Registrable domain approximation: the last two host labels.
-	 *
-	 * @param string $host Host.
-	 * @return string
-	 */
-	private static function base_domain( $host ) {
-		$parts = explode( '.', strtolower( (string) $host ) );
-		return implode( '.', array_slice( $parts, -2 ) );
-	}
-
 	public static function test_from_alignment() {
 		$from = (string) get_option( 'pue_from_email', '' );
 		if ( '' === $from || false === strpos( $from, '@' ) ) {
@@ -90,14 +79,21 @@ final class PUE_Site_Health {
 		}
 		$site_host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
 		$from_host = substr( strrchr( $from, '@' ), 1 );
-		if ( self::base_domain( $site_host ) !== self::base_domain( $from_host ) ) {
+		$site_host = preg_replace( '/^www\./i', '', strtolower( rtrim( $site_host, '.' ) ) );
+		$from_host = preg_replace( '/^www\./i', '', strtolower( rtrim( $from_host, '.' ) ) );
+		if ( $site_host !== $from_host ) {
 			/* translators: 1: From domain, 2: site domain. */
-			return self::result( 'pue_from_alignment', 'recommended', __( 'Post update email sender domain differs from the site', 'hackrepair-post-update-email-notifier' ), sprintf( __( 'The From address uses %1$s but the site is %2$s. Mail providers are more likely to filter messages whose sender domain does not match the sending server.', 'hackrepair-post-update-email-notifier' ), $from_host, $site_host ) );
+			return self::result( 'pue_from_alignment', 'recommended', __( 'Post update email sender domain differs from the site', 'hackrepair-post-update-email-notifier' ), sprintf( __( 'The From address uses %1$s but the site is %2$s. Review your mail provider configuration. This address comparison does not verify SPF, DKIM, DMARC or delivery.', 'hackrepair-post-update-email-notifier' ), $from_host, $site_host ) );
 		}
-		return self::result( 'pue_from_alignment', 'good', __( 'Post update email sender matches the site domain', 'hackrepair-post-update-email-notifier' ), __( 'The From address matches the site domain.', 'hackrepair-post-update-email-notifier' ) );
+		return self::result( 'pue_from_alignment', 'good', __( 'Post update email sender matches the site domain', 'hackrepair-post-update-email-notifier' ), __( 'The address domains match (ignoring a www alias). This does not verify SPF, DKIM, DMARC or delivery.', 'hackrepair-post-update-email-notifier' ) );
 	}
 
 	public static function test_cron() {
+		foreach ( PUE_Delivery::jobs() as $job ) {
+			if ( in_array( $job['state'] ?? '', array( 'paused', 'failed' ), true ) ) {
+				return self::result( 'pue_background_cron', 'recommended', __( 'Background email needs attention', 'hackrepair-post-update-email-notifier' ), __( 'A queued message could not schedule its next batch. Recovery retries up to five times. Use wp pue jobs to inspect progress and wp pue retry JOB_ID --yes to retry only unattempted recipients.', 'hackrepair-post-update-email-notifier' ) );
+			}
+		}
 		$mode = (string) PUE_Defaults::option( 'pue_delivery_mode' );
 		if ( 'sync' !== $mode && defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
 			return self::result( 'pue_background_cron', 'recommended', __( 'Background sending depends on a server cron job', 'hackrepair-post-update-email-notifier' ), __( 'WP-Cron is disabled on this site. Make sure a server cron job runs wp-cron.php regularly, or choose “Always send right away”.', 'hackrepair-post-update-email-notifier' ) );

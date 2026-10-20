@@ -21,6 +21,8 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 
 **[Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)** · **[Plugin documentation](readme.txt)** · **[Report an issue](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues)**
 
+**Release status:** This branch describes the upcoming 1.6.0 candidate. The latest published release is still 1.5.0; the new features below will ship with 1.6.0 after final review.
+
 ## Features
 
 | Feature | What you control |
@@ -73,11 +75,19 @@ Logging is optional. When enabled, recipient addresses, subjects and message con
 
 GitHub receives standard connection information during update checks, such as the server IP. Post content and recipient lists are not included in those checks.
 
+## Background delivery and recovery
+
+Progress is saved per recipient. If a process stops during a send, that recipient's outcome is unknown and the plugin does not resend it automatically. This favors avoiding duplicate messages; it cannot guarantee exactly-once delivery.
+
+An independent WP-Cron recovery check runs every 15 minutes. Missing batch callbacks are retried up to five consecutive scheduling failures. Site Health reports paused or failed scheduling even when email logging is off. Operators can inspect `wp pue jobs` and retry only unattempted recipients with `wp pue retry JOB_ID --yes` after checking the cron configuration.
+
+Pending message payloads expire after seven days and are deleted on the next recovery run. Deactivation removes delivery callbacks; pending work can resume on reactivation within that window. Reset and Clear Log do not cancel queued messages. Uninstall removes the jobs and their callbacks. WordPress privacy erasure removes matching addresses from the optional log; it does not cancel queued notifications or erase arbitrary text inside message bodies.
+
 ## FAQ
 
 **Will every edit send an email?**
 
-No. The per-post **Don’t send email notifications** checkbox defaults to checked. Explicitly uncheck it for the update you want to announce. No notification roles are enabled by default.
+With the shipped skip-by-default policy, no: explicitly uncheck **Don’t send email notifications** for an update you want to announce. With the optional send-by-default policy, eligible updates notify unless an editor opts out. No notification roles are enabled by default.
 
 **Can I notify clients as well as editors?**
 
@@ -97,13 +107,13 @@ Send a test email, review the optional log, and check your site's SMTP or mail-p
 
 **Is this designed for large mailing lists?**
 
-Sending is synchronous. Large recipient groups can make the update request slow or exceed hosting limits. Evaluate your hosting and mail-provider limits before enabling large groups. The separate Bulk Test control is for testing and sends real mail.
+Automatic mode queues lists above 20 recipients and sends them in WP-Cron batches. You can also choose background sending for every list, or synchronous sending for small lists. WP-Cron needs site visits or a server cron job; it does not guarantee a precise delivery time. Bulk Test remains synchronous and sends real mail. Evaluate hosting and mail-provider limits before enabling large groups.
 
 ## For developers
 
 The plugin provides hooks for placeholders, recipient selection, subjects, headers and final HTML. See [readme.txt](readme.txt) for signatures and examples.
 
-For the source layout, validation evidence and contribution workflow, read [PROJECT.md](PROJECT.md), [MAINTAINING.md](MAINTAINING.md) and [CONTRIBUTING.md](CONTRIBUTING.md). CI checks PHP 7.4 and 8.3; local WordPress integration was verified on WordPress 7.1 / PHP 8.2.33. These checks do not establish external email delivery or large-recipient performance.
+For the source layout, validation evidence and contribution workflow, read [PROJECT.md](PROJECT.md), [MAINTAINING.md](MAINTAINING.md) and [CONTRIBUTING.md](CONTRIBUTING.md). CI covers standalone PHP 7.4/8.3 checks and real WordPress on PHP 8.1/8.3. The integration matrix includes WordPress 6.6 and latest; see the project record for the most recently verified run. Local WordPress integration uses PHP 8.2.33. These checks do not establish external email delivery or large-recipient performance.
 
 ## Third-party code
 
