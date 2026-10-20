@@ -7,7 +7,7 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -185,10 +185,11 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 1. Upload the `hackrepair-post-update-email-notifier` folder to `/wp-content/plugins/`
 2. Activate the plugin through the Plugins menu
 
-== Screenshots ==
-1. Settings screen showing roles, post types, template, and options
-
 == Changelog ==
+
+= 1.6.3 =
+* Cleanup: Removed the Screenshots tab from View Details, including older cached screenshot sections.
+* Retains the plugin banner, other information tabs and Other THRG Plugins guide.
 
 = 1.6.2 =
 * Release: Consolidates the previously unpublished 1.5.1, 1.6.0 and 1.6.1 review builds.

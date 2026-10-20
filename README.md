@@ -21,7 +21,7 @@ Notifications are intentional: **Don’t send email notifications** is checked b
 
 **[Download the latest release](https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/latest)** · **[Plugin documentation](readme.txt)** · **[Report an issue](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues)**
 
-**Version 1.6.2** brings background delivery and recovery, flexible notification rules, previews, and a clearer settings page with contextual help.
+**Version 1.6.3** brings background delivery and recovery, flexible notification rules, previews, and a clearer settings page with contextual help.
 
 ## Features
 

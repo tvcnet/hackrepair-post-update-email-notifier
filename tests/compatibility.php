@@ -37,8 +37,12 @@ verify(PUE_Site_Health::test_failures()['status']==='good','skipped updates neve
 
 // View Details keeps the update checker's reported version
 function wp_enqueue_style(...$a){}function plugins_url($p='',$f=''){return 'https://example.test/'.$p;}
-$info=(object)array('version'=>'9.9.9','sections'=>array('description'=>'x'));$args=(object)array('slug'=>'hackrepair-post-update-email-notifier');
+$info=(object)array('version'=>'9.9.9','sections'=>array('description'=>'x','screenshots'=>'Old screenshot section'));$args=(object)array('slug'=>'hackrepair-post-update-email-notifier');
 $out=pue_companion_plugin_info($info,'plugin_information',$args);verify($out->version==='9.9.9'&&isset($out->sections['other_THRG_plugins']),'View Details shows the available version, not the installed one');
+
+verify(!isset($out->sections['screenshots'])&&$out->sections['description']==='x','View Details removes only the unwanted screenshots section');
+$foreign=(object)array('sections'=>array('screenshots'=>'Other plugin screenshots'));
+verify(pue_companion_plugin_info($foreign,'plugin_information',(object)array('slug'=>'another-plugin'))===$foreign&&isset($foreign->sections['screenshots']),'other plugins keep their screenshots section');
 
 // Literal address-domain comparisons do not guess public suffix ownership.
 foreach(array(

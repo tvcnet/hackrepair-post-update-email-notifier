@@ -19,6 +19,8 @@ function pue_companion_plugin_info( $result, $action, $args ) {
 	if ( 'plugin_information' !== $action || ! is_object( $args ) || ! isset( $args->slug ) || 'hackrepair-post-update-email-notifier' !== $args->slug || ! is_object( $result ) || ! isset( $result->sections ) || ! is_array( $result->sections ) ) {
 		return $result;
 	}
+	// Omit the tab even if an older remote response includes a screenshots section.
+	unset( $result->sections['screenshots'] );
 	wp_enqueue_style( 'hackrepair-post-update-email-notifier-brand', plugins_url( 'assets/brand/thrg-brand.css', PUE_PLUGIN_FILE ), array(), PUE_VERSION );
 	wp_enqueue_style( 'hackrepair-post-update-email-notifier-brand-details', plugins_url( 'assets/brand/thrg-details.css', PUE_PLUGIN_FILE ), array( 'hackrepair-post-update-email-notifier-brand' ), PUE_VERSION );
 	wp_enqueue_style( 'pue-plugin-details', plugins_url( 'assets/css/pue-plugin-details.css', PUE_PLUGIN_FILE ), array( 'hackrepair-post-update-email-notifier-brand-details' ), PUE_VERSION );

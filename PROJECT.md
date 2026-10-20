@@ -12,7 +12,7 @@ Do not add third-party AI-assistant or provider names, branding, avatars, profil
 
 ## Current version
 
-1.6.2 is the latest published release, incorporating the previously unpublished 1.5.1, 1.6.0 and 1.6.1 work. The user explicitly authorized publication on October 20, 2026. Published ZIP/checksum, real updater discovery/install, active Zendogs runtime and View Details are verified. Existing saved settings are preserved. See docs/reviews/2026-10-20-1.6.2-release-verification.md; historical candidate evidence is retained.
+1.6.3 is the approved release being prepared to remove the Screenshots tab from View Details. The user explicitly authorized publication of 1.6.3 followed by deletion of the 1.6.2 GitHub release and tag. Older local ZIPs and recoverable Git backups will be preserved. The attribution-history rewrite remains unapproved and is separate from this release/tag deletion. Verification and withdrawal results will be recorded below.
 
 ## Source map
 
