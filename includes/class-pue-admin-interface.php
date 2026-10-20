@@ -458,7 +458,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				?>
 				<p><strong><?php echo esc_html__( 'Current version:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-current"><?php echo esc_html( $current_v ); ?></span></p>
 				<p><strong><?php echo esc_html__( 'Latest available (GitHub):', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-latest"><?php echo $latest_v ? esc_html( $latest_v ) : esc_html__( 'Not checked yet', 'hackrepair-post-update-email-notifier' ); ?></span></p>
-				<p><strong><?php echo esc_html__( 'Last checked:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( function_exists( 'pue_format_datetime' ) ? pue_format_datetime( $fetched_at ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $fetched_at ) ) : esc_html__( '—', 'hackrepair-post-update-email-notifier' ); ?></span></p>
+				<p><strong><?php echo esc_html__( 'Last checked:', 'hackrepair-post-update-email-notifier' ); ?></strong> <span class="pue-updates-fetched"><?php echo $fetched_at ? esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $fetched_at ) ) : esc_html__( '—', 'hackrepair-post-update-email-notifier' ); ?></span></p>
 				<p class="pue-inline" style="margin-top:8px;">
 					<button type="button" id="pue-check-updates-btn" class="button button-primary"><?php echo esc_html__( 'Check for updates now', 'hackrepair-post-update-email-notifier' ); ?></button>
 					<input type="hidden" id="pue-force-check-nonce" value="<?php echo esc_attr( wp_create_nonce( 'pue_force_check' ) ); ?>" />
@@ -589,7 +589,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 				),
 				12 * HOUR_IN_SECONDS
 			);
-			$last_html = function_exists( 'pue_format_datetime' ) ? pue_format_datetime( $ts ) : date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts );
+			$last_html = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $ts );
 			wp_send_json_success(
 				array(
 					'latest_version' => $latest,
