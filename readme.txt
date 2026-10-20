@@ -3,7 +3,7 @@
 Contributors: hackrepair, tvcnet
 Tags: email notifications, post update, roles, html email, admin
 Donate link: https://hackrepair.com/donations/buy-jim-a-coffee
-Support link: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
+Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
@@ -116,6 +116,17 @@ Deleting the plugin removes its settings:
  - `pue_smtp_notice_dismiss_until`
 
 On multisite, these options are deleted from every site.
+
+== Support ==
+
+For questions, ideas and community support, visit GitHub Discussions:
+https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions
+
+Report reproducible bugs through Issues:
+https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues
+
+Report security concerns privately using the repository security policy:
+https://github.com/tvcnet/hackrepair-post-update-email-notifier/blob/main/SECURITY.md
 
 == Frequently Asked Questions ==
 

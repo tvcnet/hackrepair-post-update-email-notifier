@@ -54,3 +54,7 @@ Version 1.5.0 is published under tvcnet: https://github.com/tvcnet/hackrepair-po
 ## GitHub presentation
 
 The repository landing page follows Disable Other Plugin Notices: original View Details banner above the centered title, release/requirements/CI badges, product introduction, features, setup, FAQs and maintainer/support links. The GitHub About description and topics identify the notification workflow. Full changelog details remain in readme.txt. This presentation update does not change the published 1.5.0 package.
+
+## Community support
+
+Questions, ideas and community help: https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions. Reproducible bugs: https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues. Security reports stay private. GitHub Discussions is enabled; Reddit is no longer the support destination. Documentation and support-link updates are committed for future packages without replacing published release assets.

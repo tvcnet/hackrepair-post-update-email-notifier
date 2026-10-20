@@ -145,4 +145,4 @@ For very large recipient lists, individual sends can be slow. Use an SMTP servic
 GPLv2 (as noted in the plugin header)
 
 ## Support
-Reddit thread: https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/
+Reddit thread: https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions

@@ -509,7 +509,7 @@ if ( ! class_exists( 'PUE_Admin_Interface' ) ) {
 			<h2 id="support"><?php echo esc_html__( 'Support', 'hackrepair-post-update-email-notifier' ); ?></h2>
 			<div class="pue-card">
 				<p>☕ <?php echo wp_kses_post( __( 'If you found this plugin helpful, please <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener">buy Jim a cup of coffee?</a>', 'hackrepair-post-update-email-notifier' ) ); ?></p>
-				<p><span class="dashicons dashicons-editor-help"></span> <?php echo wp_kses_post( __( 'Support and Updates: If you want to receive notifications about updates or leave feedback on the plugin, <a href="https://www.reddit.com/user/hackrepair/comments/1ole6n1/new_plugin_post_update_email_notifier_branded/" target="_blank" rel="noopener">subscribe to the official support thread</a>.', 'hackrepair-post-update-email-notifier' ) ); ?></p>
+				<p><span class="dashicons dashicons-editor-help"></span> <?php echo wp_kses_post( __( 'Questions and Feedback: For questions, ideas, or help with the plugin, <a href="https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions" target="_blank" rel="noopener">visit GitHub Discussions</a>.', 'hackrepair-post-update-email-notifier' ) ); ?></p>
 			</div>
 
 

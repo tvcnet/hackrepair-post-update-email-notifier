@@ -110,7 +110,7 @@ Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-
 
 **[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
 
-[Report a bug or request a feature](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+[Questions, ideas and community support](https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions) · [Report a bug](https://github.com/tvcnet/hackrepair-post-update-email-notifier/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
 
 ## License
 
