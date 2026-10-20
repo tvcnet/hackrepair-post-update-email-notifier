@@ -119,3 +119,9 @@ Zendogs browser verification for this adjustment: v1.6.1 renders eight sections;
 Removed the section-level Recent Email Log and Clear Log help controls and their unused translated text. Kept the help control immediately after Export CSV. There are now 26 help topics overall. Updated readme/release wording and regenerated the translation template. Shared PHPCS (27 files), PHP syntax, seven help assertions and seven export/admin-action assertions pass. On Zendogs, invoking the installed Recent Email Log renderer confirms its only help key is `pue_export_log`; no log entries were deleted or settings saved. All 159 installed files match the revised ZIP.
 
 Direct dist and review-help copies rebuilt at version 1.6.1; SHA-256 `200cc7d62a13abfc3c3dc194dc5c0b92abdcb887ca421ac01d0bba75515d1c97`. Prior ZIP/checksum copies preserved under before-log-tooltip-trim; prior installed plugin backed up at `/tmp/pue-before-log-tooltip-trim.tgz`. Publication remains separate.
+
+### 1.6.1 review adjustment: clearer send-policy help
+
+Rewrote Default for each update help in plain language: recommended emails-off behavior, the exact editor checkbox to uncheck when sending, the alternative send-by-default option, one-update editor choices, recipient selection and Save Notifications. Other sending rules still apply. Removed the longer historical-migration explanation from this tooltip; notification behavior is unchanged. Updated the existing help-copy assertion and regenerated translations. Seven help assertions and shared PHPCS (27 files) pass.
+
+Rebuilt direct dist and review-help ZIP/checksum copies; SHA-256 `6fdc6f96014279f7240913cb679c385261259fcfba70bf5727c0ff1e21145a13`. Previous review copies preserved under before-send-policy-copy-simplification. Version remains 1.6.1 and publication remains separate.

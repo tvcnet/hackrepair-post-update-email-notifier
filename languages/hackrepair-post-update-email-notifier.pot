@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T18:43:56+00:00\n"
+"POT-Creation-Date: 2026-10-20T18:48:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: hackrepair-post-update-email-notifier\n"
@@ -663,7 +663,7 @@ msgid "The mail transport raised an exception; that recipient will not be resent
 msgstr ""
 
 #: includes/class-pue-help.php:20
-msgid "Start here: choose what happens when an editor saves eligible published content. The recommended option starts with “Don’t send email notifications” checked; uncheck it in the editor for an update you want to announce. “Send unless the editor opts out” starts unchecked; check it to skip one update. After a processed update, the post returns to this site default. Save Notifications to apply your choice. Existing posts may retain a saved choice until their next update. No mail is sent unless recipient roles are selected and the other sending rules allow it."
+msgid "Choose your usual email setting. Recommended: send no email unless you uncheck “Don’t send email notifications” in the post editor. To send emails by default, choose “Send unless the editor opts out”; check the box to skip an update. That editor choice applies to one update, then the site default applies again. Select recipient roles and click Save Notifications. Other sending rules still apply."
 msgstr ""
 
 #: includes/class-pue-help.php:21
