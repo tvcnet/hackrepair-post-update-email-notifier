@@ -5,9 +5,9 @@ Tags: email notifications, post update, roles, html email, admin
 Donate link: https://hackrepair.com/donations/buy-jim-a-coffee
 Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/discussions
 Requires at least: 6.6
-Tested up to: 7.1
+Tested up to: 7.1.3
 Requires PHP: 7.4
-Stable tag: 1.6.3
+Stable tag: 1.6.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -186,6 +186,9 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 2. Activate the plugin through the Plugins menu
 
 == Changelog ==
+
+= 1.6.4 =
+* Declare WordPress 7.1.3 compatibility consistently in the readme and native View details.
 
 = 1.6.3 =
 * Cleanup: Removed the Screenshots tab from View Details, including older cached screenshot sections.

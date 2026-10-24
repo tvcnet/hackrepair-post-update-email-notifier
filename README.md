@@ -10,7 +10,7 @@
 [![License: GPL v2](https://img.shields.io/badge/license-GPLv2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 [![Requires PHP: 7.4+](https://img.shields.io/badge/Requires%20PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![Requires WordPress: 6.6+](https://img.shields.io/badge/WordPress-6.6%2B-21759b.svg)](https://wordpress.org/)
-[![Tested up to: 7.1](https://img.shields.io/badge/Tested%20up%20to-7.1-21759b.svg)](readme.txt)
+[![Tested up to: 7.1.3](https://img.shields.io/badge/Tested%20up%20to-7.1.3-21759b.svg)](readme.txt)
 [![Plugin checks](https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/workflows/checks.yml/badge.svg)](https://github.com/tvcnet/hackrepair-post-update-email-notifier/actions/workflows/checks.yml)
 
 Updating a page is easy. Remembering to tell everyone who needs to know is another task. Editors need to know when a reference changes, clients want to review revised pages, and site owners need a useful record of what was announced.
@@ -133,3 +133,5 @@ GPLv2. See the [GNU General Public License v2.0](https://www.gnu.org/licenses/ol
 ## Changelog
 
 See the **Changelog** section of [readme.txt](readme.txt).
+
+Compatibility update 1.6.4: Tested up to WordPress 7.1.3.

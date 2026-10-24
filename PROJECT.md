@@ -184,3 +184,9 @@ Published latest release: https://github.com/tvcnet/hackrepair-post-update-email
 Zendogs' real updater discovered and installed the exact public 1.6.3 asset anonymously through WordPress bulk upgrade. Active status, settings and logs were preserved; all 159 installed files match the published ZIP. Native View Details confirms version 1.6.3, banner and remaining tabs, with no Screenshots tab. Shared PHPCS and regression/package checks pass. See `docs/reviews/2026-10-20-1.6.3-release-verification.md`.
 
 After verification, deleted the 1.6.2 release and local/remote tag as explicitly requested. Local 1.6.2 ZIPs, downloaded assets, release metadata and verified full Git bundle remain in the external withdrawal backup. Version 1.5.0 remains published; main is the only branch. Historical records below describe their original verification date, not current release availability.
+
+## WordPress 7.1.3 compatibility patch 1.6.4
+
+Corrected readme and native plugin information metadata to 7.1.3. Zendogs core upgraded from 7.1 to official 7.1.3 after a full local database/core backup. Existing settings preserved. This patch changes compatibility metadata only; no functional changes. Shared PHPCS passed. Runtime integration and native details checks recorded in the release verification.
+
+Verification October 23, 2026: Zendogs core reports 7.1.3. All six native plugin-information responses declare tested 7.1.3; Ego Lite space 59 opened all six View details pages and found no has-not-been-tested warning. Stickies 52 WordPress integration assertions and PUE real-WordPress integration passed; DOPN update-notices and all seven PUE standalone suites passed. Shared PHPCS passed for all three corrected plugins. Other plugins were checked for metadata/UI behavior, not subjected to a new full feature audit.
