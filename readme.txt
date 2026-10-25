@@ -13,6 +13,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
+The native View Details window includes an Other THRG Plugins guide to five other tools from The Hack Repair Guy.
+
 Send branded HTML emails to selected user roles when you announce an update to published content. Choose who is notified, whether editors opt in or opt out for each update, and how the email looks. Preview the email without sending, send yourself a test, and review the results in an optional log.
 
 = Features =
