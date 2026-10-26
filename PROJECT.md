@@ -12,7 +12,7 @@ Do not add third-party AI-assistant or provider names, branding, avatars, profil
 
 ## Current version
 
-1.6.5 is the approved release candidate for the expanded companion-plugin guide. Publication and verification results are recorded below. Historical release records retain their original dates.
+1.6.5 is published and verified for the expanded companion-plugin guide. Publication and verification results are recorded below. Historical release records retain their original dates.
 
 ## Source map
 
@@ -202,3 +202,8 @@ Verification: shared PHPCS and `php tests/companion-plugins.php` pass for this c
 ## 1.6.5 release preparation — October 25, 2026
 
 User approved packaging and publication for the five GitHub-updated plugins. Plugin Archiver is explicitly excluded from this release pass. Version headers/constants, stable tag, README and release notes are aligned at 1.6.5. Release checks and publication results follow below.
+
+
+## 1.6.5 published and verified — October 25, 2026
+
+Published: https://github.com/tvcnet/hackrepair-post-update-email-notifier/releases/tag/v1.6.5. Version metadata, ZIP and published digest agree. Real Zendogs updater discovery/install, retained settings/activation, installed file hashes and native View Details verified. All local checks passed; CI scope and hashes are recorded in `docs/release-verification-1.6.5.md`. Older packages/releases retained. Plugin Archiver was excluded from this release pass.
