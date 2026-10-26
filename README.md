@@ -134,4 +134,4 @@ GPLv2. See the [GNU General Public License v2.0](https://www.gnu.org/licenses/ol
 
 See the **Changelog** section of [readme.txt](readme.txt).
 
-Compatibility update 1.6.4: Tested up to WordPress 7.1.3.
+Compatibility update 1.6.5: Tested up to WordPress 7.1.3.

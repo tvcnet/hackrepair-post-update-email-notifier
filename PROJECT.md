@@ -12,7 +12,7 @@ Do not add third-party AI-assistant or provider names, branding, avatars, profil
 
 ## Current version
 
-1.6.3 is published and verified on Zendogs. Screenshots is removed from native View Details; the banner and other tabs remain. At the user's explicit request, the 1.6.2 GitHub release and local/remote tag were deleted after replacement verification. Older local ZIPs and recoverable Git backups are preserved. The attribution-history rewrite remains unapproved. See the 1.6.3 verification record below.
+1.6.5 is the approved release candidate for the expanded companion-plugin guide. Publication and verification results are recorded below. Historical release records retain their original dates.
 
 ## Source map
 
@@ -197,3 +197,8 @@ Verification October 23, 2026: Zendogs core reports 7.1.3. All six native plugin
 The native View Details **Other THRG Plugins** tab lists the other five tools: Disable Other Plugin Notices, Group Password Reset, Plugin Detective, Site Inspector, Post Update Email Notifier and Plugin Archiver, excluding the current plugin. Plugin Archiver always links to https://wordpress.org/plugins/hackrepair-plugin-archiver/; the GitHub-distributed tools link to their own repositories. Cards are informational links, with no automatic installs or external requests. Archiver retains WordPress.org updates and metadata. No published version, tag or release asset is changed by this source update.
 
 Verification: shared PHPCS and `php tests/companion-plugins.php` pass for this checkout. Native WordPress View Details on Zendogs renders five distinct companion cards, with no self-link and Archiver linked only to WordPress.org. Archiver uses `plugins_api_result` for official metadata and preserves ratings/version/update controls; the test used a temporary loader beside the older installed Archiver, not a full upgrade. Temporary preview files are restored after testing; no reset, archive, delete or email action was performed. Published releases remain unchanged.
+
+
+## 1.6.5 release preparation — October 25, 2026
+
+User approved packaging and publication for the five GitHub-updated plugins. Plugin Archiver is explicitly excluded from this release pass. Version headers/constants, stable tag, README and release notes are aligned at 1.6.5. Release checks and publication results follow below.
