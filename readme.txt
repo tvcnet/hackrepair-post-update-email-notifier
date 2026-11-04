@@ -7,7 +7,7 @@ Support link: https://github.com/tvcnet/hackrepair-post-update-email-notifier/di
 Requires at least: 6.6
 Tested up to: 7.1.3
 Requires PHP: 7.4
-Stable tag: 1.6.5
+Stable tag: 1.6.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -188,6 +188,9 @@ Admin actions require the `manage_options` capability (filterable with `pue_sett
 2. Activate the plugin through the Plugins menu
 
 == Changelog ==
+
+= 1.6.6 =
+* The Other THRG Plugins tab in View Details now lists Bunker and Stickies and ends with a donation note.
 
 = 1.6.5 =
 * Expanded Other THRG Plugins in View Details to show five companion tools, excluding the current plugin.

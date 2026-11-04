@@ -12,7 +12,7 @@ Do not add third-party AI-assistant or provider names, branding, avatars, profil
 
 ## Current version
 
-1.6.5 is published and verified for the expanded companion-plugin guide. Publication and verification results are recorded below. Historical release records retain their original dates.
+1.6.6 is the current release (companion guide update); 1.6.5 was published and verified for the expanded companion-plugin guide. Publication and verification results are recorded below. Historical release records retain their original dates.
 
 ## Source map
 
@@ -217,3 +217,7 @@ Added the common SECURITY.md policy, repository-specific private reporting desti
 ## Secret protection and dependency coverage — October 26, 2026
 
 Enabled secret scanning, push protection and Dependabot alerts; added the trusted-main dependency inventory workflow and live read-only protection verifier. This is repository tooling, with no plugin release/SVN/runtime change. Bundled Parsedown declares 1.6.0, with upstream advisories requiring source-aware review. See `docs/repository-protection-2026-10-26.md` and `docs/dependency-coverage.md` for evidence and limits.
+
+## 1.6.6 release — November 3, 2026
+
+User approved a patch release for the companion guide update. Plugin header, PUE_VERSION, stable tag and release notes are aligned at 1.6.6. The Other THRG Plugins tab now lists Bunker and Stickies and ends with a donation note. No change to the notification workflow, settings or Tested up to. Checks and publication results follow in the GitHub release.
